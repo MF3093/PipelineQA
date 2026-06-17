@@ -1,0 +1,26 @@
+{
+  "key": "TEST-TCG-002",
+  "summary": "Archive Aircraft Record",
+  "status": "parsed",
+  "priority": "Medium",
+  "epic_key": "TEST-EPIC-TCG",
+  "description": "As a fleet manager, I want to archive decommissioned aircraft records so that they no longer appear in active fleet lists but remain accessible for historical reporting.",
+  "acs": [
+    { "id": "AC-1", "text": "Clicking the Archive button marks the aircraft record as archived in the system." },
+    { "id": "AC-2", "text": "Archived aircraft do not appear in the active aircraft dropdown or the main fleet list." },
+    { "id": "AC-3", "text": "An archived aircraft record can be restored using the Restore action." },
+    { "id": "AC-4", "text": "Archived aircraft remain visible in the historical reports section with an 'Archived' badge." }
+  ],
+  "out_of_scope": [
+    "Bulk archiving of multiple aircraft at once is out of scope."
+  ],
+  "questions": [],
+  "sections": [],
+  "figma_links": [],
+  "linked_stories": [],
+  "dependencies": [],
+  "comments": [],
+  "needs_review": false,
+  "flags": [],
+  "extraction_quality": "standard"
+}

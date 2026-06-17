@@ -1,0 +1,26 @@
+{
+  "key": "TEST-TCG-001",
+  "summary": "Aircraft Weight & Balance Report Generation",
+  "status": "parsed",
+  "priority": "High",
+  "epic_key": "TEST-EPIC-TCG",
+  "description": "As a load planner, I want to generate a weight and balance report for a flight so that the aircraft loading configuration is within safe limits.",
+  "acs": [
+    { "id": "AC-1", "text": "The report includes total payload weight, fuel weight, and empty aircraft weight." },
+    { "id": "AC-2", "text": "The report calculates the center of gravity (CG) position as a percentage of the Mean Aerodynamic Chord (MAC)." },
+    { "id": "AC-3", "text": "The report displays a WITHIN LIMITS or EXCEEDS LIMITS status based on the CG calculation result." },
+    { "id": "AC-4", "text": "The completed report can be exported as a PDF." }
+  ],
+  "out_of_scope": [],
+  "questions": [
+    "Q-TCG001-001: AC-3 refers to CG limits but the story does not define what those limits are or where they come from. Are the limits stored per aircraft type? Per flight? Is there a regulatory table? This is required to define pass/fail criteria for test cases covering AC-3."
+  ],
+  "sections": [],
+  "figma_links": [],
+  "linked_stories": [],
+  "dependencies": [],
+  "comments": [],
+  "needs_review": true,
+  "flags": ["NEEDS_REVIEW"],
+  "extraction_quality": "standard"
+}

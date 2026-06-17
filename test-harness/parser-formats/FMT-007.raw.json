@@ -1,0 +1,20 @@
+{
+  "fetched_at": "2026-06-08T10:25:00Z",
+  "batch_id": "batch-test-FMT-007",
+  "source": "jira",
+  "item_type": "story",
+  "payload": {
+    "key": "TEST-FMT-007",
+    "fields": {
+      "summary": "Aircraft list — search and filter capabilities",
+      "status": { "name": "Ready for Test" },
+      "priority": { "name": "High" },
+      "parent": { "key": "TEST-EPIC-1" },
+      "description": "As a dispatcher I want to view the aircraft list so that I can see all registered aircraft.\nAs a dispatcher I want to search by tail number so that I can find a specific aircraft.\nAs a dispatcher I want to filter by operational status so that I see only active aircraft.\nAs a dispatcher I want to sort by base location so that I can group aircraft by region.\nAs a dispatcher I want to export the filtered list so that I can share it with my team.",
+      "comment": {
+        "comments": []
+      },
+      "issuelinks": []
+    }
+  }
+}

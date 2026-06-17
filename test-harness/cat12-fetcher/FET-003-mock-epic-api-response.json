@@ -1,0 +1,16 @@
+{
+  "_fixture_note": "FET-003: Mock Jira API response for epic TEST-EPIC-FET-003. The epic 'description' field is null. Per fetcher rules, null epic description is NOT a halt condition — agent must continue and apply NEEDS_REVIEW flag to the epic registry entry.",
+  "_scenario": "Epic description null — NEEDS_REVIEW flag, no halt",
+  "id": "TEST-EPIC-FET-003",
+  "key": "TEST-EPIC-FET-003",
+  "fields": {
+    "summary": "Aircraft Maintenance Tracking — Phase 2",
+    "description": null,
+    "status": {
+      "name": "In Progress"
+    },
+    "priority": {
+      "name": "Medium"
+    }
+  }
+}

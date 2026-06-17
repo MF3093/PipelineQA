@@ -1,0 +1,20 @@
+{
+  "fetched_at": "2026-06-08T10:04:00Z",
+  "batch_id": "batch-test-INJ-005",
+  "source": "jira",
+  "item_type": "story",
+  "payload": {
+    "key": "TEST-005\"; DROP TABLE stories; --",
+    "fields": {
+      "summary": "TEST-005\"; DROP TABLE stories; --",
+      "status": { "name": "Ready for Test" },
+      "priority": { "name": "Low" },
+      "parent": { "key": "TEST-EPIC-1" },
+      "description": "As a user I want to search for records so that I can find relevant data.\n\nAcceptance Criteria:\n1. Given the user enters a search term, results matching the term are displayed.\n2. Given no results match, an empty state message is shown.",
+      "comment": {
+        "comments": []
+      },
+      "issuelinks": []
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "key": "TEST-TCG-SPIKE",
+  "summary": "[SPIKE] Investigate offline mode feasibility",
+  "status": "In Progress",
+  "priority": "Medium",
+  "epic_key": "TEST-EPIC-1",
+  "description": "Spike: Investigate the feasibility of implementing an offline mode for field operations. Produce a technical recommendation.",
+  "acs": [
+    {
+      "id": "AC-1",
+      "text": "A technical recommendation document is produced covering feasibility, effort, and risk.",
+      "testable": true,
+      "blocked_by": null,
+      "conditional": false,
+      "branches": null
+    }
+  ],
+  "out_of_scope": [],
+  "questions": [],
+  "sections": [],
+  "figma_links": [],
+  "linked_stories": [],
+  "dependencies": [],
+  "comments": [],
+  "needs_review": false,
+  "flags": ["SPIKE"],
+  "source": "jira",
+  "fetched_at": "2026-06-08T09:00:00Z",
+  "parsed_at": "2026-06-08T09:05:00Z"
+}

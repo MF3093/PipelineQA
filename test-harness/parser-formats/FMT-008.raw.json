@@ -1,0 +1,20 @@
+{
+  "fetched_at": "2026-06-08T10:26:00Z",
+  "batch_id": "batch-test-FMT-008",
+  "source": "jira",
+  "item_type": "story",
+  "payload": {
+    "key": "TEST-FMT-008",
+    "fields": {
+      "summary": "Aircraft search — BDD acceptance scenarios",
+      "status": { "name": "Ready for Test" },
+      "priority": { "name": "High" },
+      "parent": { "key": "TEST-EPIC-1" },
+      "description": "As a dispatcher I want to search and filter the aircraft list so that I can find the right aircraft quickly.\n\nScenario: Search by tail number\n  Given I am on the aircraft list page\n  When I type a tail number in the search field\n  Then only aircraft matching that tail number are displayed\n\nScenario: Clear search restores full list\n  Given I have entered a search term that filters the list\n  When I click the clear button\n  Then all aircraft are displayed again\n\nScenario: No results found\n  Given I have entered a search term that matches no aircraft\n  When the search executes\n  Then an empty state message \"No aircraft found\" is displayed\n\nScenario: Filter by operational status\n  Given I am on the aircraft list page\n  When I select \"Active\" from the status filter\n  Then only aircraft with status Active are displayed in the list",
+      "comment": {
+        "comments": []
+      },
+      "issuelinks": []
+    }
+  }
+}

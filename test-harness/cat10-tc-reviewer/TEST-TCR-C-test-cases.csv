@@ -1,0 +1,10 @@
+Work Item Type,ID,Title,Priority,Description,Test Step,Test Action,Step Expected
+Test Case,TC-001,Verify successful registration redirects to confirmation page,1,AC-2: After submit user is taken to confirmation page,1,Navigate to /register and log in as Operator,Registration form is displayed
+,,,,,2,"Fill all required fields with valid data and click Submit",POST request sent to /api/registrations
+,,,,,3,Observe the page after submission,User is redirected to /register/confirmation page
+,,,,,4,Observe the confirmation page content,Confirmation page displays 'Your registration has been submitted'
+Test Case,TC-002,Verify failed registration keeps user on form with error message,2,AC-3: API error preserves form data,1,Navigate to /register and log in as Operator,Registration form is displayed
+,,,,,2,Fill all fields with valid data,All fields show entered values
+,,,,,3,"Click Submit while the API is configured to return a 500 error (use test flag ?simulate_error=true)",POST request sent
+,,,,,4,Observe the response,Red error banner displays 'Registration could not be saved — please try again'
+,,,,,5,Observe the form fields,All previously entered field values are preserved in the form

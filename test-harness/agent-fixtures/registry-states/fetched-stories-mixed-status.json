@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0",
+  "last_updated": "2026-06-08T10:00:00Z",
+  "stories": [
+    {
+      "story_key": "TEST-FMT-001",
+      "epic_key": "TEST-EPIC-1",
+      "summary": "Aircraft list — search and filter",
+      "fetched_at": "2026-06-08T09:00:00Z",
+      "parsed_at": "2026-06-08T09:05:00Z",
+      "tc_generated_at": null,
+      "approved_at": null,
+      "status": "parsed",
+      "batch_id": "batch-20260608-001",
+      "flags": []
+    },
+    {
+      "story_key": "TEST-FMT-002",
+      "epic_key": "TEST-EPIC-1",
+      "summary": "Aircraft detail — view registration information",
+      "fetched_at": "2026-06-08T09:00:00Z",
+      "parsed_at": "2026-06-08T09:05:00Z",
+      "tc_generated_at": null,
+      "approved_at": null,
+      "status": "parsed",
+      "batch_id": "batch-20260608-001",
+      "flags": []
+    },
+    {
+      "story_key": "TEST-FMT-003",
+      "epic_key": "TEST-EPIC-1",
+      "summary": "Flight schedule — create new flight entry",
+      "fetched_at": "2026-06-08T09:00:00Z",
+      "parsed_at": null,
+      "tc_generated_at": null,
+      "approved_at": null,
+      "status": "fetched",
+      "batch_id": "batch-20260608-001",
+      "flags": []
+    }
+  ]
+}

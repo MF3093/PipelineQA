@@ -1,0 +1,20 @@
+{
+  "fetched_at": "2026-06-08T10:14:00Z",
+  "batch_id": "batch-test-MAL-005",
+  "source": "jira",
+  "item_type": "story",
+  "payload": {
+    "key": "TEST-MAL-005",
+    "fields": {
+      "summary": "[SPIKE] Investigate third-party payment gateway options",
+      "status": { "name": "In Progress" },
+      "priority": { "name": "Medium" },
+      "parent": { "key": "TEST-EPIC-1" },
+      "description": "Spike: Investigate and evaluate third-party payment gateway integrations (Stripe, PayPal, Braintree). Produce a recommendation document.\n\nAcceptance Criteria:\n1. A comparison document covering pricing, API quality, and regional support is produced.\n2. A recommended option with justification is documented.",
+      "comment": {
+        "comments": []
+      },
+      "issuelinks": []
+    }
+  }
+}

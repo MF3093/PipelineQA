@@ -1,0 +1,35 @@
+{
+  "key": "TEST-CTX-002",
+  "summary": "Flight plan form — select aircraft from registered list",
+  "status": "parsed",
+  "priority": "High",
+  "epic_key": "TEST-EPIC-CTX",
+  "description": "Users can select a registered aircraft from a searchable dropdown when creating a new flight plan. The dropdown is populated from the aircraft registry API.",
+  "acs": [
+    {"id": "AC-1", "text": "Aircraft dropdown shows all active aircraft from the registry on page load"},
+    {"id": "AC-2", "text": "Typing in the dropdown filters the list by registration number or aircraft type"},
+    {"id": "AC-3", "text": "Selecting an aircraft pre-fills the Aircraft Type and Registration Number fields on the form"}
+  ],
+  "out_of_scope": ["Adding new aircraft from the flight plan form"],
+  "questions": [],
+  "sections": [
+    {
+      "header": "Overview",
+      "content": "Searchable aircraft selector for the flight plan creation form. Integrates with the aircraft registry API."
+    },
+    {
+      "header": "Backend Notes",
+      "content": "The aircraft registry API is a Node.js REST service. The endpoint GET /api/aircraft-registry returns a JSON array of aircraft objects. Authentication uses JWT bearer tokens stored in browser localStorage. The frontend is built in React 18 with TypeScript. The dropdown component uses the react-select library (v5) configured for async loading."
+    },
+    {
+      "header": "Testing Notes",
+      "content": "Test environment is staging.jetnet.internal. The QA team uses Azure DevOps Test Plans for manual TC tracking. The team has 2 QA engineers. Test execution is manual — no automated test suite exists yet."
+    }
+  ],
+  "figma_links": [],
+  "linked_stories": [],
+  "dependencies": [],
+  "comments": [],
+  "needs_review": false,
+  "flags": []
+}

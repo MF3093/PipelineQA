@@ -1,0 +1,20 @@
+{
+  "fetched_at": "2026-06-08T10:12:00Z",
+  "batch_id": "batch-test-MAL-003",
+  "source": "jira",
+  "item_type": "story",
+  "payload": {
+    "key": "TEST-MAL-003",
+    "fields": {
+      "summary": "Notification settings — user alert preferences",
+      "status": { "name": "Ready for Test" },
+      "priority": { "name": "Medium" },
+      "parent": null,
+      "description": "As a user I want to configure notification preferences so that I only receive relevant alerts.\n\nAcceptance Criteria:\n1. The user can enable or disable email notifications.\n2. The user can set notification frequency to daily, weekly, or real-time.\n3. Changes are saved immediately upon toggle.",
+      "comment": {
+        "comments": []
+      },
+      "issuelinks": []
+    }
+  }
+}

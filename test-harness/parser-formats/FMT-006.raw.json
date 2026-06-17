@@ -1,0 +1,20 @@
+{
+  "fetched_at": "2026-06-08T10:24:00Z",
+  "batch_id": "batch-test-FMT-006",
+  "source": "jira",
+  "item_type": "story",
+  "payload": {
+    "key": "TEST-FMT-006",
+    "fields": {
+      "summary": "Aircraft search — filter active aircraft",
+      "status": { "name": "Ready for Test" },
+      "priority": { "name": "Medium" },
+      "parent": { "key": "TEST-EPIC-1" },
+      "description": "As a dispatcher I want to search the aircraft list so that I can quickly find active aircraft.",
+      "comment": {
+        "comments": []
+      },
+      "issuelinks": []
+    }
+  }
+}

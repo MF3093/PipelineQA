@@ -1,0 +1,9 @@
+Work Item Type,ID,Title,Priority,Description,Test Step,Test Action,Step Expected
+Test Case,TC-001,Verify edit form loads with all pre-filled values,1,AC-1: Edit form opens pre-filled,1,Navigate to /register and log in as Operator,Registration list is displayed with at least one saved record
+,,,,,2,Click the Edit button on an existing registration record,Edit form opens
+,,,,,3,Observe all field values,"Registration Number, Aircraft Type, Manufacturer, and Year fields are pre-filled with the stored values from the record"
+Test Case,TC-002,Verify editing a record updates it via PUT request,1,AC-2: PUT /api/registrations/{id} triggered on edit submit,1,Navigate to /register and log in as Operator,Registration list is displayed
+,,,,,2,Click Edit on an existing record,Edit form opens with pre-filled values
+,,,,,3,Change the Aircraft Type field to a different valid value,Field shows the new value
+,,,,,4,Click Submit,PUT request is sent to /api/registrations/{id} with the updated Aircraft Type value
+,,,,,5,Observe the page response,Green banner displays 'Registration updated successfully'

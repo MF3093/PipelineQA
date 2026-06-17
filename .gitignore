@@ -1,0 +1,8 @@
+# Personal project registry — contains local paths specific to each user's machine
+projects.json
+
+# VSCode MCP server config — may contain personal tokens or URLs
+.vscode/mcp.json
+
+# Generated QA pipeline output artifacts
+**/project-output/

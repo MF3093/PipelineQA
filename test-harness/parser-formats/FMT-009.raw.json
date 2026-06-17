@@ -1,0 +1,20 @@
+{
+  "fetched_at": "2026-06-08T10:27:00Z",
+  "batch_id": "batch-test-FMT-009",
+  "source": "jira",
+  "item_type": "story",
+  "payload": {
+    "key": "TEST-FMT-009",
+    "fields": {
+      "summary": "Aircraft detail — view registration information",
+      "status": { "name": "Ready for Test" },
+      "priority": { "name": "High" },
+      "parent": { "key": "TEST-EPIC-1" },
+      "description": "As a dispatcher I want to view the full registration details of an aircraft so that I can verify its operational readiness.\n\n1. The detail page displays the aircraft registration number, type, model, and base location.\n2. The operational status badge reflects the current status from the maintenance system.\n3. A warning banner is displayed at the top of the page when the aircraft has an active maintenance record.\n4. The warning banner is not shown when no active maintenance record exists.\n5. The page loads within 2 seconds under normal network conditions.",
+      "comment": {
+        "comments": []
+      },
+      "issuelinks": []
+    }
+  }
+}

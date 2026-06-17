@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "project_name": "TEST-PROJECT",
+  "output_path": "C:\\Users\\MariaRodriguezSalaza\\Documents\\JetNetProccess\\test-harness\\agent-fixtures",
+  "last_updated": "2026-06-08T10:00:00Z",
+
+  "lock": {
+    "locked": true,
+    "locked_at": "2026-06-07T08:00:00Z"
+  },
+
+  "current_run": {
+    "run_id": "run-20260607-001",
+    "batch_id": "batch-20260607-001",
+    "started_at": "2026-06-07T08:00:00Z",
+    "completed_at": null,
+    "status": "in_progress",
+    "current_phase": "tc_generation",
+    "current_story": null,
+    "story_keys_in_run": ["TEST-001", "TEST-002"]
+  },
+
+  "approval_states": {
+    "fetch_completed": true,
+    "fetch_completed_at": "2026-06-07T08:05:00Z",
+    "context_approved": false,
+    "context_approved_at": null,
+    "context_version": 0,
+    "strategy_approved": false,
+    "strategy_approved_at": null,
+    "strategy_current_version": 0,
+    "scoped_story_keys": [],
+    "scoped_epic_keys": [],
+    "tc_approvals": {}
+  },
+
+  "run_history": []
+}

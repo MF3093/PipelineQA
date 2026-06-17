@@ -1,0 +1,20 @@
+{
+  "_fixture_note": "FET-002: Mock Jira API response for TEST-FET-002. The 'description' field is missing entirely (null in Jira). Agent must halt the entire batch, not skip just this story.",
+  "_scenario": "Required field missing — HALT entire batch",
+  "id": "TEST-FET-002",
+  "key": "TEST-FET-002",
+  "fields": {
+    "summary": "Fuel log entry — record fuel uplift for an aircraft",
+    "status": {
+      "name": "In Progress"
+    },
+    "priority": {
+      "name": "High"
+    },
+    "description": null,
+    "customfield_epic_link": "TEST-EPIC-FET",
+    "comment": {
+      "comments": []
+    }
+  }
+}

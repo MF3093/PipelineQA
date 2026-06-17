@@ -1,0 +1,20 @@
+{
+  "fetched_at": "2026-06-08T10:29:00Z",
+  "batch_id": "batch-test-FMT-011",
+  "source": "ado",
+  "item_type": "story",
+  "payload": {
+    "key": "TEST-FMT-011",
+    "fields": {
+      "summary": "Aircraft assignment — assign aircraft to flight",
+      "status": { "name": "Ready for Test" },
+      "priority": { "name": "High" },
+      "parent": { "key": "TEST-EPIC-1" },
+      "description": "<p>As a dispatcher I want to assign an aircraft to a flight so that every scheduled flight has an aircraft allocated.</p><h3>Acceptance Criteria</h3><ol><li>The assignment form shows all active aircraft available for the selected flight date.</li><li>Selecting an aircraft and saving updates the flight record immediately.</li><li>If the aircraft becomes grounded after assignment, a warning is shown on the flight detail page.</li><li>The dispatcher can change the aircraft assignment up to 2 hours before the scheduled departure.</li></ol><h3>Out of Scope</h3><p>Automated aircraft assignment based on availability algorithms is not in scope for this story.</p><h3>Technical Constraints</h3><p>Aircraft availability is determined by the maintenance system API. The response must be received within 3 seconds or the form displays a timeout error.</p>",
+      "comment": {
+        "comments": []
+      },
+      "issuelinks": []
+    }
+  }
+}

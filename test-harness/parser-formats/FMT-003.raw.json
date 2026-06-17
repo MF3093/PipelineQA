@@ -1,0 +1,30 @@
+{
+  "fetched_at": "2026-06-08T10:22:00Z",
+  "batch_id": "batch-test-FMT-003",
+  "source": "jira",
+  "item_type": "story",
+  "payload": {
+    "key": "TEST-FMT-003",
+    "fields": {
+      "summary": "Flight schedule — create new flight entry",
+      "status": { "name": "Ready for Test" },
+      "priority": { "name": "High" },
+      "parent": { "key": "TEST-EPIC-1" },
+      "description": "As a flight operations manager I want to create a new flight entry so that the schedule is kept accurate.\n\n## Acceptance Criteria\n1. The flight creation form requires: flight number, departure airport, arrival airport, scheduled departure time, scheduled arrival time, and aircraft assignment.\n2. All required fields must be populated before the form can be submitted.\n3. If the selected aircraft is grounded or in maintenance, a warning is shown before submission is allowed.\n4. If the departure time is in the past, submission is blocked with a validation error.\n5. On successful submission, the new flight appears in the weekly schedule view.\n\n## Out of Scope\n- Recurring flight scheduling (templates) is not in scope for this story.\n- Crew assignment at flight creation time is not in scope.\n\n## Specified Behavior\n\n### Field Behavior\n- **Flight Number**: Alphanumeric, 2–8 characters, uppercase enforced automatically.\n- **Departure / Arrival Airport**: Searchable dropdown populated from the airport reference table.\n- **Scheduled Times**: Date-time picker; departure must be before arrival; both must be in the future.\n- **Aircraft Assignment**: Searchable dropdown showing only aircraft with status = Active.\n\n### Entry Points\nThe form is accessible from:\n- The \"+ New Flight\" button on the weekly schedule view.\n- The aircraft detail page → \"Schedule Flight\" action button.\n\n### Error Handling\n- Missing required field: inline validation message beneath the field.\n- Grounded aircraft selected: amber warning modal with \"Proceed anyway\" / \"Choose different aircraft\" options.\n- Past departure time: red inline error, submit button disabled.\n\n## Dependencies\nRequires the aircraft catalog (TEST-FMT-002) and airport reference table to be populated.\n\n## Questions to Be Resolved\n1. Should the flight number uniqueness check be enforced on the same date only, or globally across all dates?\n2. What is the maximum number of flights that can be scheduled per day per aircraft?",
+      "comment": {
+        "comments": [
+          {
+            "author": "Product Owner",
+            "created": "2026-06-05T14:00:00Z",
+            "body": "Regarding question 1: flight number uniqueness should be enforced per date only. Two different dates can have the same flight number."
+          }
+        ]
+      },
+      "issuelinks": [
+        {
+          "outwardIssue": { "key": "TEST-FMT-002" }
+        }
+      ]
+    }
+  }
+}

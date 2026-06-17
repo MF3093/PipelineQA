@@ -1,0 +1,22 @@
+{
+  "key": "TEST-STR-002A",
+  "summary": "Aircraft type dropdown — populate options from aircraft-types API",
+  "status": "parsed",
+  "priority": "High",
+  "epic_key": "TEST-EPIC-STR",
+  "description": "The Aircraft Type dropdown on the registration form must be populated from the /api/aircraft-types endpoint. Options must load on page mount before the user can interact with the field.",
+  "acs": [
+    {"id": "AC-1", "text": "Dropdown populates with all active aircraft types from /api/aircraft-types on page load"},
+    {"id": "AC-2", "text": "If the API call fails, the dropdown displays a placeholder option 'Unable to load types — contact support' and is disabled"},
+    {"id": "AC-3", "text": "The dropdown field is disabled and shows a loading indicator until the API response is received"}
+  ],
+  "out_of_scope": ["Caching behavior", "Offline mode", "Adding new aircraft types via this form"],
+  "questions": [],
+  "sections": [],
+  "figma_links": [],
+  "linked_stories": [],
+  "dependencies": [],
+  "comments": [],
+  "needs_review": false,
+  "flags": []
+}

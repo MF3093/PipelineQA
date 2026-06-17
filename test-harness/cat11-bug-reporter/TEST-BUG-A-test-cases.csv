@@ -1,0 +1,9 @@
+Work Item Type,ID,Title,Priority,Description,Test Step,Test Action,Step Expected
+Test Case,TC-001,Verify aircraft registration form renders on page load,2,AC-1,1,Navigate to /register,Page loads without error
+,,,,,2,Observe the form,Registration form is displayed with all four fields visible
+Test Case,TC-002,Verify Registration Number accepts valid format,2,AC-2,1,Navigate to /register,Registration form is displayed
+,,,,,2,"Enter 'AB-12345' in Registration Number",No validation error shown
+,,,,,3,Click Submit,POST request sent to /api/registrations
+Test Case,TC-003,Verify Registration Number rejects invalid format,2,AC-3,1,Navigate to /register,Registration form is displayed
+,,,,,2,"Enter 'abc123' in Registration Number",Field is active
+,,,,,3,Click elsewhere on the page,Inline error appears: 'Invalid format. Use 1-2 capital letters, a dash, then 3-5 digits (e.g. AB-12345)'

@@ -1,0 +1,30 @@
+{
+  "key": "TEST-STR-004",
+  "summary": "Maintenance log — attach PDF document to log entry",
+  "status": "parsed",
+  "priority": "Medium",
+  "epic_key": "TEST-EPIC-STR",
+  "description": "Users can upload a single PDF attachment to any maintenance log entry. The upload replaces any previously attached file. Only PDF format is accepted.",
+  "acs": [
+    {"id": "AC-1", "text": "An 'Attach File' button is displayed on each maintenance log entry row"},
+    {"id": "AC-2", "text": "Clicking the button opens the system file browser filtered to PDF files only"},
+    {"id": "AC-3", "text": "If a non-PDF file is selected, the upload is rejected with the inline error: 'Only PDF files are accepted'"},
+    {"id": "AC-4", "text": "After a successful upload, the attached filename is displayed below the log entry with a remove link"}
+  ],
+  "out_of_scope": ["Multi-file attachments", "File size validation", "Preview of attached PDF"],
+  "questions": [],
+  "sections": [],
+  "figma_links": [],
+  "linked_stories": [],
+  "dependencies": [],
+  "comments": [
+    "Moved to current sprint by @Maria 2026-05-28",
+    "Assigned to @JohnDoe for QA",
+    "Sprint planning: estimated 2 points",
+    "PR #512 merged — backend upload endpoint ready",
+    "Ticket moved from In Progress → Ready for QA",
+    "2026-06-01: QA cycle begins this sprint"
+  ],
+  "needs_review": false,
+  "flags": []
+}

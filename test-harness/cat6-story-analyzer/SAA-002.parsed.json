@@ -1,0 +1,24 @@
+{
+  "key": "TEST-SAA-002",
+  "summary": "Maintenance Log Update",
+  "status": "In Progress",
+  "priority": "Medium",
+  "epic_key": "TEST-EPIC-SAA",
+  "description": "As a maintenance crew member, I want to update the maintenance log for an aircraft so that maintenance history is accurately recorded.",
+  "acs": [
+    { "id": "AC-1", "text": "The maintenance log form works correctly." },
+    { "id": "AC-2", "text": "Data is saved as expected when the user submits the form." },
+    { "id": "AC-3", "text": "The user is properly notified after submission." },
+    { "id": "AC-4", "text": "Error handling functions as expected." }
+  ],
+  "out_of_scope": [],
+  "questions": [],
+  "sections": [],
+  "figma_links": [],
+  "linked_stories": [],
+  "dependencies": [],
+  "comments": [],
+  "needs_review": true,
+  "flags": ["NEEDS_REVIEW", "AC_QUALITY_ISSUE"],
+  "extraction_quality": "standard"
+}

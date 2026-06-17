@@ -1,0 +1,58 @@
+{
+  "key": "TEST-TCG-OBSERVATION",
+  "summary": "Aircraft status badge — color coding",
+  "status": "Ready for Test",
+  "priority": "Medium",
+  "epic_key": "TEST-EPIC-1",
+  "description": "As a user I want the aircraft status badge to use distinct colors so that I can identify status at a glance.",
+  "acs": [
+    {
+      "id": "AC-1",
+      "text": "The Active status badge displays in green.",
+      "testable": true,
+      "blocked_by": null,
+      "conditional": false,
+      "branches": null
+    },
+    {
+      "id": "AC-2",
+      "text": "The Grounded status badge displays in red.",
+      "testable": true,
+      "blocked_by": null,
+      "conditional": false,
+      "branches": null
+    },
+    {
+      "id": "AC-3",
+      "text": "The In Maintenance status badge displays in the correct color per the design specification.",
+      "testable": false,
+      "blocked_by": "Q-001",
+      "conditional": false,
+      "branches": null
+    }
+  ],
+  "out_of_scope": [],
+  "questions": [
+    {
+      "text": "What exact color (hex or Tailwind class) should the In Maintenance badge use?",
+      "answered": false,
+      "answer": null
+    }
+  ],
+  "sections": [
+    {
+      "header": "Specified Behavior",
+      "content": "Status badges appear on the aircraft list and aircraft detail views. Badge color must meet WCAG AA contrast standards.",
+      "subsections": []
+    }
+  ],
+  "figma_links": [],
+  "linked_stories": [],
+  "dependencies": [],
+  "comments": [],
+  "needs_review": false,
+  "flags": [],
+  "source": "jira",
+  "fetched_at": "2026-06-08T09:00:00Z",
+  "parsed_at": "2026-06-08T09:05:00Z"
+}

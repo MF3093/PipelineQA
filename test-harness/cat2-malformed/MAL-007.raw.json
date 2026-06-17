@@ -1,0 +1,20 @@
+{
+  "fetched_at": "2026-06-08T10:16:00Z",
+  "batch_id": "batch-test-MAL-007",
+  "source": "jira",
+  "item_type": "story",
+  "payload": {
+    "key": "TEST-MAL-007",
+    "fields": {
+      "summary": "Flight schedule — weekly view",
+      "status": { "name": "Ready for Test" },
+      "priority": { "name": "Medium" },
+      "parent": { "key": "TEST-EPIC-1" },
+      "description": "As an operations manager I want to view the weekly flight schedule so that I can plan resources.\n\nThis story is very long and contains a great deal of context about the operational requirements of the scheduling system. The system must support multiple time zones, handle daylight saving time transitions automatically, and display flights in the local time of the viewing user. When a flight is delayed, the new estimated departure time must be displayed prominently. All times must be presented in 24-hour format. The layout must be responsive and work on both desktop and mobile devices. The weekly view must show Monday through Sunday by default. Navigation arrows must allow the user to move forward or backward one week at a time. The current week must be highlighted. Today's date column must have a distinct visual treatment. Clicking on a flight entry must open a detail panel. The detail panel must show full flight information including aircraft registration, crew assignment, departure gate, and destination. Filtering by aircraft type must be supported. Filtering by crew member must be supported. Export to CSV must be available from the weekly view. The export must include all visible flights for the selected week. Column headers in the export must match the display labels exactly. The print view must render cleanly without overlapping elements. The page must load within 3 seconds for a schedule containing up to 200 flights. Pagination is not required for the weekly view. The schedule must refresh automatically every 5 minutes. A manual refresh button must be available. Last refresh time must be displayed. Acceptance Criteria:\n1. The weekly view displays all flights for the selected week in chronological order.\n2. Navigation arrows advance or rewind the view by exactly one calendar week.\n3. Today's date column is visually distinct from other columns.\n4. Clicking a flight row opens the detail panel without page reload.\n5. The detail panel displays aircraft registration, crew, gate, and destination.\n6. The CSV export contains all flights visible in the current week view.\n7. The page loads within 3 seconds for up to 200 flights.",
+      "comment": {
+        "comments": []
+      },
+      "issuelinks": []
+    }
+  }
+}

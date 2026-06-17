@@ -1,0 +1,10 @@
+Work Item Type,ID,Title,Priority,Description,Test Step,Test Action,Step Expected
+Test Case,TC-001,Verify aircraft registration form displays all required fields,2,AC-1: All four fields are displayed in a two-column grid on desktop viewport,1,Navigate to /register and log in as Operator,Registration form is displayed
+,,,,,2,Observe the form layout at 1280×720 viewport,Registration Number field is present and visible in the top-left column
+,,,,,3,Observe the remaining fields,"Aircraft Type, Manufacturer, and Year of Manufacture fields are all present"
+Test Case,TC-002,Verify Registration Number field accepts valid format,2,AC-2: Valid registration numbers are accepted,1,Navigate to /register and log in as Operator,Registration form is displayed
+,,,,,2,Enter 'AB-12345' in the Registration Number field,No validation error is shown
+,,,,,3,Observe the field state,Field border remains neutral (no red outline)
+Test Case,TC-003,Verify Registration Number field rejects invalid format,2,AC-3: Invalid registration numbers are rejected,1,Navigate to /register and log in as Operator,Registration form is displayed
+,,,,,2,Enter 'abc123' (lowercase letters and no dash) in the Registration Number field,Inline error appears below the field
+,,,,,3,Read the error message text,Error reads: 'Invalid format. Use 1-2 capital letters, a dash, then 3-5 digits (e.g. AB-12345)'

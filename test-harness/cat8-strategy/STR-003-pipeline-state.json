@@ -1,0 +1,10 @@
+{
+  "locked": false,
+  "current_story": null,
+  "context_approved": true,
+  "strategy_approved": true,
+  "strategy_current_version": 1,
+  "scoped_story_keys": ["TEST-STR-003A", "TEST-STR-003B", "TEST-STR-003C"],
+  "scoped_epic_keys": ["TEST-EPIC-STR"],
+  "daily_batch_counter": 1
+}

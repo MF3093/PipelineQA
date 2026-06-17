@@ -1,0 +1,23 @@
+{
+  "key": "TEST-STR-003E",
+  "summary": "Registration form — delete registration record with confirmation dialog",
+  "status": "parsed",
+  "priority": "Medium",
+  "epic_key": "TEST-EPIC-STR",
+  "description": "Users with admin role can permanently delete an aircraft registration record. A confirmation dialog must be presented before the deletion is executed.",
+  "acs": [
+    {"id": "AC-1", "text": "Delete button is visible only to users with admin role; non-admin users do not see the button"},
+    {"id": "AC-2", "text": "Clicking Delete opens a modal dialog with the text: 'Are you sure? This action cannot be undone.' and Confirm / Cancel buttons"},
+    {"id": "AC-3", "text": "Clicking Confirm in the dialog triggers a DELETE request to /api/registrations/{id}"},
+    {"id": "AC-4", "text": "On a 200 response, the record is removed from the list view and a banner displays 'Registration deleted'"}
+  ],
+  "out_of_scope": ["Soft delete", "Restore / undo deletion"],
+  "questions": [],
+  "sections": [],
+  "figma_links": [],
+  "linked_stories": ["TEST-STR-003C"],
+  "dependencies": ["TEST-STR-003C"],
+  "comments": [],
+  "needs_review": false,
+  "flags": []
+}

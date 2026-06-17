@@ -1,0 +1,20 @@
+{
+  "fetched_at": "2026-06-08T10:15:00Z",
+  "batch_id": "batch-test-MAL-006",
+  "source": "jira",
+  "item_type": "story",
+  "payload": {
+    "key": "TEST-MAL-006",
+    "fields": {
+      "summary": "Aircraft registration form — basic field layout",
+      "status": { "name": "Ready for Test" },
+      "priority": { "name": "High" },
+      "parent": { "key": "TEST-EPIC-1" },
+      "description": "As a dispatcher I want to fill in the aircraft registration form so that the aircraft is correctly entered in the system.\n\nAcceptance Criteria:\n1. The registration number field accepts alphanumeric input up to 10 characters.\n2. The aircraft type dropdown displays all available types from the reference catalog.\n3. The form saves correctly when all required fields are populated.\n4. A confirmation message is displayed after successful submission.\n5. The system works correctly when the user submits the form.\n6. The form is properly validated before submission.\n7. The save button functions as expected in all scenarios.",
+      "comment": {
+        "comments": []
+      },
+      "issuelinks": []
+    }
+  }
+}

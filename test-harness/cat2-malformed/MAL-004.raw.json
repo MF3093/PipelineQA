@@ -1,0 +1,20 @@
+{
+  "fetched_at": "2026-06-08T10:13:00Z",
+  "batch_id": "batch-test-MAL-004",
+  "source": "jira",
+  "item_type": "story",
+  "payload": {
+    "key": "TEST-MAL-004",
+    "fields": {
+      "summary": "Data import — CSV upload",
+      "status": { "name": "Ready for Test" },
+      "priority": { "name": "High" },
+      "parent": { "key": "TEST-EPIC-1" },
+      "description": "As a user I want to import data via CSV upload so that I can bulk-load records.\n\nAcceptance Criteria:\n1. The Import button is enabled when the user has upload permissions.\n2. The Import button is disabled when the user does not have upload permissions.\n3. When the file is valid, the import processes successfully and a success message is shown.\n4. The Import button is visible AND hidden on the upload page depending on file type selected.",
+      "comment": {
+        "comments": []
+      },
+      "issuelinks": []
+    }
+  }
+}

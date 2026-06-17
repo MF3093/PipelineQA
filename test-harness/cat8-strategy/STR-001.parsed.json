@@ -1,0 +1,31 @@
+{
+  "key": "TEST-STR-001",
+  "summary": "Aircraft registration form — field layout and visual arrangement",
+  "status": "parsed",
+  "priority": "Medium",
+  "epic_key": "TEST-EPIC-STR",
+  "description": "The registration form must display aircraft identification fields in a two-column grid layout. Fields include Registration Number, Aircraft Type, Manufacturer, and Year of Manufacture.",
+  "acs": [
+    {"id": "AC-1", "text": "All four fields are displayed in a two-column grid layout on desktop viewport"},
+    {"id": "AC-2", "text": "Registration Number field is positioned in the top-left cell of the grid"},
+    {"id": "AC-3", "text": "The form renders without visual overflow at 1280×720 viewport"}
+  ],
+  "out_of_scope": ["Mobile responsive layout", "Tablet breakpoints"],
+  "questions": [],
+  "sections": [
+    {
+      "header": "Overview",
+      "content": "Standard form layout for aircraft data entry. Two-column grid for primary identification fields."
+    },
+    {
+      "header": "Design Reference",
+      "content": "Exact field placement, spacing, and column widths are defined in the prototype at https://www.figma.com/file/abc123XYZ/AircraftRegForm?node-id=12%3A45 — use this as the authoritative visual reference for layout validation."
+    }
+  ],
+  "figma_links": [],
+  "linked_stories": [],
+  "dependencies": [],
+  "comments": [],
+  "needs_review": false,
+  "flags": []
+}

@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "stories": [
+    {
+      "key": "TEST-BUG-A",
+      "summary": "Aircraft registration form — field display and validation",
+      "status": "tc_generated",
+      "epic_key": "TEST-EPIC-BUG"
+    },
+    {
+      "key": "TEST-BUG-B",
+      "summary": "Aircraft registration — submit and confirmation flow",
+      "status": "tc_generated",
+      "epic_key": "TEST-EPIC-BUG"
+    }
+  ]
+}

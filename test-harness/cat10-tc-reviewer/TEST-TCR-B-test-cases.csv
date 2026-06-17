@@ -1,0 +1,11 @@
+Work Item Type,ID,Title,Priority,Description,Test Step,Test Action,Step Expected
+Test Case,TC-001,Verify aircraft registration form is visible on page load,2,AC-1: Form renders on page load,1,Navigate to /register and log in as Operator,Page loads without error
+,,,,,2,Observe the page,Registration form is displayed
+,,,,,3,Observe the form fields,Form contains Registration Number field and at least one other field
+Test Case,TC-002,Verify successful aircraft registration saves the record,1,AC-1: Record is saved on submit,1,Navigate to /register and log in as Operator,Registration form is displayed
+,,,,,2,"Enter valid values in all fields: Registration Number = 'AB-12345', Aircraft Type = 'Cessna 172', Manufacturer = 'Cessna', Year = '2010'",All fields accept input without error
+,,,,,3,Click the Submit button,POST request is sent to /api/registrations
+,,,,,4,Observe the page response,Green banner displays 'Registration saved successfully'
+Test Case,TC-003,Verify submit button is disabled when Registration Number is empty,2,AC-3: Submit disabled on empty required field,1,Navigate to /register and log in as Operator,Registration form is displayed
+,,,,,2,Leave Registration Number field empty,Field shows placeholder text only
+,,,,,3,Observe the Submit button state,Submit button is disabled (greyed out and not clickable)

@@ -1,0 +1,27 @@
+{
+  "key": "TEST-TCG-004",
+  "summary": "Aircraft Registration Form — Post-Submit Behavior",
+  "status": "parsed",
+  "priority": "High",
+  "epic_key": "TEST-EPIC-TCG",
+  "description": "As a dispatcher, I want to register a new aircraft in the system so that it becomes available for flight scheduling.",
+  "acs": [
+    { "id": "AC-1", "text": "After successful form submission, a success toast message reading 'Aircraft registered successfully' is displayed for 3 seconds." },
+    { "id": "AC-2", "text": "After successful form submission, the user is immediately redirected to the aircraft list view without any confirmation message." },
+    { "id": "AC-3", "text": "The form data is persisted to the database upon submit." },
+    { "id": "AC-4", "text": "If the Registration Number already exists in the system, the form displays an inline error: 'Registration number already in use'." }
+  ],
+  "out_of_scope": [],
+  "questions": [],
+  "sections": [],
+  "figma_links": [],
+  "linked_stories": [],
+  "dependencies": [],
+  "comments": [
+    "Dev (2026-05-20): AC-1 and AC-2 seem to contradict each other — one says show toast, the other says redirect immediately with no message. Needs PO clarification.",
+    "PO (2026-05-21): Will check with UX and update. Leave as-is for now."
+  ],
+  "needs_review": true,
+  "flags": ["DISCREPANCY_DETECTED", "AC_QUALITY_ISSUE", "NEEDS_REVIEW"],
+  "extraction_quality": "standard"
+}

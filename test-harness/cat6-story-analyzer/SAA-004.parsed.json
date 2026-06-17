@@ -1,0 +1,29 @@
+{
+  "key": "TEST-SAA-004",
+  "summary": "Aircraft Detail View — Fuel Capacity Display",
+  "status": "In Progress",
+  "priority": "Low",
+  "epic_key": "TEST-EPIC-SAA",
+  "description": "As a dispatcher, I want to see the fuel capacity of an aircraft on its detail view so that I can plan fueling operations.",
+  "acs": [
+    { "id": "AC-1", "text": "The aircraft detail view displays the Maximum Fuel Capacity field in liters." },
+    { "id": "AC-2", "text": "The fuel capacity value is read-only and cannot be edited on this view." },
+    { "id": "AC-3", "text": "If the aircraft record has no fuel capacity value, the field displays a dash (—)." }
+  ],
+  "out_of_scope": [],
+  "questions": [
+    "What is the source of the fuel capacity data — is it pulled from a separate fuel management API or stored locally in the aircraft record?",
+    "Should fuel capacity be displayed in liters, gallons, or configurable per user preference?"
+  ],
+  "sections": [],
+  "figma_links": [],
+  "linked_stories": [],
+  "dependencies": ["FUEL-API-001"],
+  "comments": [
+    "PO (2026-05-10): The fuel capacity unit question is still open — waiting on decision from ops team.",
+    "Dev (2026-05-12): The dependency on FUEL-API-001 is not resolved yet. This story may be blocked."
+  ],
+  "needs_review": true,
+  "flags": ["NEEDS_REVIEW"],
+  "extraction_quality": "standard"
+}

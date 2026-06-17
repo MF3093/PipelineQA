@@ -1,0 +1,66 @@
+{
+  "key": "TEST-TCG-CONDITIONAL",
+  "summary": "Flight creation — grounded aircraft warning",
+  "status": "Ready for Test",
+  "priority": "High",
+  "epic_key": "TEST-EPIC-1",
+  "description": "As a flight ops manager I want to be warned when I select a grounded aircraft so that I avoid scheduling errors.",
+  "acs": [
+    {
+      "id": "AC-1",
+      "text": "If the selected aircraft has status Grounded, a warning modal is displayed before submission is allowed.",
+      "testable": true,
+      "blocked_by": null,
+      "conditional": true,
+      "branches": [
+        "aircraft status = Grounded → warning modal shown",
+        "aircraft status != Grounded → no modal shown"
+      ]
+    },
+    {
+      "id": "AC-2",
+      "text": "The warning modal contains 'Proceed anyway' and 'Choose different aircraft' action buttons.",
+      "testable": true,
+      "blocked_by": null,
+      "conditional": false,
+      "branches": null
+    },
+    {
+      "id": "AC-3",
+      "text": "If the user clicks 'Proceed anyway', the form submits normally.",
+      "testable": true,
+      "blocked_by": null,
+      "conditional": true,
+      "branches": [
+        "user clicks Proceed anyway → form submits",
+        "user clicks Choose different aircraft → modal closes, aircraft field re-enabled"
+      ]
+    },
+    {
+      "id": "AC-4",
+      "text": "The page load time for the flight creation form must be under 2 seconds.",
+      "testable": true,
+      "blocked_by": null,
+      "conditional": false,
+      "branches": null
+    }
+  ],
+  "out_of_scope": [],
+  "questions": [],
+  "sections": [
+    {
+      "header": "Entry Points",
+      "content": "The form is accessible from the weekly schedule view via the '+ New Flight' button.",
+      "subsections": []
+    }
+  ],
+  "figma_links": [],
+  "linked_stories": [],
+  "dependencies": [],
+  "comments": [],
+  "needs_review": false,
+  "flags": [],
+  "source": "jira",
+  "fetched_at": "2026-06-08T09:00:00Z",
+  "parsed_at": "2026-06-08T09:05:00Z"
+}

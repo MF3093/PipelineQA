@@ -1,0 +1,20 @@
+{
+  "fetched_at": "2026-06-08T10:23:00Z",
+  "batch_id": "batch-test-FMT-004",
+  "source": "jira",
+  "item_type": "story",
+  "payload": {
+    "key": "TEST-FMT-004",
+    "fields": {
+      "summary": "Notification banner — maintenance alert display",
+      "status": { "name": "Ready for Test" },
+      "priority": { "name": "Medium" },
+      "parent": { "key": "TEST-EPIC-1" },
+      "description": "Show a banner when there is a maintenance alert. The banner should be visible at the top. It should disappear when dismissed. There should be some way to see the full details of the alert. The banner needs to look different from the normal information banners. Color should probably be different. Make sure it works on mobile too.",
+      "comment": {
+        "comments": []
+      },
+      "issuelinks": []
+    }
+  }
+}

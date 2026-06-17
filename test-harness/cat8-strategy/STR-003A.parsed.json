@@ -1,0 +1,21 @@
+{
+  "key": "TEST-STR-003A",
+  "summary": "Registration form — display header, title, and default registration date",
+  "status": "parsed",
+  "priority": "Low",
+  "epic_key": "TEST-EPIC-STR",
+  "description": "The aircraft registration form must display the form title and default the registration date to today's date when opened for a new entry.",
+  "acs": [
+    {"id": "AC-1", "text": "Page displays 'Aircraft Registration' as the form title in the page header"},
+    {"id": "AC-2", "text": "Registration Date field defaults to today's date (YYYY-MM-DD format) when form is opened for a new entry"}
+  ],
+  "out_of_scope": [],
+  "questions": [],
+  "sections": [],
+  "figma_links": [],
+  "linked_stories": [],
+  "dependencies": [],
+  "comments": [],
+  "needs_review": false,
+  "flags": []
+}

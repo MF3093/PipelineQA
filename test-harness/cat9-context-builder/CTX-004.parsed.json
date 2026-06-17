@@ -1,0 +1,22 @@
+{
+  "key": "TEST-CTX-004",
+  "summary": "Notification preferences — user email and push settings",
+  "status": "parsed",
+  "priority": "Low",
+  "epic_key": "TEST-EPIC-CTX",
+  "description": "Users can configure whether they receive email and push notifications for flight plan status changes. Settings are persisted per user account.",
+  "acs": [
+    {"id": "AC-1", "text": "Page displays toggles for Email Notifications and Push Notifications"},
+    {"id": "AC-2", "text": "Toggling either switch and clicking Save persists the preference to the user account"},
+    {"id": "AC-3", "text": "Page loads with the user's current saved preferences pre-populated"}
+  ],
+  "out_of_scope": ["SMS notifications", "In-app notifications"],
+  "questions": [],
+  "sections": [],
+  "figma_links": [],
+  "linked_stories": [],
+  "dependencies": [],
+  "comments": [],
+  "needs_review": false,
+  "flags": []
+}

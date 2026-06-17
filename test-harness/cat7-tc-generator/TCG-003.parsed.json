@@ -1,0 +1,23 @@
+{
+  "key": "TEST-TCG-003",
+  "summary": "Aircraft Status Dropdown Options",
+  "status": "parsed",
+  "priority": "High",
+  "epic_key": "TEST-EPIC-TCG",
+  "description": "As a fleet manager, I want to update aircraft operational status using a dropdown so that the fleet board reflects the current state of each aircraft.",
+  "acs": [
+    { "id": "AC-1", "text": "The status dropdown displays exactly three options: Active, Grounded, and In Maintenance." },
+    { "id": "AC-2", "text": "When the status is changed to Grounded, a mandatory reason text field appears below the dropdown." },
+    { "id": "AC-3", "text": "The status change is recorded in the aircraft audit trail with a timestamp and the user who made the change." }
+  ],
+  "out_of_scope": [],
+  "questions": [],
+  "sections": [],
+  "figma_links": [],
+  "linked_stories": [],
+  "dependencies": [],
+  "comments": [],
+  "needs_review": true,
+  "flags": ["DISCREPANCY_DETECTED", "NEEDS_REVIEW"],
+  "extraction_quality": "standard"
+}

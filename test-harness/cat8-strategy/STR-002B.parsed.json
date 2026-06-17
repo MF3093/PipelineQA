@@ -1,0 +1,22 @@
+{
+  "key": "TEST-STR-002B",
+  "summary": "Registration form — pre-fill Aircraft Type from selected flight plan context",
+  "status": "parsed",
+  "priority": "Medium",
+  "epic_key": "TEST-EPIC-STR",
+  "description": "When a user opens a new registration form from a flight plan context, the Aircraft Type field must be pre-filled with the aircraft type recorded in the selected flight plan. The pre-filled value must be a valid entry in the dropdown loaded from the API.",
+  "acs": [
+    {"id": "AC-1", "text": "Aircraft Type field is pre-filled with the value from the flight plan when the form is opened in flight-plan context"},
+    {"id": "AC-2", "text": "The pre-filled value appears as the selected option in the loaded dropdown"},
+    {"id": "AC-3", "text": "If the flight plan's aircraft type is no longer present in the active types list, the field shows an inline validation warning: 'Aircraft type from flight plan is no longer available — please select a valid type'"}
+  ],
+  "out_of_scope": ["Pre-filling any field other than Aircraft Type from flight plan context"],
+  "questions": [],
+  "sections": [],
+  "figma_links": [],
+  "linked_stories": ["TEST-STR-002A"],
+  "dependencies": ["TEST-STR-002A"],
+  "comments": [],
+  "needs_review": false,
+  "flags": []
+}

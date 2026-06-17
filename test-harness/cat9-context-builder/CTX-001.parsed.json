@@ -1,0 +1,30 @@
+{
+  "key": "TEST-CTX-001",
+  "summary": "User profile page — display user name and role badge",
+  "status": "parsed",
+  "priority": "Medium",
+  "epic_key": "TEST-EPIC-CTX",
+  "description": "The user profile page displays the logged-in user's full name and their role. Role is shown as a coloured badge using the system's standard badge component.",
+  "acs": [
+    {"id": "AC-1", "text": "User's full name is displayed in the page header"},
+    {"id": "AC-2", "text": "User's role is displayed as a coloured badge: Admin = blue, Operator = green, Viewer = grey"}
+  ],
+  "out_of_scope": ["Editing user name or role from this page"],
+  "questions": [],
+  "sections": [
+    {
+      "header": "Overview",
+      "content": "Profile display page for authenticated users. No edit functionality on this page."
+    },
+    {
+      "header": "Story-Specific Constraints",
+      "content": "This page is only accessible at route /users/H20-42/profile. Story H20-42 (User Profile) is the only story covering this route. AC-1 of H20-42 requires that the full name is retrieved from the /api/users/{id} endpoint. The badge colour values for H20-42 are defined in design token --color-role-admin, --color-role-operator, --color-role-viewer."
+    }
+  ],
+  "figma_links": [],
+  "linked_stories": [],
+  "dependencies": [],
+  "comments": [],
+  "needs_review": false,
+  "flags": []
+}

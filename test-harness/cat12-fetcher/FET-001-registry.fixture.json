@@ -1,0 +1,11 @@
+{
+  "_fixture_note": "FET-001: Story already in fetched-stories.json. Agent must skip without re-fetching.",
+  "known_fetched_stories": [
+    {
+      "key": "TEST-FET-001",
+      "status": "fetched",
+      "epic_key": "TEST-EPIC-FET",
+      "fetched_at": "2026-06-09T10:00:00Z"
+    }
+  ]
+}

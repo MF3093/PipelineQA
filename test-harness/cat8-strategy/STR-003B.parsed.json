@@ -1,0 +1,22 @@
+{
+  "key": "TEST-STR-003B",
+  "summary": "Registration form — Registration Number field format validation",
+  "status": "parsed",
+  "priority": "High",
+  "epic_key": "TEST-EPIC-STR",
+  "description": "Registration Number is a required field. It must follow the format [A-Z]{1,2}-[0-9]{3,5} and be validated before the form can be submitted.",
+  "acs": [
+    {"id": "AC-1", "text": "Registration Number field accepts values matching the pattern [A-Z]{1,2}-[0-9]{3,5}"},
+    {"id": "AC-2", "text": "Registration Number field rejects values not matching the pattern with an inline error: 'Invalid format. Use 1-2 capital letters, a dash, then 3-5 digits (e.g. AB-12345)'"},
+    {"id": "AC-3", "text": "Form submit button is disabled if Registration Number is empty or currently showing a validation error"}
+  ],
+  "out_of_scope": ["Multi-country registration number formats"],
+  "questions": [],
+  "sections": [],
+  "figma_links": [],
+  "linked_stories": [],
+  "dependencies": [],
+  "comments": [],
+  "needs_review": false,
+  "flags": []
+}

@@ -1,0 +1,94 @@
+{
+  "fetched_at": "2026-06-08T10:28:00Z",
+  "batch_id": "batch-test-FMT-010",
+  "source": "jira",
+  "item_type": "story",
+  "payload": {
+    "key": "TEST-FMT-010",
+    "fields": {
+      "summary": "Flight booking — create new booking",
+      "status": { "name": "Ready for Test" },
+      "priority": { "name": "High" },
+      "parent": { "key": "TEST-EPIC-1" },
+      "description": {
+        "version": 1,
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "As a dispatcher I want to create a new flight booking so that the schedule reflects all planned flights."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": { "level": 3 },
+            "content": [{ "type": "text", "text": "Acceptance Criteria" }]
+          },
+          {
+            "type": "orderedList",
+            "content": [
+              {
+                "type": "listItem",
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [{ "type": "text", "text": "The booking form requires origin airport, destination airport, flight date, and aircraft assignment." }]
+                  }
+                ]
+              },
+              {
+                "type": "listItem",
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [{ "type": "text", "text": "All required fields must be completed before the form can be submitted." }]
+                  }
+                ]
+              },
+              {
+                "type": "listItem",
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [{ "type": "text", "text": "If the selected aircraft is grounded, a warning modal is displayed before submission is allowed." }]
+                  }
+                ]
+              },
+              {
+                "type": "listItem",
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [{ "type": "text", "text": "On successful submission, the new booking appears in the daily schedule view." }]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": { "level": 3 },
+            "content": [{ "type": "text", "text": "Out of Scope" }]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Recurring booking templates are not in scope for this story."
+              }
+            ]
+          }
+        ]
+      },
+      "comment": {
+        "comments": []
+      },
+      "issuelinks": []
+    }
+  }
+}

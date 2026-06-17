@@ -1,0 +1,20 @@
+{
+  "fetched_at": "2026-06-08T10:11:00Z",
+  "batch_id": "batch-test-MAL-002",
+  "source": "jira",
+  "item_type": "story",
+  "payload": {
+    "key": "TEST-MAL-002",
+    "fields": {
+      "summary": "Report export — PDF generation",
+      "status": { "name": "Ready for Test" },
+      "priority": { "name": "High" },
+      "parent": { "key": "TEST-EPIC-1" },
+      "description": "As a user I want to export reports as PDF so that I can share them with stakeholders.\n\nThis story covers the export functionality for the reporting module.",
+      "comment": {
+        "comments": []
+      },
+      "issuelinks": []
+    }
+  }
+}

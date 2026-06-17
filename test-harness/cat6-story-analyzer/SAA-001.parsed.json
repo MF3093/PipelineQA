@@ -1,0 +1,24 @@
+{
+  "key": "TEST-SAA-001",
+  "summary": "Draft Aircraft Registration Form",
+  "status": "In Progress",
+  "priority": "Medium",
+  "epic_key": "TEST-EPIC-SAA",
+  "description": "As a dispatcher, I want to create a draft aircraft registration so that I can save progress before submitting. All fields are optional for draft submissions — the system auto-saves every 30 seconds and allows partial data.",
+  "acs": [
+    { "id": "AC-1", "text": "The Registration Number field is mandatory and must be filled before the draft can be saved." },
+    { "id": "AC-2", "text": "The Aircraft Type field is mandatory and must be validated against the approved type list before saving." },
+    { "id": "AC-3", "text": "When the user clicks 'Save Draft', the form is saved with the current data." },
+    { "id": "AC-4", "text": "A confirmation message 'Draft saved successfully' is displayed after each save." }
+  ],
+  "out_of_scope": [],
+  "questions": [],
+  "sections": [],
+  "figma_links": [],
+  "linked_stories": [],
+  "dependencies": [],
+  "comments": [],
+  "needs_review": false,
+  "flags": [],
+  "extraction_quality": "standard"
+}
