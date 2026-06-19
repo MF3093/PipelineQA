@@ -1,0 +1,15 @@
+{
+  "locked": false,
+  "current_story": null,
+  "context_approved": true,
+  "context_version": 1,
+  "strategy_approved": true,
+  "strategy_current_version": 1,
+  "scoped_story_keys": [
+    "TEST-SAA-006", "TEST-SAA-007",
+    "TEST-TCG-005", "TEST-TCG-006", "TEST-TCG-008A", "TEST-TCG-008B", "TEST-TCG-009",
+    "TEST-STR-006"
+  ],
+  "scoped_epic_keys": ["SAA-EPIC-6", "SAA-EPIC-7", "TCG-EPIC-5", "TCG-EPIC-6", "TCG-EPIC-8"],
+  "daily_batch_counter": 1
+}

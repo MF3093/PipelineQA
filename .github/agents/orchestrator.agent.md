@@ -115,16 +115,22 @@ On first use, or when user starts a run for an unknown project name:
     This is where all QA artifacts will be stored (context, strategy, test cases, etc.)
     Example: C:/Users/Maria/Documents/MyProjectQA"
 
-   "What is the bug tracking platform for this project? (jira / ado / github / none)"
+   "What is the project key in your tracking platform? (e.g. H20, MYPROJ — enter 'none' if not applicable)"
 
-   "What is the project key in {platform}? (e.g. H20, MYPROJ — enter 'none' if not applicable)"
+   "Does this project have UI screenshots to support test case generation? (yes / no)"
+
+   "Are stories in this project grouped under epics or parent items? (yes / no)"
+
+   "Does this project have supplementary documentation or extra resources to reference? (yes / no)"
 
 4. Add entry to projects.json:
    {
      "project_name": "{name}",
      "output_path": "{absolute path}",
-     "bug_tracking_platform": "{jira | ado | github | none}",
      "jira_project_key": "{key or null}",
+     "has_screenshots": "{true | false}",
+     "has_epics": "{true | false}",
+     "has_extra_resources": "{true | false}",
      "registered_at": "{timestamp}",
      "status": "active"
    }
@@ -132,13 +138,17 @@ On first use, or when user starts a run for an unknown project name:
 5. Create the project output folder structure:
    See **instructions/path-schema.instructions.md** for complete folder structure and file locations.
    All paths and files used across the pipeline must follow the schema defined there.
+   Always create the mandatory folders. Additionally:
+   - If `has_epics: true` → create `epics/raw/`, `epics/parsed/`
+   - If `has_screenshots: true` → create `screenshots/`
+   - If `has_extra_resources: true` → create `ExtraResources/`
    Copy `config/source-config.template.md` → `{PROJECT_OUTPUT}/config/source-config.md`.
    Instruct the user: "Fill in `{PROJECT_OUTPUT}/config/source-config.md` before running the pipeline.
-   Set story_source, project_key, bug_tracking_platform, and the connection fields for your platform."
+   Set story_source, project_key, and the connection fields for your platform."
 
 6. Initialize registry files:
    - registry/fetched-stories.json → { "schema_version": "1.0", "last_updated": "", "stories": [] }
-   - registry/fetched-epics.json  → { "schema_version": "1.0", "last_updated": "", "epics": [] }
+   - registry/fetched-epics.json  → only if `has_epics: true` → { "schema_version": "1.0", "last_updated": "", "epics": [] }
    - registry/pipeline-state.json → (full schema below, all values at initial state)
    - tracking/corrections-log.md  → Copy from `config/corrections-log.template.md`
 
@@ -228,9 +238,9 @@ On first use, or when user starts a run for an unknown project name:
             Resume from where it stopped, or start a new run? (resume / new)"
 
 8. Ask: "What would you like to do?"
-   [1] Full run         — provide story IDs, run all phases (Fetch → Parse → Story Analysis → Strategy → TC Generation)
+   [1] Full run         — provide story IDs, run all phases (Fetch → Parse → Story Analysis → Context Build → Story Prioritizer → TC Generation)
    [2] Phase 1 only     — provide story IDs, early analysis (Fetch → Parse → Story Analysis)
-   [3] Phase 2 only     — provide story IDs, TC generation (conditional re-fetch → Strategy → TC Generation)
+   [3] Phase 2 only     — provide story IDs, TC generation (conditional re-fetch → Context Build (if needed) → Story Prioritizer → TC Generation)
    [4] Fetch only       — provide story IDs
    [5] Parse only
    [6] Story Prioritizer only
@@ -293,7 +303,7 @@ On first use, or when user starts a run for an unknown project name:
 | 3b | Story Analysis | story-analyzer.md | — | findings logged to assumptions.md |
 | 3c | Context Build | context-builder.md | **Gate 2** — approve project-context.md (yes/edit/reject) | context_approved = true — skip if already approved |
 | 4 | Strategy Scope Check | Orchestrator | — | — |
-| 5 | Prioritize | story-prioritizer.md | **Gate 3** — approve priority-matrix.md (yes/edit/reject) | strategy_approved = true |
+| 5 | Story Prioritizer | story-prioritizer.md | **Gate 3** — approve priority-matrix.md (yes/edit/reject) | strategy_approved = true |
 | 6 | TC Generation (per story) | tc-generator.md | **Gate 4** — approve TCs per story (yes/edit/reject) | status = "tc_generated" |
 | 7 | Run Summary | Orchestrator | — | status = "completed", lock = false |
 
@@ -398,9 +408,9 @@ For each story ID, determine which steps to run based on the selected option and
 
 | Story status | Option 1 (Full) | Option 2 (Phase 1) | Option 3 (Phase 2) | Option 4 (Fetch only) |
 |---|---|---|---|---|
-| Not in registry | Fetch → Parse → Story Analysis → Strategy → TC Generation | Fetch → Parse → Story Analysis | Error: run Phase 1 first | Fetch |
-| `fetched` | Parse → Story Analysis → Strategy → TC Generation | Parse → Story Analysis | Error: run Phase 1 first | Skip (already fetched) |
-| `parsed` | Story Analysis → Strategy → TC Generation | Story Analysis only | Conditional re-fetch → Strategy → TC Generation | Skip |
+| Not in registry | Fetch → Parse → Story Analysis → Context Build → Story Prioritizer → TC Generation | Fetch → Parse → Story Analysis | Error: run Phase 1 first | Fetch |
+| `fetched` | Parse → Story Analysis → Context Build → Story Prioritizer → TC Generation | Parse → Story Analysis | Error: run Phase 1 first | Skip (already fetched) |
+| `parsed` | Story Analysis → Context Build → Story Prioritizer → TC Generation | Story Analysis only | Conditional re-fetch → Context Build (if needed) → Story Prioritizer → TC Generation | Skip |
 | `tc_generated` or `approved` | Skip | Skip | Skip | Skip |
 
 Error on Phase 2/3 for unprocessed stories: `"Story {KEY} has not been fetched yet. Run Phase 1 first."`

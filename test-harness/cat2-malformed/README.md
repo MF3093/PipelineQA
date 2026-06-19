@@ -20,6 +20,7 @@ Tests how the Parser and Fetcher handle stories that violate expected structure.
 | MAL-005.raw.json | MAL-005 | Story title contains "Spike" | Parser | `flags: ["SPIKE"]` set |
 | MAL-006.raw.json | MAL-006 | Multiple ACs contain vague/unmeasurable terms | Parser | `AC_QUALITY_ISSUE` flag on vague ACs; Q-NNN logged via assumption-tracker; 3-choice pause shown |
 | MAL-007.raw.json | MAL-007 | Extremely long description (single paragraph >2000 chars) | Parser | PowerShell fallback used; story parsed successfully; `NEEDS_REVIEW` only if PS fails |
+| *(no raw file)* | MAL-008 | `has_epics: false` project — parser called for a standalone story | Parser | Parser skips `fetched-epics.json` load and all epic resolution steps; produces valid ParsedStory with `epic_key: null` |
 
 ## MAL-001 vs MAL-002 Distinction
 
@@ -40,6 +41,25 @@ The following ACs in MAL-006 contain vague/unmeasurable terms and must each trig
 - AC-7: `"The save button functions as expected in all scenarios."`
 
 ACs 1–4 are well-formed and should NOT be flagged.
+
+## MAL-008 Detail — has_epics:false (No Epic Fixture Required)
+
+**Setup:**
+1. Copy any valid `.raw.json` file to `{PROJECT_OUTPUT}/stories/raw/TEST-MAL-008.raw.json` (no `parent` field, or `parent: null`).
+2. Add a matching entry to `fetched-stories.json` with `status: "fetched"`.
+3. In `projects.json`, set `has_epics: false` for the test project.
+4. Do NOT create `fetched-epics.json`.
+5. Load `@parser` and instruct it to parse story key `TEST-MAL-008`.
+
+**Expected behavior:**
+- Parser checks `has_epics: false` in `projects.json` at the start.
+- Skips the step that reads `fetched-epics.json` (the file is neither opened nor required).
+- Does NOT attempt to resolve a parent epic for this story.
+- Produces a valid ParsedStory JSON with `epic_key: null`.
+- No error, warning, or `NEEDS_REVIEW` flag related to the missing epic.
+
+**Pass:** Valid parsed JSON produced; `epic_key: null`; no error about `fetched-epics.json`.  
+**Fail:** Parser errors on missing `fetched-epics.json`, sets `NEEDS_REVIEW` for the missing epic, or fails to write the output file.
 
 ## Pass / Fail Criteria
 

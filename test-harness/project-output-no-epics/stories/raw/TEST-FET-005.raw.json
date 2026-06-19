@@ -1,0 +1,19 @@
+{
+  "fetched_at": "2026-06-18T12:00:00Z",
+  "batch_id": "batch-001",
+  "source": "jira",
+  "item_type": "story",
+  "payload": {
+    "key": "TEST-FET-005",
+    "summary": "User can filter product list by category",
+    "status": "In Progress",
+    "priority": "Medium",
+    "assignee": "qa-tester@example.com",
+    "reporter": "product-owner@example.com",
+    "epic_key": null,
+    "description": "As a shopper, I want to filter the product list by category so that I can find relevant items faster.\n\nAcceptance Criteria:\nAC-1: A category dropdown is visible above the product grid.\nAC-2: Selecting a category filters the list to show only matching products.\nAC-3: Selecting 'All' resets the filter and shows all products.\nAC-4: The active filter label is shown above the product count.",
+    "comments": [],
+    "created_at": "2026-06-10T09:00:00Z",
+    "updated_at": "2026-06-17T14:30:00Z"
+  }
+}

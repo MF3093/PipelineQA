@@ -1,0 +1,34 @@
+{
+  "projects": [
+    {
+      "project_name": "Alpha Project",
+      "output_path": "{REPLACE_WITH_ABSOLUTE_PATH}/AlphaProject",
+      "jira_project_key": "ALP",
+      "has_epics": true,
+      "has_screenshots": false,
+      "has_extra_resources": false,
+      "registered_at": "2026-06-01T09:00:00Z",
+      "status": "active"
+    },
+    {
+      "project_name": "Beta Project",
+      "output_path": "{REPLACE_WITH_ABSOLUTE_PATH}/BetaProject",
+      "jira_project_key": "BET",
+      "has_epics": false,
+      "has_screenshots": true,
+      "has_extra_resources": false,
+      "registered_at": "2026-06-10T11:00:00Z",
+      "status": "active"
+    },
+    {
+      "project_name": "Gamma Project",
+      "output_path": "{REPLACE_WITH_ABSOLUTE_PATH}/GammaProject",
+      "jira_project_key": "GAM",
+      "has_epics": true,
+      "has_screenshots": true,
+      "has_extra_resources": true,
+      "registered_at": "2026-06-15T14:00:00Z",
+      "status": "active"
+    }
+  ]
+}

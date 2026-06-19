@@ -1,0 +1,14 @@
+{
+  "projects": [
+    {
+      "project_name": "TEST-ORC-MISSING-PATH",
+      "output_path": "C:/THIS/PATH/DOES/NOT/EXIST/TEST-ORC-MISSING",
+      "jira_project_key": "ORC",
+      "has_epics": true,
+      "has_screenshots": false,
+      "has_extra_resources": false,
+      "registered_at": "2026-06-18T10:00:00Z",
+      "status": "active"
+    }
+  ]
+}

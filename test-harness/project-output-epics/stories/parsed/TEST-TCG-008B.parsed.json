@@ -1,0 +1,23 @@
+{
+  "key": "TEST-TCG-008B",
+  "summary": "Fleet Management — Edit Vehicle Details",
+  "status": "Ready for Dev",
+  "priority": "High",
+  "epic_key": "TCG-EPIC-8",
+  "description": "As a fleet administrator, I want to edit the details of an existing vehicle so that I can keep the fleet registry accurate.",
+  "acs": [
+    { "id": "AC-1", "text": "Clicking Edit on a vehicle row opens the Edit Vehicle form pre-filled with existing values." },
+    { "id": "AC-2", "text": "Vehicle ID is read-only in edit mode — it cannot be changed." },
+    { "id": "AC-3", "text": "On Save, the updated values appear in the fleet list immediately." }
+  ],
+  "out_of_scope": ["Vehicle deletion"],
+  "questions": [],
+  "sections": [{ "header": "UI Notes", "content": "Edit icon is in the Actions column of each fleet list row. The Edit form uses the same layout as Add Vehicle but with Vehicle ID field disabled.", "subsections": [] }],
+  "figma_links": ["https://www.figma.com/file/tcg008/fleet-management"],
+  "linked_stories": ["TEST-TCG-008A"],
+  "dependencies": [{ "story_key": "TEST-TCG-008A", "type": "depends_on", "blocked_by": null, "branches": null }],
+  "comments": [],
+  "needs_review": false,
+  "flags": [],
+  "extraction_quality": "standard"
+}

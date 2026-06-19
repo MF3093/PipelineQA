@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "last_updated": "2026-06-18T12:00:00Z",
+  "stories": [
+    { "key": "TEST-SAA-008", "status": "parsed", "epic_key": null, "fetched_at": "2026-06-18T08:00:00Z" },
+    { "key": "TEST-TCG-007", "status": "parsed", "epic_key": null, "fetched_at": "2026-06-18T08:00:00Z" },
+    { "key": "TEST-STR-007A", "status": "parsed", "epic_key": null, "fetched_at": "2026-06-18T08:00:00Z" },
+    { "key": "TEST-STR-007B", "status": "parsed", "epic_key": null, "fetched_at": "2026-06-18T08:00:00Z" },
+    { "key": "TEST-MAL-008", "status": "fetched", "epic_key": null, "fetched_at": "2026-06-18T08:00:00Z" },
+    { "key": "TEST-FET-005", "status": "fetched", "epic_key": null, "fetched_at": "2026-06-18T12:00:00Z", "parsed_at": null, "tc_generated_at": null, "approved_at": null, "batch_id": "batch-001", "flags": [] }
+  ]
+}

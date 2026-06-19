@@ -53,7 +53,7 @@ All rules in `../instructions/global-rules.instructions.md` apply. Key rules for
 | Project context | `{PROJECT_OUTPUT}/context/project-context.md` | Must be approved. Defines output format. |
 | Approved strategy | `{PROJECT_OUTPUT}/strategy/priority-matrix.md` | Must be approved |
 | Parsed story | `{PROJECT_OUTPUT}/stories/parsed/{STORY-KEY}.parsed.json` | Read selectively — required fields only (see Step 1) |
-| Screenshots | `{PROJECT_OUTPUT}/screenshots/{EPIC-KEY}/` | All files in the epic folder apply to every story in that epic. Loaded once per unique EPIC-KEY per session — summarized into a compact reference, not reloaded per story. |
+| Screenshots | `{PROJECT_OUTPUT}/screenshots/{EPIC-KEY}/` (if `has_epics: true`) or `screenshots/{STORY-KEY}/` (if `has_epics: false`) | If `has_epics: true`: all files in the epic folder apply to every story in that epic, loaded once per unique EPIC-KEY per session. If `has_epics: false`: loaded per story from the story-key subfolder. |
 | ExtraResources | `{PROJECT_OUTPUT}/ExtraResources/` | Scanned per story/epic at Step 2a. Used to resolve open questions and inform AC interpretation. |
 | Existing assumptions | `{PROJECT_OUTPUT}/tracking/assumptions.md` | Read once at session start. Append during run without re-reading. Re-read only to check for duplicates before adding a new entry. |
 
@@ -80,7 +80,7 @@ All rules in `../instructions/global-rules.instructions.md` apply. Key rules for
 | `{PROJECT_OUTPUT}/context/project-context.md` | Read-only |
 | `{PROJECT_OUTPUT}/strategy/priority-matrix.md` | Read-only |
 | `{PROJECT_OUTPUT}/stories/parsed/{STORY-KEY}.parsed.json` | Read-only |
-| `{PROJECT_OUTPUT}/screenshots/{EPIC-KEY}/` | Read-only |
+| `{PROJECT_OUTPUT}/screenshots/{EPIC-KEY}/` (if `has_epics: true`) or `screenshots/{STORY-KEY}/` (if `has_epics: false`) | Read-only |
 | `{PROJECT_OUTPUT}/ExtraResources/` | Read-only |
 | `{PROJECT_OUTPUT}/test-cases/` | Write |
 | `{PROJECT_OUTPUT}/tracking/assumptions.md` | Write (via assumption-tracker skill only) |
@@ -133,20 +133,24 @@ Do not invent column names not specified in `project-context.md`.
 If this step has already run in the current session: use the cached `extra_resources_cache` in working memory. Do not re-list or re-read any folder.
 
 ```
-1. List all subfolders in {PROJECT_OUTPUT}/ExtraResources/ — once per session.
-   Store the result as `extra_resources_index` in working memory.
-2. Collect the set of UNIQUE epic_keys across all stories in the current batch.
+1. List all contents of {PROJECT_OUTPUT}/ExtraResources/ — once per session.
+   Separate into: root-level files (no subfolder) and subfolders.
+   Store subfolders as `extra_resources_index` in working memory.
+2. Load any files found directly in the root (not inside a subfolder) using the rules in step 5.
+   Store extracted facts in working memory: `extra_resources_cache["__project__"]`.
+   These apply to ALL stories in the batch.
+3. Collect the set of UNIQUE epic_keys across all stories in the current batch.
    Stories with no `epic_key` (null or absent) are excluded from this step — they are covered by their story-key subfolder in step 4.
-3. For each non-null unique epic_key:
+4. For each non-null unique epic_key:
    a. Check `extra_resources_index` for a subfolder matching that epic_key
       (e.g. ExtraResources/PROJ-EPIC-1/).
    b. If found: list its contents and load all files using the rules in step 5.
    c. Store extracted facts in working memory: `extra_resources_cache[epic_key]`.
    If no stories have an epic_key, skip this step entirely.
-4. For each story-key entry in `extra_resources_index` (e.g. ExtraResources/PROJ-101/):
+5. For each story-key entry in `extra_resources_index` (e.g. ExtraResources/PROJ-101/):
    a. Load its contents using the rules in step 5.
    b. Store extracted facts in working memory: `extra_resources_cache[story_key]`.
-5. File handling rules:
+6. File handling rules:
    - .pdf  → read immediately. Summarize key facts relevant to the story's ACs.
      This includes the Reporte Técnico de Referencia (PDF describing the HTML prototype's UI and functionality).
      Extract: UI element names, field labels, layout structure, validations, navigation flows, and functional behavior.
@@ -159,24 +163,26 @@ If this step has already run in the current session: use the cached `extra_resou
    - .png / .jpg / .jpeg → load as visual reference (same rules as screenshots — see Step 3).
    - Other formats → report to user: "Found '{filename}' in ExtraResources — unsupported format.
      Please convert to PDF or paste the relevant content."
-6. If no matching subfolder exists for any epic or story key: continue silently.
+7. If no matching subfolder exists for any epic or story key: continue silently.
 ```
 
-**During Step 4 (per story):** Look up `extra_resources_cache[story.epic_key]` and
+**During Step 4 (per story):** Look up `extra_resources_cache["__project__"]`, `extra_resources_cache[story.epic_key]`, and
 `extra_resources_cache[story_key]` in working memory. No file system reads needed — use cached facts directly.
 
 > **Why this matters:** ExtraResources documents (data profiles, spec sheets, design notes) may resolve open questions, clarify AC behavior, or constrain TC scope. Discovering them after TCs are written wastes a full re-generation cycle.
 
 ### Step 3 — Screenshot Reference (Element Name Lookup)
-**Screenshots are scoped by epic. All files in `{PROJECT_OUTPUT}/screenshots/{EPIC-KEY}/` apply to every story in that epic.**
-**Path rule:** All screenshots are stored at `{PROJECT_OUTPUT}/screenshots/{EPIC-KEY}/` (see **instructions/path-schema.instructions.md** Rule P-3).
+**Resolve scope key:** if `has_epics: true` → `SCOPE-KEY = EPIC-KEY`; if `has_epics: false` → `SCOPE-KEY = STORY-KEY`.
+**Screenshots are stored at `{PROJECT_OUTPUT}/screenshots/{SCOPE-KEY}/` (see **instructions/path-schema.instructions.md** Rule P-3).**
+**If `has_epics: true`: all files in the epic folder apply to every story in that epic — loaded once per unique EPIC-KEY per session.**
+**If `has_epics: false`: loaded per story from `screenshots/{STORY-KEY}/`.**
 
 > **Scope:** Screenshots are used here exclusively for **UI element name lookup** — to write accurate, traceable TC steps. Discrepancy detection between story content and design references was performed by the Story Analyzer in Phase 1 and is not repeated here.
 
 **Session reuse (required first):**
-Check working memory for `screenshot_reference[EPIC-KEY]`.
+Check working memory for `screenshot_reference[SCOPE-KEY]`.
 - **Found:** reuse directly. Do not reload any file.
-- **Not found:** list and load all files in `{PROJECT_OUTPUT}/screenshots/{EPIC-KEY}/`. If no files exist, proceed without screenshots — do not prompt the user. Produce a compact element name reference and store in `screenshot_reference[EPIC-KEY]` in working memory:
+- **Not found:** list and load all files in `{PROJECT_OUTPUT}/screenshots/{SCOPE-KEY}/`. If no files exist, proceed without screenshots — do not prompt the user. Produce a compact element name reference and store in `screenshot_reference[SCOPE-KEY]` in working memory:
   - All UI element names and labels visible
   - All distinct UI states identified
   - Any error or empty-state messages visible

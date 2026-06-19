@@ -1,9 +1,0 @@
-{
-  "schema_version": "1.0",
-  "epics": [
-    {
-      "key": "TEST-EPIC-BUG",
-      "summary": "Aircraft Registration Module — Phase 1"
-    }
-  ]
-}

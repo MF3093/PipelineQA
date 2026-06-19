@@ -108,3 +108,68 @@ Then load `@story-analyzer` and provide the story key.
 | SAA-003 | Q-NNN per missing error behavior | No questions about error paths |
 | SAA-004 | 0 duplicates + new gap found | Existing questions re-logged |
 | SAA-005 | D-NNN for AC-vs-out_of_scope contradiction | Contradiction not detected |
+| SAA-006 | Visual discrepancy step runs; screenshot loaded from EPIC-KEY subfolder | Agent skips screenshot scan or uses wrong folder path |
+| SAA-007 | ExtraResources root file loaded into `extra_resources_ref["__project__"]` | Root file ignored; only subfolder files loaded |
+| SAA-008 | SCOPE-KEY = STORY-KEY; screenshots loaded from `screenshots/TEST-SAA-008/` | Agent tries `screenshots/null/` or errors on missing epic_key |
+
+---
+
+### SAA-006 — Screenshots Present (EPIC-KEY Subfolder)
+
+**Fixture:** `SAA-006.parsed.json`  
+**Setup:**
+1. Copy `SAA-006.parsed.json` to `{PROJECT_OUTPUT}/stories/parsed/TEST-SAA-006.parsed.json`.
+2. Create folder `{PROJECT_OUTPUT}/screenshots/SAA-EPIC-6/`.
+3. Place any `.png` or `.jpg` file in that folder (a UI mockup or any image with visible elements).
+4. Ensure `projects.json` has `has_epics: true` for the test project.
+5. Load `@story-analyzer` for story key `TEST-SAA-006`.
+
+**What to observe:**
+- Agent resolves SCOPE-KEY as `SAA-EPIC-6` (the story's `epic_key`).
+- Agent scans `screenshots/SAA-EPIC-6/` for image files.
+- Step 4A (visual discrepancy detection) executes — agent lists UI elements visible in the image.
+- If AC mentions a UI element that is absent from the screenshot (or vice versa), a D-NNN is logged.
+
+**Pass:** Agent loads the correct screenshot subfolder, runs visual analysis, documents findings.  
+**Fail:** Agent skips the screenshot step, loads from wrong path, or crashes on folder lookup.
+
+---
+
+### SAA-007 — ExtraResources Root-Level Project-Wide File
+
+**Fixture:** `SAA-007.parsed.json`  
+**Setup:**
+1. Copy `SAA-007.parsed.json` to `{PROJECT_OUTPUT}/stories/parsed/TEST-SAA-007.parsed.json`.
+2. Create folder `{PROJECT_OUTPUT}/ExtraResources/` (no subfolder).
+3. Place a plain text or HTML file in the root of `ExtraResources/` — e.g., `glossary.html` containing a list of system-wide terms and their definitions.
+4. Load `@story-analyzer` for story key `TEST-SAA-007`.
+
+**What to observe:**
+- Agent scans `ExtraResources/` and finds the root-level file.
+- The file is loaded and stored under `extra_resources_ref["__project__"]`.
+- Content from this file may inform the analysis (e.g., a term defined in the glossary used in an AC is resolved using the definition from the root file).
+- The agent does NOT attempt to look for the file in an epic or story subfolder.
+
+**Pass:** Root file loaded into `extra_resources_ref["__project__"]`; project-wide context applied to analysis.  
+**Fail:** Root file ignored; agent only scans subfolders; or `extra_resources_ref["__project__"]` is never populated.
+
+---
+
+### SAA-008 — has_epics:false (Screenshots in STORY-KEY Subfolder)
+
+**Fixture:** `SAA-008.parsed.json` (epic_key: null)  
+**Setup:**
+1. Copy `SAA-008.parsed.json` to `{PROJECT_OUTPUT}/stories/parsed/TEST-SAA-008.parsed.json`.
+2. In `projects.json`, set `has_epics: false` for the test project.
+3. Create folder `{PROJECT_OUTPUT}/screenshots/TEST-SAA-008/`.
+4. Place any `.png` or `.jpg` image file in that folder.
+5. Load `@story-analyzer` for story key `TEST-SAA-008`.
+
+**What to observe:**
+- Agent checks `has_epics` in `projects.json` and gets `false`.
+- Agent resolves SCOPE-KEY = `TEST-SAA-008` (story key, since epic_key is null and has_epics is false).
+- Agent loads screenshots from `screenshots/TEST-SAA-008/` (not from `screenshots/null/` or any epic path).
+- Visual analysis runs normally.
+
+**Pass:** SCOPE-KEY resolves to story key; correct subfolder loaded; no errors about missing epic.  
+**Fail:** Agent attempts `screenshots/null/`, throws an error, skips the screenshot step, or uses wrong path.

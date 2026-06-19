@@ -1,0 +1,24 @@
+{
+  "key": "TEST-SAA-007",
+  "summary": "User Profile — Edit Personal Information",
+  "status": "Ready for Dev",
+  "priority": "Medium",
+  "epic_key": "SAA-EPIC-7",
+  "description": "As a registered user, I want to edit my personal information on the profile page so that I can keep my account details up to date.",
+  "acs": [
+    { "id": "AC-1", "text": "The profile edit form displays fields for First Name, Last Name, Email, and Phone Number." },
+    { "id": "AC-2", "text": "All fields are pre-filled with the current saved values when the form opens." },
+    { "id": "AC-3", "text": "On Save, a success toast message 'Profile updated successfully' is shown for 3 seconds." },
+    { "id": "AC-4", "text": "If the email is changed to one already in use, an error message 'Email already registered' is shown inline." }
+  ],
+  "out_of_scope": ["Password change", "Profile photo upload"],
+  "questions": [],
+  "sections": [],
+  "figma_links": [],
+  "linked_stories": [],
+  "dependencies": [],
+  "comments": [],
+  "needs_review": false,
+  "flags": [],
+  "extraction_quality": "standard"
+}

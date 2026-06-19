@@ -1,0 +1,23 @@
+{
+  "key": "TEST-STR-007B",
+  "summary": "User Login — Account Lockout After Failed Attempts",
+  "status": "Ready for Dev",
+  "priority": "Critical",
+  "epic_key": null,
+  "description": "As a security administrator, I want the system to lock accounts after repeated failed login attempts so that brute-force attacks are prevented.",
+  "acs": [
+    { "id": "AC-1", "text": "After 5 consecutive failed login attempts, the account is locked for 15 minutes." },
+    { "id": "AC-2", "text": "The user sees: 'Account temporarily locked. Try again in 15 minutes.'" },
+    { "id": "AC-3", "text": "Admins can manually unlock an account from the user management panel." }
+  ],
+  "out_of_scope": ["Permanent account lockout", "IP-based blocking"],
+  "questions": [],
+  "sections": [],
+  "figma_links": [],
+  "linked_stories": ["TEST-STR-007A"],
+  "dependencies": [{ "story_key": "TEST-STR-007A", "type": "depends_on", "blocked_by": null, "branches": null }],
+  "comments": [],
+  "needs_review": false,
+  "flags": [],
+  "extraction_quality": "standard"
+}

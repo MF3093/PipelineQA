@@ -6,7 +6,7 @@ A QA Test Case Generation Pipeline that operates as a multi-agent system within 
 
 ### Prerequisites
 - VS Code with GitHub Copilot Chat extension
-- Jira MCP server configured (for the Fetcher agent)
+- Jira MCP server configured (only required if your stories are in Jira — see GETTING-STARTED.md)
 
 ### Usage with GitHub Copilot
 
@@ -26,7 +26,8 @@ Select an agent from the agent picker (`@`) in Copilot Chat. The Orchestrator is
 ### Pipeline Phases
 
 1. **Phase 1 — Early Analysis**: Fetch → Parse → Story Analyze
-2. **Phase 2 — TC Generation**: Context Build → Story Prioritizer → TC Generate
+2. **First Run Only — Project Context**: Context Build → Gate 2 approval
+3. **Phase 2 — TC Generation**: Story Prioritizer → TC Generate
 
 Key approval gates: **Gate 2** — project context, **Gate 3** — priority matrix, **Gate 4** — test cases per story (`yes` / `edit` / `reject` at each).
 

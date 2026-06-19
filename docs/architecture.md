@@ -30,11 +30,10 @@ graph TB
 
     subgraph Standalone["Standalone Agents"]
         TR[TC Reviewer]
-        BR[Bug Reporter]
     end
 
     subgraph External["External Systems"]
-        JIRA[Jira / ADO / GitHub]
+        JIRA[Jira / ADO]
     end
 
     U -->|"load orchestrator"| O
@@ -45,10 +44,8 @@ graph TB
     O -->|"invoke"| PR
     O -->|"invoke"| TG
     U -->|"load directly"| TR
-    U -->|"load directly"| BR
 
     F -->|"MCP read-only"| JIRA
-    BR -->|"create issue + link"| JIRA
 
     style O fill:#2d5a87,color:#fff
     style F fill:#4a7c59,color:#fff
@@ -58,7 +55,6 @@ graph TB
     style PR fill:#7c5a2d,color:#fff
     style TG fill:#7c5a2d,color:#fff
     style TR fill:#5a2d7c,color:#fff
-    style BR fill:#5a2d7c,color:#fff
 ```
 
 ---
@@ -216,7 +212,6 @@ Each agent has strictly scoped read/write permissions. No agent operates outside
 | **Prioritizer** | stories/parsed, epics/parsed, context | strategy/priority-matrix.md, tracking/assumptions.md | None |
 | **TC Generator** | stories/parsed, context, strategy, screenshots, ExtraResources | test-cases/*.csv, tracking/assumptions.md | None |
 | **TC Reviewer** | test-cases/*.csv, priority-matrix.md | tracking/reviews/ (optional) | None |
-| **Bug Reporter** | TC files, registries, user input | bugs/drafts/ | Jira (create issue + link only) |
 
 ---
 

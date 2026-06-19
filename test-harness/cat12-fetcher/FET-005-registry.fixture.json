@@ -1,0 +1,11 @@
+{
+  "_fixture_note": "FET-005: Project registered with has_epics:false. Fetcher must skip the epic lookup step entirely and must NOT create or reference fetched-epics.json.",
+  "known_fetched_stories": [
+    {
+      "key": "TEST-FET-005",
+      "status": "pending",
+      "epic_key": null,
+      "fetched_at": null
+    }
+  ]
+}

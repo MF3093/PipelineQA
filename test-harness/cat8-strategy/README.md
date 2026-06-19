@@ -199,3 +199,72 @@ Step 1 requires `pipeline-state.json` to show `context_approved: true` before th
 | STR-003 | State write accuracy — scoped_story_keys merge | All 5 keys present | Only batch-002 keys written |
 | STR-004 | Comment discrimination — noise vs. signal | Likelihood=1, no phantom assumptions | Likelihood inflated by administrative comment |
 | STR-005 | Prerequisite gate enforcement | Halt at Step 1 | Any progress past the check |
+| STR-006 | epic_key:null — story scored from content only | Score produced; no epic file read | Agent errors on missing epic or skips story |
+| STR-007 | has_epics:false project — no epics folder | Score produced; no epic lookup attempted | Agent errors on missing epics/parsed/ folder |
+
+---
+
+### STR-006 — epic_key:null — Prioritizer Scores from Story Content Only
+
+**What is being tested:**
+When `epic_key` is null, the prioritizer must score the story from its own content (description, ACs, sections, comments) without attempting to read any epic file. No error must be raised.
+
+**Fixture:** `STR-006.parsed.json` (epic_key: null)
+
+**Pre-conditions:**
+1. Copy `project-context.fixture.md` → `{PROJECT_OUTPUT}/context/project-context.md`.
+2. Copy `STR-006.parsed.json` → `{PROJECT_OUTPUT}/stories/parsed/TEST-STR-006.parsed.json`.
+3. Ensure `pipeline-state.json` has `context_approved: true` and no existing `priority-matrix.md`.
+4. Do NOT create any file in `epics/parsed/` for this story.
+5. Invoke `@story-prioritizer` — provide `TEST-STR-006` as the batch.
+
+**Expected behavior:**
+- Agent detects `epic_key: null`.
+- Skips any step that would read an epic file for context.
+- Scores the story based on its own ACs, description, and sections only.
+- Produces a valid priority matrix row for TEST-STR-006.
+- No error, warning, or assumption logged about the missing epic.
+
+**Failure mode:**
+- Agent attempts to read `epics/parsed/null.parsed.json` and errors.
+- Agent skips the story silently without producing a row.
+- Agent logs a phantom assumption about a missing epic.
+
+**Pass criteria:**
+- Valid matrix row produced for TEST-STR-006.
+- No epic file read or referenced.
+- No error raised.
+
+---
+
+### STR-007 — has_epics:false Project — Prioritizer Completes Without Epic Folder
+
+**What is being tested:**
+When `projects.json` has `has_epics: false` for the active project, no `epics/` folder exists. The prioritizer must complete a full first-time matrix for a batch of stories without attempting to access the missing folder.
+
+**Fixtures:** `STR-007A.parsed.json`, `STR-007B.parsed.json`, `STR-007-pipeline-state.json`
+
+**Pre-conditions:**
+1. Copy `project-context.fixture.md` → `{PROJECT_OUTPUT}/context/project-context.md`.
+2. Copy `STR-007A.parsed.json` → `{PROJECT_OUTPUT}/stories/parsed/TEST-STR-007A.parsed.json`.
+3. Copy `STR-007B.parsed.json` → `{PROJECT_OUTPUT}/stories/parsed/TEST-STR-007B.parsed.json`.
+4. Copy `STR-007-pipeline-state.json` → `{PROJECT_OUTPUT}/registry/pipeline-state.json`.
+5. In `projects.json`, set `has_epics: false` for the test project.
+6. Do NOT create an `epics/` folder.
+7. Invoke `@story-prioritizer` — provide `TEST-STR-007A` and `TEST-STR-007B` as the batch.
+
+**Expected behavior:**
+- Agent checks `has_epics: false` in `projects.json`.
+- Proceeds without reading or listing the `epics/` folder at any step.
+- Scores both stories from their own content.
+- Produces a valid priority matrix with both rows.
+- DW for TEST-STR-007B set to 1 (depends on TEST-STR-007A).
+
+**Failure mode:**
+- Agent attempts to access `epics/parsed/` and throws a file-not-found error.
+- Agent scores stories as 0 because it could not read epic context.
+
+**Pass criteria:**
+- Two valid rows in the priority matrix.
+- No error or assumption related to missing epic folder.
+- TEST-STR-007B Dependency Weight = 1.

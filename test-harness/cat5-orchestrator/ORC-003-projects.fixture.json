@@ -1,0 +1,14 @@
+{
+  "projects": [
+    {
+      "project_name": "TEST-ORC-EXISTING",
+      "output_path": "{REPLACE_WITH_ABSOLUTE_PATH}/TEST-ORC-EXISTING",
+      "jira_project_key": "ORC",
+      "has_epics": true,
+      "has_screenshots": false,
+      "has_extra_resources": false,
+      "registered_at": "2026-06-18T10:00:00Z",
+      "status": "active"
+    }
+  ]
+}

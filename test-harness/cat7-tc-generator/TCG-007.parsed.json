@@ -1,0 +1,23 @@
+{
+  "key": "TEST-TCG-007",
+  "summary": "Notification Preferences — Email Toggle",
+  "status": "Ready for Dev",
+  "priority": "Low",
+  "epic_key": null,
+  "description": "As a user, I want to toggle email notifications on or off in my account settings so that I can control which emails I receive from the system.",
+  "acs": [
+    { "id": "AC-1", "text": "The Notifications settings page contains a list of notification types, each with an on/off toggle." },
+    { "id": "AC-2", "text": "Changes are saved immediately when a toggle is flipped — no Save button required." },
+    { "id": "AC-3", "text": "A brief confirmation 'Preferences updated' appears inline after each change." }
+  ],
+  "out_of_scope": ["Push notifications", "SMS notifications"],
+  "questions": [],
+  "sections": [],
+  "figma_links": [],
+  "linked_stories": [],
+  "dependencies": [],
+  "comments": [],
+  "needs_review": false,
+  "flags": [],
+  "extraction_quality": "standard"
+}

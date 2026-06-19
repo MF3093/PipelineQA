@@ -153,3 +153,37 @@ Step 4 states: "if user answers 'unknown' or 'TBD' for any field: accept it, log
 | CTX-002 | Sections[] scanning — non-obvious headers | Tech signals extracted from "Backend Notes"/"Testing Notes" | Agent misses sections with non-standard header names |
 | CTX-003 | Re-run gate — confirmation before overwrite | Confirmation prompt before any file changes | Agent overwrites without asking |
 | CTX-004 | Unknown answer handling — TBD + assumption ID | `[TBD — see ID]` in draft; Q-NNN in assumptions.md | Blank field or fabricated value |
+| CTX-005 | has_epics:false — context built from stories only | Context doc complete; no error about missing epics folder | Agent errors on missing epics/parsed/ or produces incomplete context |
+
+---
+
+### CTX-005 — has_epics:false — Context Builder Reads Stories Only
+
+**What is being tested:**
+When `projects.json` has `has_epics: false`, no `epics/` folder exists. The Context Builder must complete the full interview and document draft without attempting to scan the epic folder.
+
+**Fixture:** `CTX-005-pipeline-state.json` (context_approved: false)
+
+**Pre-conditions:**
+1. Copy `CTX-005-pipeline-state.json` → `{PROJECT_OUTPUT}/registry/pipeline-state.json`.
+2. In `projects.json`, set `has_epics: false` for the test project.
+3. Place at least one valid parsed story file in `{PROJECT_OUTPUT}/stories/parsed/` (any fixture from cat6 or cat7 will work, e.g. `SAA-007.parsed.json` renamed appropriately).
+4. Do NOT create an `epics/` folder.
+5. Invoke `@context-builder`.
+
+**Expected behavior:**
+- Agent checks `has_epics: false` in `projects.json` at Step 3.
+- Skips any scan of `epics/parsed/` — does NOT attempt to list or read that folder.
+- Scans `stories/parsed/` normally and extracts tech signals.
+- Conducts the interview and produces a complete `project-context.md` draft.
+- No error, warning, or assumption logged about the missing epics folder.
+
+**Failure mode:**
+- Agent attempts to read `epics/parsed/` and errors on folder not found.
+- Agent produces an incomplete context document because it expected epic data.
+- Agent logs an assumption about missing epics when they are legitimately not part of the project.
+
+**Pass criteria:**
+- Full `project-context.md` draft produced.
+- No error or reference to missing epics folder.
+- Gate 2 approval prompt presented normally.

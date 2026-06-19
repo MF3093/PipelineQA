@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "project_name": "TEST-ORC-008",
+  "locked": false,
+  "locked_at": null,
+  "context_approved": true,
+  "context_approved_at": "2026-06-18T10:00:00Z",
+  "context_version": 2,
+  "strategy_approved": true,
+  "strategy_approved_at": "2026-06-17T08:00:00Z",
+  "strategy_current_version": 1,
+  "approval_states": {
+    "scoped_story_keys": ["TEST-001", "TEST-002"],
+    "scoped_epic_keys": ["TEST-EPIC-1"]
+  },
+  "current_run": {
+    "run_id": null,
+    "batch_id": null,
+    "daily_batch_counter": 0,
+    "current_story": null,
+    "stories_in_batch": []
+  }
+}

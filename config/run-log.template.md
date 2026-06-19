@@ -25,7 +25,7 @@
 | 2 | Parse | {time} | {time} | {completed / partial} | {flags raised} |
 | 3 | Story Analysis | {time} | {time} | {completed} | {Q/D entries logged} |
 | 4 | Context Build | {time} | {time} | {approved / skipped} | {first run or reuse} |
-| 5 | Strategy | {time} | {time} | {approved / rejected / skipped} | {new or extension} |
+| 5 | Story Prioritizer | {time} | {time} | {approved / rejected / skipped} | {new or extension} |
 | 6 | TC Generation | {time} | {time} | {approved / partial / rejected} | {TC count} |
 
 ---

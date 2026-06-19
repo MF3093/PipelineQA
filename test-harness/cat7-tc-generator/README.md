@@ -111,3 +111,110 @@ Some tests require entries pre-seeded in `tracking/assumptions.md`. Add these be
 | TCG-002 | A-NNN logged; TC steps reference assumption ID | TC invents button location |
 | TCG-003 | TC for AC-1 flagged/Observation; D-NNN referenced | TC silently picks 3 or 4 options |
 | TCG-004 | D-NNN logged; no deterministic TC for AC-1/AC-2 | Both contradictory TCs written as standard |
+| TCG-005 | TC steps reference actual UI element names from screenshots; A-NNN if any label unclear | TC invents UI element names not visible in screenshot |
+| TCG-006 | Root ExtraResources file loaded as project-wide context; content used in TC descriptions | Root file ignored; only subfolder files used |
+| TCG-007 | SCOPE-KEY = story key; screenshots loaded from `screenshots/TEST-TCG-007/` | Agent tries `screenshots/null/` or errors |
+| TCG-008 | Screenshots for `TCG-EPIC-8` loaded once; reused for second story without re-reading folder | Folder re-scanned for each story in the batch |
+| TCG-009 | ExtraResources epic step skipped; story-key subfolder checked; completes normally | Agent errors on null epic_key or tries `ExtraResources/null/` |
+
+---
+
+### TCG-005 — Screenshots Present (TC Steps Reference Actual UI Elements)
+
+**Fixture:** `TCG-005.parsed.json`  
+**Setup:**
+1. Copy `TCG-005.parsed.json` to `{PROJECT_OUTPUT}/stories/parsed/TEST-TCG-005.parsed.json`.
+2. Ensure `projects.json` has `has_epics: true` for the test project.
+3. Create folder `{PROJECT_OUTPUT}/screenshots/TCG-EPIC-5/`.
+4. Place a `.png` or `.jpg` image of a multi-step form (e.g., a booking form with labeled fields) in that folder.
+5. Load `@tc-generator` for story key `TEST-TCG-005`.
+
+**What to observe:**
+- Agent resolves SCOPE-KEY = `TCG-EPIC-5` (story's epic_key).
+- Agent scans `screenshots/TCG-EPIC-5/` and loads the image.
+- TC step actions reference field/button labels as they appear in the screenshot image.
+- If a label in the image differs from the AC text, an A-NNN is logged and the TC uses the screenshot label.
+- Agent does NOT invent UI labels not visible in any screenshot.
+
+**Pass:** TC steps use exact element names from the screenshot; A-NNN logged for any discrepancy.  
+**Fail:** TC invents field names not visible in any screenshot; or screenshots folder is never scanned.
+
+---
+
+### TCG-006 — ExtraResources Root-Level (Project-Wide Context)
+
+**Fixture:** `TCG-006.parsed.json`  
+**Setup:**
+1. Copy `TCG-006.parsed.json` to `{PROJECT_OUTPUT}/stories/parsed/TEST-TCG-006.parsed.json`.
+2. Create `{PROJECT_OUTPUT}/ExtraResources/` (root only, no subfolders).
+3. Place a text or HTML file there containing project-wide constraints — e.g., "Max file size: 10 MB for all uploads. PDF export uses server-side rendering."
+4. Load `@tc-generator` for story key `TEST-TCG-006`.
+
+**What to observe:**
+- Agent scans ExtraResources root during Step 2a.
+- Root file is loaded into `extra_resources_cache["__project__"]`.
+- Content (e.g., the 10 MB limit) is applied to TCs where relevant, without requiring it to be explicitly stated in the story's ACs.
+- The agent does NOT skip root-level files.
+
+**Pass:** Root ExtraResources file loaded; constraint applied in TC description.  
+**Fail:** Root file skipped; agent only scans subfolder files; TC omits context from root file.
+
+---
+
+### TCG-007 — has_epics:false (Screenshots in STORY-KEY Subfolder)
+
+**Fixture:** `TCG-007.parsed.json` (epic_key: null)  
+**Setup:**
+1. Copy `TCG-007.parsed.json` to `{PROJECT_OUTPUT}/stories/parsed/TEST-TCG-007.parsed.json`.
+2. In `projects.json`, set `has_epics: false` for the test project.
+3. Create folder `{PROJECT_OUTPUT}/screenshots/TEST-TCG-007/`.
+4. Place any `.png` image in that folder.
+5. Load `@tc-generator` for story key `TEST-TCG-007`.
+
+**What to observe:**
+- Agent checks `has_epics: false` and resolves SCOPE-KEY = `TEST-TCG-007` (story key).
+- Agent scans `screenshots/TEST-TCG-007/` — does NOT attempt `screenshots/null/`.
+- TC generation completes normally.
+
+**Pass:** Correct screenshot subfolder used; no errors about missing epic_key; TCs generated.  
+**Fail:** Agent errors on `epic_key: null`, tries `screenshots/null/`, or skips screenshot scan entirely.
+
+---
+
+### TCG-008 — Screenshot Session Reuse (Same SCOPE-KEY in Same Batch)
+
+**Fixtures:** `TCG-008A.parsed.json` and `TCG-008B.parsed.json` (both have epic_key: `TCG-EPIC-8`)  
+**Setup:**
+1. Copy both fixtures to `{PROJECT_OUTPUT}/stories/parsed/`.
+2. Ensure `projects.json` has `has_epics: true`.
+3. Create `{PROJECT_OUTPUT}/screenshots/TCG-EPIC-8/` with one or more image files.
+4. Load `@tc-generator` and provide both story keys in the same batch run.
+
+**What to observe:**
+- Agent processes TCG-008A first: loads `screenshots/TCG-EPIC-8/` → caches result in `screenshot_reference["TCG-EPIC-8"]`.
+- Agent processes TCG-008B next: detects that `screenshot_reference["TCG-EPIC-8"]` already populated.
+- Agent does NOT re-scan the screenshots folder for TCG-008B.
+- Both TCs correctly reference UI elements from the same screenshot.
+
+**Pass:** Screenshots folder scanned exactly once for the batch; cache used for second story.  
+**Fail:** Folder re-scanned for each story; or cache miss causes inconsistent TC content between stories.
+
+---
+
+### TCG-009 — epic_key:null — ExtraResources Skips Epic Step
+
+**Fixture:** `TCG-009.parsed.json` (epic_key: null)  
+**Setup:**
+1. Copy `TCG-009.parsed.json` to `{PROJECT_OUTPUT}/stories/parsed/TEST-TCG-009.parsed.json`.
+2. In `projects.json`, set `has_epics: true` (project has epics, but this specific story has none).
+3. Create `{PROJECT_OUTPUT}/ExtraResources/TEST-TCG-009/` with a text file.
+4. Load `@tc-generator` for story key `TEST-TCG-009`.
+
+**What to observe:**
+- During Step 2a ExtraResources scan: agent loads root-level files (if any) normally.
+- For epic subfolder: agent detects `epic_key: null` → skips the epic subfolder step.
+- For story subfolder: agent checks `ExtraResources/TEST-TCG-009/` and loads the file.
+- Agent does NOT attempt `ExtraResources/null/`.
+
+**Pass:** Epic subfolder step skipped cleanly; story subfolder loaded; no errors.  
+**Fail:** Agent tries `ExtraResources/null/`, throws an error, or skips the story subfolder too.

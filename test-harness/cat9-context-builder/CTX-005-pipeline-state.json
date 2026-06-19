@@ -1,0 +1,8 @@
+{
+  "_fixture_note": "CTX-005: Project with has_epics:false. No epics/parsed/ folder exists. Context builder reads stories only and completes without error.",
+  "locked": false,
+  "current_story": null,
+  "context_approved": false,
+  "context_version": 0,
+  "strategy_approved": false
+}

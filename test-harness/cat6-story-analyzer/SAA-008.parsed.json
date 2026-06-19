@@ -1,0 +1,24 @@
+{
+  "key": "TEST-SAA-008",
+  "summary": "Inventory Item — Quick Edit Modal",
+  "status": "Ready for Dev",
+  "priority": "Medium",
+  "epic_key": null,
+  "description": "As a warehouse manager, I want to edit inventory item details through a quick edit modal so that I can make updates without navigating to a separate page.",
+  "acs": [
+    { "id": "AC-1", "text": "The quick edit modal opens when the user clicks the Edit icon in the item row." },
+    { "id": "AC-2", "text": "The modal contains fields for Item Name, Quantity, Unit Price, and Category." },
+    { "id": "AC-3", "text": "On Save, the item row in the table is updated immediately without a page reload." },
+    { "id": "AC-4", "text": "On Cancel, no changes are saved and the modal closes." }
+  ],
+  "out_of_scope": ["Bulk editing", "Item deletion from modal"],
+  "questions": [],
+  "sections": [],
+  "figma_links": [],
+  "linked_stories": [],
+  "dependencies": [],
+  "comments": [],
+  "needs_review": false,
+  "flags": [],
+  "extraction_quality": "standard"
+}

@@ -12,12 +12,12 @@ This is a **QA Test Case Generation Pipeline** that operates as a multi-agent sy
 - **Story Prioritizer**: Creates risk-based test prioritization matrix.
 - **TC Generator**: Generates precise, atomic test cases for manual and automated execution.
 - **TC Reviewer**: Read-only cross-story analysis (redundancy, integration gaps).
-- **Bug Reporter**: Creates Jira bug issues with full traceability.
 
 ## Pipeline Phases
 
 1. **Phase 1 — Early Analysis**: Fetch → Parse → Story Analyze
-2. **Phase 2 — TC Generation**: Context Build → Story Prioritizer → TC Generate
+2. **First Run Only — Project Context**: Context Build → Gate 2 approval
+3. **Phase 2 — TC Generation**: Story Prioritizer → TC Generate
 
 ## Key Conventions
 
