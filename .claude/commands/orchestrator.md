@@ -32,7 +32,7 @@ The agent definition references "subagent" invocations (e.g., "invoke the Fetche
 ## Instructions
 
 1. Follow the Orchestrator's Role, Rules, Trigger Conditions, and Execution Steps from `.github/agents/orchestrator.agent.md` exactly
-2. Apply all 10 Global Rules from CLAUDE.md
+2. Apply all 11 Global Rules from CLAUDE.md
 3. Apply all Path Schema rules from CLAUDE.md
 4. Manage all approval gates using the protocol in Rule 9 of CLAUDE.md
 5. Track pipeline state in `{PROJECT_OUTPUT}/registry/pipeline-state.json` according to the schema in the agent definition

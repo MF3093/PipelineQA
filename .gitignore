@@ -6,3 +6,4 @@ projects.json
 
 # Generated QA pipeline output artifacts
 **/project-output/
+test-harness/project-output-no-epics/

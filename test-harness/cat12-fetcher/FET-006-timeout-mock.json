@@ -1,0 +1,30 @@
+{
+  "scenario": "FET-006-API-TIMEOUT",
+  "description": "Simulate Jira API timeout after 60+ seconds",
+  "test_setup": {
+    "story_key": "H20-TIMEOUT-TEST",
+    "action": "When Fetcher calls MCP getJiraIssue for H20-TIMEOUT-TEST, simulate 70-second delay before response",
+    "expected_behavior": "Fetcher should timeout after 60 seconds, show error, offer retry"
+  },
+  "mock_response": {
+    "type": "TIMEOUT",
+    "delay_seconds": 70,
+    "error": "Request timeout after 60 seconds",
+    "http_status": null,
+    "retry_after": null,
+    "instructions": [
+      "1. Configure MCP mock to delay response by 70 seconds",
+      "2. Fetcher makes call to getJiraIssue for H20-TIMEOUT-TEST",
+      "3. At 60 seconds: Fetcher timeout triggered",
+      "4. No raw file written (incomplete request)",
+      "5. Registry NOT updated",
+      "6. Error shown to user: 'Jira API timeout after 60s for story H20-TIMEOUT-TEST'",
+      "7. User offered retry option"
+    ]
+  },
+  "verification": {
+    "file_should_not_exist": "stories/raw/H20-TIMEOUT-TEST.raw.json",
+    "registry_entry": "Should NOT exist for H20-TIMEOUT-TEST",
+    "error_message_contains": ["timeout", "60", "H20-TIMEOUT-TEST"]
+  }
+}

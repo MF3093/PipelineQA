@@ -48,9 +48,9 @@ All rules in `../instructions/global-rules.instructions.md` apply. Key rules for
 | Input | Source | Notes |
 |---|---|---|
 | Parsed story | `{PROJECT_OUTPUT}/stories/parsed/{STORY-KEY}.parsed.json` | All fields present in the file |
-| Parsed epic | `{PROJECT_OUTPUT}/epics/parsed/{EPIC-KEY}.parsed.json` | For scope and permission context |
-| Screenshots | `{PROJECT_OUTPUT}/screenshots/{EPIC-KEY}/` (if `has_epics: true`) or `screenshots/{STORY-KEY}/` (if `has_epics: false`) | Optional — analysis runs regardless |
-| ExtraResources | `{PROJECT_OUTPUT}/ExtraResources/{EPIC-KEY}/` and `{PROJECT_OUTPUT}/ExtraResources/{STORY-KEY}/` | Optional — PDF report (Reporte Técnico de Referencia) documenting the HTML prototype's UI and functionality |
+| Parsed epic | `{PROJECT_OUTPUT}/epics/parsed/{EPIC-KEY}.parsed.json` (if `has_epics: true`) | For scope and permission context |
+| Screenshots (if `has_screenshots: true`) | `{PROJECT_OUTPUT}/screenshots/{EPIC-KEY}/` (if `has_epics: true`) or `screenshots/{STORY-KEY}/` (if `has_epics: false`) | Optional — analysis runs regardless |
+| ExtraResources (if `has_extra_resources: true`) | `{PROJECT_OUTPUT}/ExtraResources/{EPIC-KEY}/` (if `has_epics: true`) and `{PROJECT_OUTPUT}/ExtraResources/{STORY-KEY}/` | Optional — PDF report (Reporte Técnico de Referencia) documenting the HTML prototype's UI and functionality |
 | Existing assumptions | `{PROJECT_OUTPUT}/tracking/assumptions.md` | Read once at session start to avoid duplicates |
 
 ---
@@ -74,10 +74,10 @@ All rules in `../instructions/global-rules.instructions.md` apply. Key rules for
 | Tool / Resource | Permission |
 |---|---|
 | `{PROJECT_OUTPUT}/stories/parsed/{STORY-KEY}.parsed.json` | Read-only |
-| `{PROJECT_OUTPUT}/epics/parsed/{EPIC-KEY}.parsed.json` | Read-only |
-| `{PROJECT_OUTPUT}/screenshots/{EPIC-KEY}/` (if `has_epics: true`) or `screenshots/{STORY-KEY}/` (if `has_epics: false`) | Read-only |
-| `{PROJECT_OUTPUT}/ExtraResources/{EPIC-KEY}/` (if `has_epics: true`) | Read-only |
-| `{PROJECT_OUTPUT}/ExtraResources/{STORY-KEY}/` | Read-only |
+| `{PROJECT_OUTPUT}/epics/parsed/{EPIC-KEY}.parsed.json` (if `has_epics: true`) | Read-only |
+| `{PROJECT_OUTPUT}/screenshots/{EPIC-KEY}/` (if `has_epics: true`) or `screenshots/{STORY-KEY}/` (if `has_epics: false`) (if `has_screenshots: true`) | Read-only |
+| `{PROJECT_OUTPUT}/ExtraResources/{EPIC-KEY}/` (if `has_epics: true`) (if `has_extra_resources: true`) | Read-only |
+| `{PROJECT_OUTPUT}/ExtraResources/{STORY-KEY}/` (if `has_extra_resources: true`) | Read-only |
 | `{PROJECT_OUTPUT}/tracking/assumptions.md` | Write (via assumption-tracker skill only) |
 
 **Explicitly NOT permitted:**
@@ -98,12 +98,43 @@ Otherwise invoke the prereq-checker skill using the **Story Analyzer** standard 
 
 If prereq-checker returns `passed: false`: stop and present failures exactly as formatted.
 
+---
+
+### Step 1b — ParsedStory Schema Validation (REC-002)
+Before proceeding with analysis, validate that `{STORY-KEY}.parsed.json` matches the expected ParsedStory schema.
+
+Read the parsed file and verify these required fields are present:
+- `acs` (array of acceptance criteria objects)
+- `extraction_quality` (object with quality metrics)
+
+Also verify these fields exist and are populated:
+- `key` (string)
+- `summary` (string)
+- `description` (string)
+
+If ANY required field is missing or null:
+  "Schema validation failed for {STORY-KEY}.parsed.json
+   Missing required fields: [{field_names}]
+   File may be corrupted by Parser. How to proceed?
+     (rerun-parser)  — halt analysis, re-run Parser on {STORY-KEY} to regenerate correct schema
+     (skip)          — skip this story, continue with others (logged as DATA_ERROR)
+     (halt)          — halt pipeline, manual investigation required"
+
+  rerun-parser → Report: "Re-run Parser for {STORY-KEY}. Orchestrator will handle re-processing." STOP.
+  skip → Log in tracking/assumptions.md via assumption-tracker: type='Blocker', message='{STORY-KEY}: Parsed file missing required schema fields; story skipped'. Resume with next story.
+  halt → Release lock (if holding one). STOP and report to user.
+
+If all validations pass: proceed to Step 2.
+
 **Signal before starting:** Output one line before the first tool call:
-`"Starting story analysis for {STORY-KEY} — reading parsed story and screenshots."`
+`"Starting story analysis for {STORY-KEY} — validating schema and reading assets."`
 
 ---
 
 ### Step 2 — Screenshot and ExtraResources Loading
+
+**If `has_screenshots: false` AND `has_extra_resources: false`: skip this entire step. Proceed directly to Step 3.**
+
 **Resolve scope key first:** if `has_epics: true` → `SCOPE-KEY = EPIC-KEY`; if `has_epics: false` → `SCOPE-KEY = STORY-KEY`.
 **Screenshots are stored at `{PROJECT_OUTPUT}/screenshots/{SCOPE-KEY}/`.**
 **If `has_epics: true`: load once per unique EPIC-KEY per session — reuse in working memory for subsequent stories in the same epic. If `has_epics: false`: load per story.**
@@ -136,7 +167,10 @@ If prereq-checker returns `passed: false`: stop and present failures exactly as 
 ---
 
 ### Step 3 — Full Story Read
-Read **all fields present** in `{STORY-KEY}.parsed.json` and `{EPIC-KEY}.parsed.json`.
+Read **all fields present** in `{STORY-KEY}.parsed.json`.
+
+**If `has_epics: true`: also read `{EPIC-KEY}.parsed.json` for this story's epic context.**
+**If `has_epics: false`: read story file only — no epic file to read.**
 
 Do not skip fields. Do not assume which fields are relevant before reading them — any field can be the source of a discrepancy or gap. Read the story as a whole, not section by section.
 
@@ -146,6 +180,35 @@ The goal is to build a complete picture of:
 - What constraints and rules apply
 - What is explicitly excluded
 - What is already known to be uncertain (questions, flags, comments)
+
+---
+
+### Step 3b — Dependency Chain Validation (REC-INT-002)
+
+After reading the full story, check the `dependencies[]` field.
+
+If `dependencies[]` is empty or null: skip this step, proceed to Step 4.
+
+If `dependencies[]` contains story keys:
+  For each dependency KEY:
+    - Look up that KEY in `fetched-stories.json` registry
+    - Check its `status` field
+    
+    IF status = "fetched" (not yet parsed):
+      ```
+      "Story {STORY-KEY} depends on {DEPENDENCY-KEY}.
+       Dependent story {DEPENDENCY-KEY} has not been parsed yet (status: 'fetched').
+       {DEPENDENCY-KEY} must be analyzed before {STORY-KEY} TCs can reference its behaviors.
+       Parser should process {DEPENDENCY-KEY} before this story's analysis continues."
+      ```
+      Log as Question via assumption-tracker: type='Question', message="{STORY-KEY} depends on {DEPENDENCY-KEY} (not yet parsed). Recommend processing {DEPENDENCY-KEY} first."
+      Continue analysis (do not halt) — questions do not block analysis.
+
+    IF status = "parsed" or "tc_generated": dependency is ready. Continue check for next dependency.
+    
+    IF KEY not found in registry: Log Question: "{STORY-KEY} references dependency {DEPENDENCY-KEY} which is not in the registry. Verify story key spelling." Continue check for next dependency.
+    
+    IF status = "approved": dependency is complete. No action needed.
 
 ---
 

@@ -1,0 +1,73 @@
+{
+  "test_id": "FET-008",
+  "scenario": "RATE_LIMITING_429_RECOVERY",
+  "batch": ["H20-RATE-001", "H20-RATE-002", "H20-RATE-003", "H20-RATE-004", "H20-RATE-005", "H20-RATE-006", "H20-RATE-007", "H20-RATE-008", "H20-RATE-009", "H20-RATE-010"],
+  "mock_behavior": "RATE_LIMIT_AT_CALL_101",
+  "description": "Batch of 10 stories; rate limit hit at API call #101; pause 60s, then resume and complete all 10",
+  "call_counts": {
+    "total_calls_needed": 150,
+    "calls_per_story": 15,
+    "stories_count": 10,
+    "rate_limit": "100 calls per minute",
+    "rate_limit_hit_at": 101
+  },
+  "mock_responses": {
+    "calls_1_to_100": {
+      "status": 200,
+      "behavior": "All succeed normally",
+      "stories_completed": ["H20-RATE-001", "H20-RATE-002", "H20-RATE-003", "H20-RATE-004", "H20-RATE-005", "H20-RATE-006"],
+      "stories_partial": {
+        "H20-RATE-007": "14 of 15 calls completed (93%)"
+      }
+    },
+    "call_101_onwards": {
+      "status": 429,
+      "error": "Too Many Requests",
+      "headers": {
+        "Retry-After": "60"
+      },
+      "errorMessages": ["You have exceeded the rate limit. Please retry your request in 60 seconds."],
+      "behavior": "At this point: PAUSE 60 seconds, then RESUME"
+    },
+    "calls_102_to_150": {
+      "status": 200,
+      "behavior": "All succeed after cooldown",
+      "stories_completed_after_resume": ["H20-RATE-007 (1 remaining call)", "H20-RATE-008", "H20-RATE-009", "H20-RATE-010"]
+    }
+  },
+  "expected_results": {
+    "files_created": [
+      "H20-RATE-001.raw.json",
+      "H20-RATE-002.raw.json",
+      "H20-RATE-003.raw.json",
+      "H20-RATE-004.raw.json",
+      "H20-RATE-005.raw.json",
+      "H20-RATE-006.raw.json",
+      "H20-RATE-007.raw.json",
+      "H20-RATE-008.raw.json",
+      "H20-RATE-009.raw.json",
+      "H20-RATE-010.raw.json"
+    ],
+    "registry_entries": "All 10 stories with status='fetched'",
+    "no_partial_files": true,
+    "no_data_loss": true,
+    "messages_sequence": [
+      "Rate limited by Jira API",
+      "Pausing for 60 second cooldown",
+      "Resuming fetch after cooldown",
+      "Fetch complete: 10 stories"
+    ]
+  },
+  "instructions": [
+    "1. Mock MCP to count API calls internally",
+    "2. For calls 1-100: return 200 OK with valid story data",
+    "3. For call 101+: return 429 with Retry-After: 60 header",
+    "4. Fetcher detects 429 at call #101 (story 7, call #11)",
+    "5. Show: 'Rate limited by Jira API. Pausing 60 seconds...'",
+    "6. Wait 60 seconds (or simulate skip for speed)",
+    "7. Show: 'Resuming after cooldown'",
+    "8. Continue from call #102 (story 7 call #11)",
+    "9. Complete all 150 calls and save all 10 stories",
+    "10. Final: 'Fetch complete: 10 stories'"
+  ]
+}

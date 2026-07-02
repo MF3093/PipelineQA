@@ -1,0 +1,67 @@
+{
+  "scenario": "FET-007-PARTIAL-BATCH-FAILURE",
+  "description": "Simulate batch fetch where story #2 returns 404 (deleted)",
+  "test_setup": {
+    "batch": ["H20-VALID-001", "H20-DELETED-404", "H20-VALID-002"],
+    "action": "Fetch 3 stories; story #2 returns 404 Not Found",
+    "expected_behavior": "Story #1 fetches successfully, story #2 halts batch, user offered to skip or abort"
+  },
+  "mock_responses": {
+    "H20-VALID-001": {
+      "status": 200,
+      "body": {
+        "key": "H20-VALID-001",
+        "summary": "Valid story 1",
+        "description": "This story exists in Jira",
+        "parent": null,
+        "issuelinks": []
+      },
+      "expected_action": "Save to stories/raw/H20-VALID-001.raw.json; update registry"
+    },
+    "H20-DELETED-404": {
+      "status": 404,
+      "error": "Not Found",
+      "body": {
+        "errorMessages": ["Issue does not exist or you do not have permission to see it"]
+      },
+      "expected_action": "HALT batch; show error; offer skip/abort"
+    },
+    "H20-VALID-002": {
+      "status": 200,
+      "body": {
+        "key": "H20-VALID-002",
+        "summary": "Valid story 2",
+        "description": "This story exists in Jira",
+        "parent": null,
+        "issuelinks": []
+      },
+      "expected_action": "Only fetch if user selected 'skip' at halt; save to stories/raw/H20-VALID-002.raw.json"
+    }
+  },
+  "instructions": [
+    "1. Create mock MCP responses for 3 story keys",
+    "2. Configure first story to return 200 OK",
+    "3. Configure second story to return 404 Not Found",
+    "4. Fetcher processes batch in order",
+    "5. After H20-DELETED-404 fails with 404:",
+    "   - Do NOT fetch H20-VALID-002",
+    "   - Show: 'Story H20-DELETED-404 not found (404). Batch processing halted.'",
+    "   - Offer user: 'Skip H20-DELETED-404 and continue? (yes / no)'",
+    "6. If yes: Resume with H20-VALID-002",
+    "7. If no: Halt completely"
+  ],
+  "verification": {
+    "scenario_YES_skip": {
+      "files_created": ["stories/raw/H20-VALID-001.raw.json", "stories/raw/H20-VALID-002.raw.json"],
+      "files_not_created": ["stories/raw/H20-DELETED-404.raw.json"],
+      "registry_entries": ["H20-VALID-001", "H20-VALID-002"],
+      "registry_excluded": ["H20-DELETED-404"]
+    },
+    "scenario_NO_abort": {
+      "files_created": ["stories/raw/H20-VALID-001.raw.json"],
+      "files_not_created": ["stories/raw/H20-DELETED-404.raw.json", "stories/raw/H20-VALID-002.raw.json"],
+      "registry_entries": ["H20-VALID-001"],
+      "registry_excluded": ["H20-DELETED-404", "H20-VALID-002"]
+    }
+  }
+}

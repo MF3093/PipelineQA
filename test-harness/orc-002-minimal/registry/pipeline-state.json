@@ -1,0 +1,21 @@
+{
+  "project_name": "ORC-002-TEST",
+  "project_key": "ORC2",
+  "run_id": "orc-002-init-2026-06-22",
+  "phase": "initialization",
+  "status": "active",
+  "lock": {
+    "acquired_at": "2026-06-22T00:00:00Z",
+    "acquired_by": "orchestrator",
+    "expires_at": "2026-06-22T01:00:00Z"
+  },
+  "context_approved": false,
+  "context_approved_at": null,
+  "context_version": 0,
+  "strategy_approved": false,
+  "strategy_approved_at": null,
+  "strategy_version": 0,
+  "tc_approvals": [],
+  "run_history": [],
+  "last_updated": "2026-06-22T00:00:00Z"
+}

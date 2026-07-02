@@ -1,0 +1,14 @@
+{
+  "story_key": "TEST-DIN-004",
+  "summary": "Schema mismatch test story",
+  "description": "This parsed file is intentionally missing required fields",
+  "parent": null,
+  "comments": [],
+  "out_of_scope": [],
+  "needs_review": true,
+  "flags": ["SCHEMA_MISMATCH"],
+  "MISSING_REQUIRED_FIELDS": [
+    "acs (array of acceptance criteria)",
+    "extraction_quality (quality metrics)"
+  ]
+}

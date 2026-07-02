@@ -50,7 +50,7 @@ All rules in `../instructions/global-rules.instructions.md` apply. Key rules for
 | Input | Source | Notes |
 |---|---|---|
 | Project context | `{PROJECT_OUTPUT}/context/project-context.md` | Must be approved |
-| Parsed epic files | `{PROJECT_OUTPUT}/epics/parsed/{EPIC-KEY}.parsed.json` | All epics referenced by current batch |
+| Parsed epic files | `{PROJECT_OUTPUT}/epics/parsed/{EPIC-KEY}.parsed.json` | All epics referenced by current batch (if `has_epics: true`) |
 | Parsed story files | `{PROJECT_OUTPUT}/stories/parsed/{STORY-KEY}.parsed.json` | Current batch only |
 | Existing priority matrix | `{PROJECT_OUTPUT}/strategy/priority-matrix.md` | Present only on extension runs |
 | Existing assumptions | `{PROJECT_OUTPUT}/tracking/assumptions.md` | To avoid duplicate entries |
@@ -76,7 +76,7 @@ All rules in `../instructions/global-rules.instructions.md` apply. Key rules for
 | Tool / Resource | Permission |
 |---|---|
 | `{PROJECT_OUTPUT}/context/project-context.md` | Read-only |
-| `{PROJECT_OUTPUT}/epics/parsed/` | Read-only |
+| `{PROJECT_OUTPUT}/epics/parsed/` | Read-only (if `has_epics: true`) |
 | `{PROJECT_OUTPUT}/stories/parsed/` | Read-only |
 | `{PROJECT_OUTPUT}/strategy/priority-matrix.md` | Read + Write |
 | `{PROJECT_OUTPUT}/strategy/strategy-versions/` | Write (archives only) |
@@ -98,7 +98,8 @@ All rules in `../instructions/global-rules.instructions.md` apply. Key rules for
 ### Step 1 — Prerequisites Check
 1. Verify `project-context.md` exists and `pipeline-state.json` shows `context_approved: true`.
    If not: stop. Report: `"project-context.md must be approved before the strategy can be generated."`
-2. Verify parsed story and epic files exist for all stories in the current batch.
+2. Verify parsed story files exist for all stories in the current batch.
+   **If `has_epics: true`: also verify that parsed epic files exist for all unique epic keys referenced by stories in the current batch.**
 3. Check if `strategy/priority-matrix.md` exists:
    - If NO → **New Strategy Mode** (Step 3A)
    - If YES → **Extension Mode** (Step 3B)
@@ -108,9 +109,11 @@ All rules in `../instructions/global-rules.instructions.md` apply. Key rules for
 `"Starting strategy analysis — reading {N} parsed stories and project context."` so the user knows work is in progress.
 
 Read and analyze:
-- **New Strategy Mode:** All parsed epics. **Extension Mode:** Only the parsed epics whose keys
-  appear in the current batch — use the approved strategy text for context on all previously
-  scoped epics rather than re-reading their parsed files.
+- **If `has_epics: true`:**
+  - **New Strategy Mode:** All parsed epics. **Extension Mode:** Only the parsed epics whose keys
+    appear in the current batch — use the approved strategy text for context on all previously
+    scoped epics rather than re-reading their parsed files.
+- **If `has_epics: false`: skip epic reading entirely.**
 - All parsed stories in the current batch: identify functional areas, entry points, permission
   patterns, conditional behaviors, dependencies, out-of-scope items, and flags.
 - `project-context.md`: extract client priorities, tech stack, team constraints, environment details.
@@ -164,7 +167,6 @@ For any decision based on an assumption: write `[see {ID}]` inline — do not wr
    - New rows in the Priority Matrix for new stories.
    - New Scope entries only if the new stories introduce a functional area or epic not already described by an existing entry. If the new stories extend an area already in scope, do not add a new entry; document the extension in the delta view instead.
    - New Out of Scope entries only if the new stories introduce exclusions that are not already covered by an existing entry. If an existing entry already covers the exclusion, do not duplicate it.
-   - Append to Batch History.
 4. Do NOT modify any previously approved section.
 5. Produce the inline delta view (see Step 3C) before presenting for approval.
 
@@ -191,7 +193,6 @@ NEW ADDITIONS (this batch — {batch_id}):
     → ...
   + Scope: {N new entries or "None"}
   + Out of Scope: {N new entries or "None"}
-  + Batch History: batch-{N} entry added
 
 OPEN ITEMS LOGGED THIS RUN:
   Assumptions: {N} | Questions: {N} | Blockers: {N}
@@ -276,11 +277,6 @@ Scoring: (Severity × Likelihood) + Dependency Weight = Score
 
 ---
 
-## Batch History
-| Batch | Date | Stories Added | Strategy Change |
-|-------|------|---------------|-----------------|
-| batch-001 | {date} | {story keys} | Initial strategy created |
-| batch-002 | {date} | {story keys} | Priority matrix extended |
 ```
 
 ---
@@ -295,6 +291,5 @@ Scoring: (Severity × Likelihood) + Dependency Weight = Score
 **Append-only** (new rows/entries may be added freely on new batches):
 - Priority Matrix (new rows for new stories only)
 - Scope and Out of Scope (new entries only)
-- Batch History
 
 

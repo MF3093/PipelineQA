@@ -1,0 +1,58 @@
+{
+  "test_id": "FET-007",
+  "scenario": "PARTIAL_BATCH_FAILURE_404",
+  "batch": ["H20-VALID-001", "H20-DELETED-404", "H20-VALID-002"],
+  "mock_behavior": "HALT_ON_404",
+  "description": "Batch fetch where story #2 returns 404 Not Found; halt batch and offer skip/abort",
+  "responses": {
+    "H20-VALID-001": {
+      "status": 200,
+      "data": {
+        "key": "H20-VALID-001",
+        "summary": "Valid story 1 — exists in Jira",
+        "description": "This story should fetch successfully",
+        "parent": null
+      }
+    },
+    "H20-DELETED-404": {
+      "status": 404,
+      "error": "Not Found",
+      "errorMessages": ["Issue does not exist or you do not have permission to see it"]
+    },
+    "H20-VALID-002": {
+      "status": 200,
+      "data": {
+        "key": "H20-VALID-002",
+        "summary": "Valid story 2 — exists in Jira",
+        "description": "This story should only fetch if user selects skip at halt",
+        "parent": null
+      }
+    }
+  },
+  "expected_results": {
+    "scenario_skip": {
+      "description": "User selects 'skip' at halt",
+      "raw_files_created": ["H20-VALID-001", "H20-VALID-002"],
+      "raw_files_not_created": ["H20-DELETED-404"],
+      "registry_entries": ["H20-VALID-001", "H20-VALID-002"],
+      "registry_excluded": ["H20-DELETED-404"]
+    },
+    "scenario_abort": {
+      "description": "User selects 'abort' at halt",
+      "raw_files_created": ["H20-VALID-001"],
+      "raw_files_not_created": ["H20-DELETED-404", "H20-VALID-002"],
+      "registry_entries": ["H20-VALID-001"],
+      "registry_excluded": ["H20-DELETED-404", "H20-VALID-002"]
+    }
+  },
+  "instructions": [
+    "1. Fetcher processes batch in order",
+    "2. Story #1: Return 200 OK, save raw file",
+    "3. Story #2: Return 404 Not Found",
+    "4. At 404: HALT batch, do NOT fetch story #3",
+    "5. Show: 'Story H20-DELETED-404 not found (404). Batch processing halted.'",
+    "6. Offer: 'Skip H20-DELETED-404 and continue? (yes / no)'",
+    "7. On yes: Resume with story #3, save raw file",
+    "8. On no: Halt completely, story #3 not fetched"
+  ]
+}

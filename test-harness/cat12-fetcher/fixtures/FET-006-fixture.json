@@ -1,0 +1,21 @@
+{
+  "test_id": "FET-006",
+  "scenario": "API_TIMEOUT_60_SECONDS",
+  "story_key": "H20-TIMEOUT-TEST",
+  "mock_behavior": "TIMEOUT_70_SECONDS",
+  "description": "Simulate Jira API taking 70+ seconds to respond (exceeds 60s timeout)",
+  "expected_result": {
+    "raw_file_created": false,
+    "registry_updated": false,
+    "error_shown": true,
+    "retry_offered": true,
+    "error_message_contains": ["timeout", "60", "H20-TIMEOUT-TEST"]
+  },
+  "instructions": [
+    "1. When Fetcher requests this story, delay response 70 seconds",
+    "2. Fetcher should timeout at 60 seconds",
+    "3. Do NOT create raw file",
+    "4. Show error message with retry option",
+    "5. On retry: can either succeed or timeout again (per test intent)"
+  ]
+}

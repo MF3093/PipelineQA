@@ -90,7 +90,7 @@ Same instructions, same logic, same outputs. Just different tool names under the
 
 When you use any command, Claude Code automatically has:
 
-✅ **All 10 Global Rules** — from CLAUDE.md (Rules 1–10)  
+✅ **All 11 Global Rules** — from CLAUDE.md (Rules 1–11)  
 ✅ **Path Schema** — folder layout and file structure rules  
 ✅ **Tool Mapping** — Copilot tool names → Claude Code tools  
 ✅ **Approval Gate Protocol** — strict response format (yes/edit/reject)  

@@ -52,9 +52,10 @@ All rules in `../instructions/global-rules.instructions.md` apply. Key rules for
 |---|---|---|
 | Project context | `{PROJECT_OUTPUT}/context/project-context.md` | Must be approved. Defines output format. |
 | Approved strategy | `{PROJECT_OUTPUT}/strategy/priority-matrix.md` | Must be approved |
+| Parsed epic (if `has_epics: true`) | `{PROJECT_OUTPUT}/epics/parsed/{EPIC-KEY}.parsed.json` | Epic-level scope, ACs, and out-of-scope to inform TC grouping and coverage consistency across stories in the same epic |
 | Parsed story | `{PROJECT_OUTPUT}/stories/parsed/{STORY-KEY}.parsed.json` | Read selectively — required fields only (see Step 1) |
-| Screenshots | `{PROJECT_OUTPUT}/screenshots/{EPIC-KEY}/` (if `has_epics: true`) or `screenshots/{STORY-KEY}/` (if `has_epics: false`) | If `has_epics: true`: all files in the epic folder apply to every story in that epic, loaded once per unique EPIC-KEY per session. If `has_epics: false`: loaded per story from the story-key subfolder. |
-| ExtraResources | `{PROJECT_OUTPUT}/ExtraResources/` | Scanned per story/epic at Step 2a. Used to resolve open questions and inform AC interpretation. |
+| Screenshots (if `has_screenshots: true`) | `{PROJECT_OUTPUT}/screenshots/{EPIC-KEY}/` (if `has_epics: true`) or `screenshots/{STORY-KEY}/` (if `has_epics: false`) | If `has_epics: true`: all files in the epic folder apply to every story in that epic, loaded once per unique EPIC-KEY per session. If `has_epics: false`: loaded per story from the story-key subfolder. |
+| ExtraResources (if `has_extra_resources: true`) | `{PROJECT_OUTPUT}/ExtraResources/` (root and `{EPIC-KEY}/` if `has_epics: true`, and/or `{STORY-KEY}/`) | Scanned per story/epic at Step 2a. Used to resolve open questions and inform AC interpretation. |
 | Existing assumptions | `{PROJECT_OUTPUT}/tracking/assumptions.md` | Read once at session start. Append during run without re-reading. Re-read only to check for duplicates before adding a new entry. |
 
 ---
@@ -79,9 +80,10 @@ All rules in `../instructions/global-rules.instructions.md` apply. Key rules for
 |---|---|
 | `{PROJECT_OUTPUT}/context/project-context.md` | Read-only |
 | `{PROJECT_OUTPUT}/strategy/priority-matrix.md` | Read-only |
+| `{PROJECT_OUTPUT}/epics/parsed/{EPIC-KEY}.parsed.json` (if `has_epics: true`) | Read-only |
 | `{PROJECT_OUTPUT}/stories/parsed/{STORY-KEY}.parsed.json` | Read-only |
-| `{PROJECT_OUTPUT}/screenshots/{EPIC-KEY}/` (if `has_epics: true`) or `screenshots/{STORY-KEY}/` (if `has_epics: false`) | Read-only |
-| `{PROJECT_OUTPUT}/ExtraResources/` | Read-only |
+| `{PROJECT_OUTPUT}/screenshots/{EPIC-KEY}/` (if `has_epics: true`) or `screenshots/{STORY-KEY}/` (if `has_epics: false`) (if `has_screenshots: true`) | Read-only |
+| `{PROJECT_OUTPUT}/ExtraResources/` (if `has_extra_resources: true`) | Read-only |
 | `{PROJECT_OUTPUT}/test-cases/` | Write |
 | `{PROJECT_OUTPUT}/tracking/assumptions.md` | Write (via assumption-tracker skill only) |
 
@@ -100,8 +102,8 @@ All rules in `../instructions/global-rules.instructions.md` apply. Key rules for
 ## Execution Steps
 
 ### Step 1 — Prerequisites Check
-If invoked by the Orchestrator with `prereq_cleared: true`: execute only checks 2, 5, 6, and 7 below —
-checks 1, 3, and 4 were already verified by the Orchestrator.
+If invoked by the Orchestrator with `prereq_cleared: true`: execute only checks 5, 6, and 7 below —
+checks 1, 2, 3, 4, and 4a were already verified by the Orchestrator.
 Otherwise run all checks:
 1. Verify `project-context.md` exists and is approved (`pipeline-state.json → context_approved: true`).
 2. Read `Test Management Tool` and `Import Format` from `project-context.md`.
@@ -109,6 +111,8 @@ Otherwise run all checks:
      Update the context file before generating TCs."`
 3. Verify `priority-matrix.md` exists and is approved (`pipeline-state.json → strategy_approved: true`).
 4. Verify `{STORY-KEY}.parsed.json` exists.
+4a. (if `has_epics: true` and story has `epic_key`): Verify `{PROJECT_OUTPUT}/epics/parsed/{EPIC-KEY}.parsed.json` exists.
+   If missing: stop. Report: `"Epic {EPIC-KEY} has not been parsed yet. Parser must process this epic before TCs can be generated."`
 5. Check story `status` in `fetched-stories.json` — must be `"parsed"`.
    If `"tc_generated"` or `"approved"`: stop.
    Report: `"TCs already generated for {STORY-KEY}. Explicitly confirm to regenerate."`
@@ -128,8 +132,30 @@ All TCs generated in this run will conform to this format.
 If the Import Format specifies column names or field order: use them exactly.
 Do not invent column names not specified in `project-context.md`.
 
-### Step 2a — ExtraResources Scan
+### Step 2a — Epic Context Loading (if `has_epics: true`)
+**Run once per batch before story analysis begins.**
+
+If `has_epics: false`: skip this step entirely. Proceed directly to Step 2b.
+
+If `has_epics: true`:
+1. Collect all UNIQUE `epic_key` values from all parsed stories in the current batch.
+2. For each unique epic_key:
+   a. Load `{PROJECT_OUTPUT}/epics/parsed/{EPIC-KEY}.parsed.json`.
+   b. Extract and store in working memory:
+      - `epic_goal`: the epic's stated goal or objective (informs TC scope boundaries)
+      - `epic_acs`: any epic-level acceptance criteria (informs what all stories in the epic must collectively satisfy)
+      - `epic_out_of_scope`: explicit exclusions at epic level (prevents TC duplication across stories)
+      - `known_story_keys[]`: all story keys linked to this epic (context for understanding story interdependencies)
+   c. Store as `epic_context[epic_key]` in working memory.
+
+**Purpose:** Understanding epic-level goals and constraints allows TCs for individual stories to be written with awareness of:
+- How each story contributes to the epic goal
+- Which TC patterns are already covered by sibling stories
+- Where cross-story integration points exist (but do not create cross-story TCs — those are for TC Reviewer)
+
+### Step 2b — ExtraResources Scan
 **Run once per batch before the first story — not repeated per story.**
+**If `has_extra_resources: false`: skip this step entirely. Proceed directly to Step 3.**
 If this step has already run in the current session: use the cached `extra_resources_cache` in working memory. Do not re-list or re-read any folder.
 
 ```
@@ -151,8 +177,7 @@ If this step has already run in the current session: use the cached `extra_resou
    a. Load its contents using the rules in step 5.
    b. Store extracted facts in working memory: `extra_resources_cache[story_key]`.
 6. File handling rules:
-   - .pdf  → read immediately. Summarize key facts relevant to the story's ACs.
-     This includes the Reporte Técnico de Referencia (PDF describing the HTML prototype's UI and functionality).
+   - .pdf  → read immediately. Summarize key facts relevant to the story's ACs. Common types: technical specs, design documents, prototype documentation.
      Extract: UI element names, field labels, layout structure, validations, navigation flows, and functional behavior.
      Treat as a UI/functional reference (same purpose as screenshots).
    - .html → read immediately. Extract UI element names, field labels, layout structure, and functional behavior.
@@ -172,6 +197,8 @@ If this step has already run in the current session: use the cached `extra_resou
 > **Why this matters:** ExtraResources documents (data profiles, spec sheets, design notes) may resolve open questions, clarify AC behavior, or constrain TC scope. Discovering them after TCs are written wastes a full re-generation cycle.
 
 ### Step 3 — Screenshot Reference (Element Name Lookup)
+**If `has_screenshots: false`: skip this step entirely. Proceed directly to Step 4.**
+
 **Resolve scope key:** if `has_epics: true` → `SCOPE-KEY = EPIC-KEY`; if `has_epics: false` → `SCOPE-KEY = STORY-KEY`.
 **Screenshots are stored at `{PROJECT_OUTPUT}/screenshots/{SCOPE-KEY}/` (see **instructions/path-schema.instructions.md** Rule P-3).**
 **If `has_epics: true`: all files in the epic folder apply to every story in that epic — loaded once per unique EPIC-KEY per session.**
@@ -211,8 +238,19 @@ While writing TC steps, if a direct conflict emerges between an AC statement and
 - If a comment introduces a conflict with an AC: log via assumption-tracker as type `"Discrepancy"`. Do not self-resolve — present to user before writing the affected TC.
 - If a comment is noise (e.g., status updates, scheduling, off-topic): ignore it.
 
+**Epic context (if available):** If `has_epics: true` and this story has an `epic_key`:
+   - Look up `epic_context[story.epic_key]` in working memory (loaded in Step 2a).
+   - Review `epic_goal`, `epic_acs`, and `epic_out_of_scope` to understand how this story contributes to the larger epic.
+   - Use this context to:
+     - Identify potential TC overlap with sibling stories (inform merging decisions in Step 4.8)
+     - Verify story ACs do not conflict with epic-level scope
+     - Understand entry points and data flow between stories in the epic
+   - Do NOT create cross-story TCs — that is handled by TC Reviewer post-batch. This context is for informed single-story TC planning only.
+
 Before writing any TC:
 1. Read all ACs from `acs[]` in the parsed story.
+
+
 2. Build an exclusion list from `out_of_scope[]`.
 3. Check approved strategy Priority Matrix for this story: read `Score`, `Dependency Weight`, and `Functional Role`.
    - `Functional Role: Entry Point` or `Required Content` → apply Content Parity Rule in addition to the three priority questions.
@@ -223,11 +261,12 @@ Before writing any TC:
    referencing `blocked_by`. Do not generate a TC for untestable ACs.
 6. Identify all conditional ACs (`conditional: true`) — plan 5-TC minimum pattern for each.
 7. Identify near-duplicate ACs — plan merged TCs where appropriate.
-   **Screenshot state coverage check (required):** For each distinct UI state identified
+   **If `has_screenshots: true` — Screenshot state coverage check (required):** For each distinct UI state identified
    in the screenshot summary (e.g., empty state, pre-search state, error state, loading
    state, collapsed state), verify that at least one planned TC covers it — either via
    an explicit AC or as an implied TC (max 2 per story). Do not leave a visible UI state
    uncovered without a documented reason.
+   **If `has_screenshots: false`: skip this check.**
 8. **Optimization scan (required before writing any TC):**
    Before generating TCs, identify groups of planned TCs that qualify for merging or splitting:
    a. **Flow groups (Pattern A):** planned TCs that each test one sub-operation of the same
@@ -260,18 +299,11 @@ Before writing any TC:
 
 ### Step 5 — Pre-Write Plan Presentation (mandatory gate before TC generation)
 
-**Batch mode (>1 story in batch):**
+Run Steps 3 and 4 (screenshot loading and pre-generation analysis) for all stories in the batch.
 
-Run a **screenshot pre-load pass** before any story analysis begins:
-1. Collect all unique EPIC-KEYs across every story in the batch.
-2. For each unique EPIC-KEY not already loaded this session: execute Step 3 (screenshot handling) in full — list folder, prompt for missing screenshots, wait for user response, load files, produce summary. Complete all epic screenshot prompts in this pass before touching any story analysis.
-3. Once all epics are resolved: proceed to Steps 4.1–4.9 for ALL stories in sequence (no more screenshot prompts during analysis — all epics are cached).
-4. Present all plans in a single consolidated gate — one approval covers the entire batch plan, eliminating one round-trip per additional story.
-   > Note: this gate approves the **plan only** — TC content is approved per story at Step 8 after generation.
+Then present a consolidated TC plan for user approval:
 
-**Single-story mode:** Run Step 3, then Steps 4.1–4.9, then present the plan immediately.
-
-**Per-story plan format (used in both modes):**
+**Per-story plan format:**
 For each story, present:
 1. A summary table of all planned TCs:
    | TC ID | AC Coverage | Summary | Path | Priority |
@@ -665,14 +697,5 @@ TCs are approved one story at a time, whether running a single story or a batch.
 `"Starting TC generation for {STORY-KEY} — reading parsed story and screenshots."` so the user knows work is in progress.
 
 ---
-
-
-
-
-
-## Stub References (Future Agents)
-
-TC files are written to be automation-ready: functional descriptions, exact element names,
-no positional references — so the transition to automation requires no TC rewrites.
 
 

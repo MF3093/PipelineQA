@@ -24,7 +24,7 @@ To resolve `{PROJECT_OUTPUT}`:
 ## Instructions
 
 1. Follow the Context Builder's Role, Rules, Trigger Conditions, and Execution Steps from `.github/agents/context-builder.agent.md` exactly
-2. Apply all 10 Global Rules from CLAUDE.md
+2. Apply all 11 Global Rules from CLAUDE.md
 3. Apply all Path Schema rules from CLAUDE.md
 4. Read parsed stories from `{PROJECT_OUTPUT}/stories/parsed/` to identify project signals
 5. Scan story `sections[]` for non-obvious headers (e.g., "Backend Notes", "Testing Notes") that contain tech stack signals

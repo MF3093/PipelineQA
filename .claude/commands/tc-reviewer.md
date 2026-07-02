@@ -27,7 +27,7 @@ To resolve `{PROJECT_OUTPUT}`:
 ## Instructions
 
 1. Follow the TC Reviewer's Role, Rules, Trigger Conditions, and Execution Steps from `.github/agents/tc-reviewer.agent.md` exactly
-2. Apply all 10 Global Rules from CLAUDE.md
+2. Apply all 11 Global Rules from CLAUDE.md
 3. Apply all Path Schema rules from CLAUDE.md
 4. Check prerequisite: at least 2 story TC files must exist in `{PROJECT_OUTPUT}/test-cases/` (HALT if fewer than 2)
 5. Read all TC files from `{PROJECT_OUTPUT}/test-cases/{STORY-KEY}-test-cases.csv`

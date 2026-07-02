@@ -24,7 +24,7 @@ To resolve `{PROJECT_OUTPUT}`:
 ## Instructions
 
 1. Follow the TC Generator's Role, Rules, Trigger Conditions, and Execution Steps from `.github/agents/tc-generator.agent.md` exactly
-2. Apply all 10 Global Rules from CLAUDE.md
+2. Apply all 11 Global Rules from CLAUDE.md
 3. Apply all Path Schema rules from CLAUDE.md
 4. Check prerequisites: `context_approved: true` and `strategy_approved: true` in `pipeline-state.json` (HALT if not approved)
 5. Read parsed story from `{PROJECT_OUTPUT}/stories/parsed/{STORY-KEY}.parsed.json`

@@ -25,7 +25,7 @@ To resolve `{PROJECT_OUTPUT}`:
 ## Instructions
 
 1. Follow the Parser's Role, Rules, Trigger Conditions, and Execution Steps from `.github/agents/parser.agent.md` exactly
-2. Apply all 10 Global Rules from CLAUDE.md
+2. Apply all 11 Global Rules from CLAUDE.md
 3. Apply all Path Schema rules from CLAUDE.md
 4. Self-verify the ParsedStory JSON before saving (use the checklist in the agent definition)
 5. Update the registry entries as specified in Step 6 of the agent definition

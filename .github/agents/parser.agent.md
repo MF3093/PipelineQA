@@ -44,10 +44,11 @@ All rules in `../instructions/global-rules.instructions.md` apply. Key rules for
 | Input | Source | Notes |
 |---|---|---|
 | Raw story snapshots | `{PROJECT_OUTPUT}/stories/raw/{STORY-KEY}.raw.json` | Read-only, never modified |
-| Raw epic snapshots | `{PROJECT_OUTPUT}/epics/raw/{EPIC-KEY}.raw.json` | Read-only, never modified |
+| Raw epic snapshots | `{PROJECT_OUTPUT}/epics/raw/{EPIC-KEY}.raw.json` | Read-only, never modified (if `has_epics: true`) |
 | Story registry | `{PROJECT_OUTPUT}/registry/fetched-stories.json` | Filter: status = "fetched" |
-| Epic registry | `{PROJECT_OUTPUT}/registry/fetched-epics.json` | Filter: not yet parsed |
-| Source config | `{PROJECT_OUTPUT}/config/source-config.md` | Used for `story_source`, `project_key` |
+| Epic registry | `{PROJECT_OUTPUT}/registry/fetched-epics.json` | Filter: not yet parsed (if `has_epics: true`) |
+| project_key | Orchestrator (parameter) | Used for text scanning to find story key references (Jira only) — passed by Orchestrator, not read from file |
+| Source config | `{PROJECT_OUTPUT}/config/source-config.md` | **OPTIONAL** — only read if `project_key` parameter is not provided by Orchestrator |
 
 ---
 
@@ -60,9 +61,9 @@ All rules in `../instructions/global-rules.instructions.md` apply. Key rules for
 | Output | Location | Notes |
 |---|---|---|
 | Parsed story files | `{PROJECT_OUTPUT}/stories/parsed/{STORY-KEY}.parsed.json` | One per story |
-| Parsed epic files | `{PROJECT_OUTPUT}/epics/parsed/{EPIC-KEY}.parsed.json` | One per epic |
+| Parsed epic files | `{PROJECT_OUTPUT}/epics/parsed/{EPIC-KEY}.parsed.json` | One per epic (if `has_epics: true`) |
 | Updated story registry | `{PROJECT_OUTPUT}/registry/fetched-stories.json` | Status: fetched -> parsed |
-| Updated epic registry | `{PROJECT_OUTPUT}/registry/fetched-epics.json` | Adds `parsed_at` field |
+| Updated epic registry | `{PROJECT_OUTPUT}/registry/fetched-epics.json` | Adds `parsed_at` field (if `has_epics: true`) |
 
 ---
 
@@ -71,12 +72,12 @@ All rules in `../instructions/global-rules.instructions.md` apply. Key rules for
 | Tool / Resource | Permission |
 |---|---|
 | `{PROJECT_OUTPUT}/stories/raw/` | Read-only |
-| `{PROJECT_OUTPUT}/epics/raw/` | Read-only |
+| `{PROJECT_OUTPUT}/epics/raw/` | Read-only (if `has_epics: true`) |
 | `{PROJECT_OUTPUT}/stories/parsed/` | Write |
-| `{PROJECT_OUTPUT}/epics/parsed/` | Write |
+| `{PROJECT_OUTPUT}/epics/parsed/` | Write (if `has_epics: true`) |
 | `{PROJECT_OUTPUT}/registry/fetched-stories.json` | Read + Write (status updates only) |
-| `{PROJECT_OUTPUT}/registry/fetched-epics.json` | Read + Write (status updates only) |
-| `{PROJECT_OUTPUT}/config/source-config.md` | Read-only |
+| `{PROJECT_OUTPUT}/registry/fetched-epics.json` | Read + Write (status updates only, if `has_epics: true`) |
+| `{PROJECT_OUTPUT}/config/source-config.md` | Read-only **only if** `project_key` is not provided as input parameter |
 
 **Explicitly NOT permitted:**
 - Accessing the story source or any external system.
@@ -111,27 +112,38 @@ If passed:
 4. For each epic to parse: verify `epics/raw/{EPIC-KEY}.raw.json` exists. If missing: report, skip.
 
 ### Step 2 - Parse Epics First
-Parse all new epics before parsing stories, so that `ParsedEpic` data is available
+If `has_epics: true`: Parse all new epics before parsing stories, so that `ParsedEpic` data is available
 when stories reference their parent epic.
 
 For each new epic raw file, apply the Epic Parsing Protocol (see below).
 
-### Step 2b - Safe Description Read (mandatory for all raw story files)
+If `has_epics: false`: Skip this step. Proceed directly to Step 3 - Parse Stories.
+
+### Step 2b - Safe Description Read (cached per batch)
 
 > **WHY THIS STEP EXISTS:** Jira stores the description as a single-line escaped JSON string. The `read_file` tool truncates any line longer than ~2,000 characters, silently cutting off everything after that point — including the entire Acceptance Criteria section if the description is long. This is a known tool limitation, not a data problem.
 
-Before running Phase 1 on any story, extract the `description` field from every raw story file using PowerShell's `ConvertFrom-Json`, which deserializes the full JSON in memory with no line-length limit:
+**Batch Caching Strategy:**
+Instead of running PowerShell per story, build a single batch cache at the START of Phase 1:
 
-```powershell
-$raw = Get-Content "{PROJECT_OUTPUT}/stories/raw/{STORY-KEY}.raw.json" -Raw | ConvertFrom-Json
-$description = $raw.payload.fields.description   # for jira
-# $description = $raw.payload.fields["System.Description"]   # for ado
-```
+1. **Build description cache once per batch (not per story):**
+   ```powershell
+   # Load ALL stories in batch at once
+   $batch_descriptions = @{}
+   foreach ($storyKey in $storyKeysToParseList) {
+     $raw = Get-Content "{PROJECT_OUTPUT}/stories/raw/{$storyKey}.raw.json" -Raw | ConvertFrom-Json
+     $batch_descriptions[$storyKey] = $raw.payload.fields.description   # for jira
+     # $batch_descriptions[$storyKey] = $raw.payload.fields["System.Description"]   # for ado
+   }
+   ```
 
-- Run this for **every story** in the batch before Phase 1 — even short ones (low cost, prevents silent truncation).
-- Store the result in memory as the authoritative body text for that story. Do **not** re-read the description from the raw file using `read_file` during Phase 2.
-- If the PowerShell command fails or returns null: fall back to `read_file` and set `flags: ["NEEDS_REVIEW"]` on that story, noting the potential truncation risk.
-- For **epic** raw files: apply the same pattern using `$raw.payload.fields.description` before parsing the epic body.
+2. **Store the entire `$batch_descriptions` hash in memory for the session.**
+
+3. **Reuse throughout Phase 2:** For each story, look up `$batch_descriptions[$storyKey]` instead of re-reading the file. This avoids per-story PowerShell overhead.
+
+4. **If any PowerShell command fails or returns null:** Fall back to `read_file` for that story and set `flags: ["NEEDS_REVIEW"]`, noting truncation risk.
+
+5. **For epic raw files:** Apply the same batch pattern using `$raw.payload.fields.description` before parsing the epic body.
 
 ### Step 3 - Parse Stories
 For each story with `status = "fetched"`, apply Phases 1-2 of the Story Parsing Protocol (see below).
@@ -341,8 +353,15 @@ These fields are derived from the payload and parsed content - they are not sect
    | `jira` | `payload.fields.issuelinks[]` | For each link: extract `inwardIssue.key` or `outwardIssue.key` (whichever is not the current story) |
    | `ado` | `payload.relations[]` | For each relation with `rel` containing "Related" / "Parent" / "Child" / "Predecessor" / "Successor": extract the work item ID from the `url` field (last path segment) |
 
-2. **Secondary source - text references (Jira only):**
-   After extracting structured links, scan all parsed text (`description`, `acs[].text`, `sections[].content`, `sections[].subsections[].content`, `out_of_scope[].description`, `questions[].text`) for the pattern: `{project_key}-{digits}` (using `project_key` from `source-config.md`). Add any matches not already in the list.
+2. **Secondary source - text references (Jira only) — CONDITIONAL:**
+   
+   **IF `project_key` was provided by Orchestrator as input parameter:**
+   - Use that value directly for text scanning (no file read needed).
+   
+   **ELSE (if `project_key` parameter not provided):**
+   - Read `{PROJECT_OUTPUT}/config/source-config.md` to extract `project_key`.
+   
+   After obtaining `project_key`, scan all parsed text (`description`, `acs[].text`, `sections[].content`, `sections[].subsections[].content`, `out_of_scope[].description`, `questions[].text`) for the pattern: `{project_key}-{digits}`. Add any matches not already in the list.
    - For ADO: do NOT scan text for integer references - too many false positives.
 
 3. Collect all unique keys. Exclude the story's own key. Result is `[]` if no references found.

@@ -1,0 +1,98 @@
+{
+  "scenario": "FET-008-RATE-LIMITING",
+  "description": "Simulate Jira rate limit: 100 calls/min; batch needs 150 calls",
+  "test_setup": {
+    "stories": 10,
+    "calls_per_story": 15,
+    "total_calls_needed": 150,
+    "rate_limit": "100 calls per minute",
+    "action": "Fetch 10 stories; hit rate limit at call #100",
+    "expected_behavior": "At 429: pause 60 seconds, then resume and complete all 10 stories"
+  },
+  "mock_responses": {
+    "calls_1_to_100": {
+      "status": 200,
+      "behavior": "All succeed normally",
+      "stories_completed": 6,
+      "story_7_progress": "90% complete (14 of 15 calls used)",
+      "action": "Save raw files as each story completes"
+    },
+    "call_101_story_7_continuation": {
+      "status": 429,
+      "error": "Too Many Requests",
+      "headers": {
+        "Retry-After": "60"
+      },
+      "body": {
+        "errorMessages": ["You have exceeded the rate limit. Please retry your request in 60 seconds."]
+      },
+      "expected_behavior": "Fetcher detects 429; shows message; pauses 60 seconds; resumes"
+    },
+    "calls_102_to_150_after_cooldown": {
+      "status": 200,
+      "behavior": "All succeed after resuming",
+      "stories_completed_after_resume": "Story 7 (1 call remaining) + Stories 8, 9, 10 (45 calls)",
+      "action": "Complete story 7; fetch stories 8, 9, 10; save all raw files; update registry"
+    }
+  },
+  "call_sequence": [
+    {
+      "call_range": "1-90",
+      "action": "Fetch stories 1-6 completely (90 calls)",
+      "stories_done": ["H20-RATE-001", "H20-RATE-002", "H20-RATE-003", "H20-RATE-004", "H20-RATE-005", "H20-RATE-006"],
+      "status": "200 OK"
+    },
+    {
+      "call_range": "91-100",
+      "action": "Fetch story 7 partially (10 of 15 calls)",
+      "stories_partial": ["H20-RATE-007"],
+      "progress": "66% complete",
+      "status": "200 OK"
+    },
+    {
+      "call_101": "Attempt story 7 call #11",
+      "status": "429 Too Many Requests",
+      "action": "HALT; show 'Rate limited...'; wait 60 seconds"
+    },
+    {
+      "call_range": "102-150",
+      "action": "After 60 second cooldown: complete story 7 (5 calls) + fetch stories 8, 9, 10 (45 calls)",
+      "stories_completed": ["H20-RATE-007", "H20-RATE-008", "H20-RATE-009", "H20-RATE-010"],
+      "status": "200 OK"
+    }
+  ],
+  "instructions": [
+    "1. Configure MCP mock to count API calls",
+    "2. For calls 1-100: return 200 OK with valid story data",
+    "3. For call 101+: return 429 with Retry-After: 60 header",
+    "4. Fetcher should:",
+    "   - Process calls 1-100 normally",
+    "   - At 429 detection: show 'Rate limited. Pausing 60 seconds...'",
+    "   - Wait 60 seconds (or skip in test for speed)",
+    "   - Show 'Rate limit cooldown complete. Resuming...'",
+    "   - Continue from call 101 (story 7 call #11)",
+    "   - Complete all 150 calls and fetch all 10 stories"
+  ],
+  "verification": {
+    "files_created": [
+      "stories/raw/H20-RATE-001.raw.json",
+      "stories/raw/H20-RATE-002.raw.json",
+      "stories/raw/H20-RATE-003.raw.json",
+      "stories/raw/H20-RATE-004.raw.json",
+      "stories/raw/H20-RATE-005.raw.json",
+      "stories/raw/H20-RATE-006.raw.json",
+      "stories/raw/H20-RATE-007.raw.json",
+      "stories/raw/H20-RATE-008.raw.json",
+      "stories/raw/H20-RATE-009.raw.json",
+      "stories/raw/H20-RATE-010.raw.json"
+    ],
+    "registry_entries": "All 10 stories with status='fetched'",
+    "no_partial_files": true,
+    "no_data_loss": true,
+    "message_sequence": [
+      "Rate limited by Jira API",
+      "Resuming after 60 second cooldown",
+      "Fetch complete: 10 stories"
+    ]
+  }
+}

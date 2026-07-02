@@ -24,7 +24,7 @@ To resolve `{PROJECT_OUTPUT}`:
 ## Instructions
 
 1. Follow the Story Analyzer's Role, Rules, Trigger Conditions, and Execution Steps from `.github/agents/story-analyzer.agent.md` exactly
-2. Apply all 10 Global Rules from CLAUDE.md
+2. Apply all 11 Global Rules from CLAUDE.md
 3. Apply all Path Schema rules from CLAUDE.md
 4. Read the parsed story JSON from `{PROJECT_OUTPUT}/stories/parsed/{STORY-KEY}.parsed.json`
 5. Analyze for:

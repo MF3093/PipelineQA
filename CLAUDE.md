@@ -69,7 +69,7 @@ The agent definitions in `.github/agents/` use Copilot tool names. This mapping 
 
 ## Global Rules (Apply to All Agents)
 
-These 10 rules apply to EVERY agent without exception. Violations are not acceptable.
+These 11 rules apply to EVERY agent without exception. Violations are not acceptable.
 
 ### Rule 1 — Never Overwrite Approved Files
 
@@ -184,6 +184,14 @@ Registry JSON files (`fetched-stories.json`, `fetched-epics.json`, `pipeline-sta
 
 This rule applies to all agents that read registry state.
 
+### Rule 11 — Communication & Response Style
+
+Avoid all conversational filler, greetings, summaries, and introductory or concluding remarks. Answer questions immediately and directly.
+
+- Use bullet points or short sentences.
+- Restrict all responses to under 3 sentences or 50 words unless explicitly asked for more detail.
+- This applies to all agents in all interactions.
+
 ---
 
 ## Path Schema — Folder & File Structure
@@ -279,11 +287,20 @@ Projects are registered in `projects.json` at the workspace root. Each project h
 - `TEST-HARNESS-EPICS` (has_epics: true)
 - `TEST-HARNESS-NO-EPICS` (has_epics: false)
 
+### Permissions Setup for New Projects
+
+After registering a project, copy the permissions template to eliminate permission prompts:
+
+1. Copy `PipelineQA/config/settings-clean.template.json`
+2. Paste into `{PROJECT_OUTPUT}/.claude/settings.json`
+
+This pre-approves all agent operations on registry files, stories, test cases, and config files. See `config/PERMISSIONS-SETUP.md` for detailed instructions.
+
 ---
 
 ## Key Conventions
 
-- All rules in this file (Rules 1–10) apply to every agent.
+- All rules in this file (Rules 1–11) apply to every agent.
 - All file paths follow the path schema above.
 - Never invent or infer content — use exactly what is in source data.
 - Every assumption must be logged via the assumption-tracker skill.

@@ -1,0 +1,12 @@
+{
+  "key": "TEST-DIN-002",
+  "summary": "Orphaned raw file test",
+  "description": "This is an orphaned raw file created for testing",
+  "parent": null,
+  "issuelinks": [],
+  "acceptanceCriteria": [
+    "AC-1: System detects orphaned file",
+    "AC-2: User is offered recovery options",
+    "AC-3: File can be registered or cleaned up"
+  ]
+}

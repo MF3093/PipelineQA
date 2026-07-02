@@ -1,0 +1,35 @@
+﻿{
+    "permissions": {
+        "allow": [
+            "mcp__claude_ai_Atlassian_Rovo__getJiraIssue",
+            "Read(test-harness/**)",
+            "Write(test-harness/**)",
+            "Read(.claude/commands/**)",
+            "Read(.github/agents/**)",
+            "Read(.github/instructions/**)",
+            "Read(projects.json)",
+            "Write(projects.json)",
+            "Read(CLAUDE.md)",
+            "Read(QUICK-START-CLAUDE.md)",
+            "Read(docs/**)",
+            "Read(config/**)",
+            "Write(config/source-config.md)",
+            "Read(registry/**)",
+            "Write(registry/**)",
+            "Read(stories/**)",
+            "Write(stories/**)",
+            "Read(epics/**)",
+            "Write(epics/**)",
+            "Read(context/**)",
+            "Write(context/**)",
+            "Read(strategy/**)",
+            "Write(strategy/**)",
+            "Read(test-cases/**)",
+            "Write(test-cases/**)",
+            "Read(tracking/**)",
+            "Write(tracking/**)",
+            "Read(screenshots/**)",
+            "Read(ExtraResources/**)"
+        ]
+    }
+}
