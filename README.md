@@ -61,13 +61,9 @@ Key approval gates: **Gate 2** — project context, **Gate 3** — priority matr
     └── prereq-checker.md
 
 config/                        ← Templates for project configuration
-docs/                          ← Architecture and adversarial testing docs
+docs/                          ← Testing documentation and runbooks
 test-harness/                  ← Fixtures and test cases for agent validation
 ```
-
-## Architecture
-
-See [docs/architecture.md](docs/architecture.md) for Mermaid diagrams of the system.
 
 ## Key Conventions
 
