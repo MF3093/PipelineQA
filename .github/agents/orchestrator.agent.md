@@ -609,11 +609,14 @@ Before presenting the summary, execute the following in order:
 
 2. **Write pipeline-state.json** in a single operation:
    - Set `current_run.status = "completed"` and `current_run.completed_at = now`.
-   - Append the full `current_run` object to `run_history[]`.
    - Set `lock.locked = false` and `lock.locked_at = null`.
 
-   These three changes must be written together in one file write. Do not split across multiple writes —
-   a crash between writes would leave the lock held or the history entry missing.
+   This write must happen immediately — do not split across multiple writes to avoid leaving the lock held.
+
+3. **Write run log** to `{PROJECT_OUTPUT}/tracking/logs/{RUN-ID}.log.md`:
+   - Use the `run-log.template.md` template.
+   - Populate all sections: Run Metadata, Phase Log, Gate Decisions, Quality Signals, Incidents.
+   - This log is the permanent record of this run — use it for historical queries and audits.
 
 Presented inline at the end of every run:
 
@@ -725,23 +728,6 @@ Run TC Reviewer? (yes / skip)"
     "scoped_epic_keys": [],
     "tc_approvals": {}
   },
-
-  "run_history": [
-    {
-      "run_id": "run-20260420-001",
-      "batch_id": "batch-20260420-001",
-      "started_at": "{timestamp}",
-      "completed_at": "{timestamp}",
-      "status": "completed",
-      "stories_processed": [],
-      "stories_skipped": [],
-      "stories_rejected": [],
-      "total_tcs_generated": 0,
-      "discrepancies_found": 0,
-      "discrepancies_resolved": 0,
-      "notes": ""
-    }
-  ],
 
   "error_log": []
 }

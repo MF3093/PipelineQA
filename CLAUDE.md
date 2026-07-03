@@ -287,15 +287,6 @@ Projects are registered in `projects.json` at the workspace root. Each project h
 - `TEST-HARNESS-EPICS` (has_epics: true)
 - `TEST-HARNESS-NO-EPICS` (has_epics: false)
 
-### Permissions Setup for New Projects
-
-After registering a project, copy the permissions template to eliminate permission prompts:
-
-1. Copy `PipelineQA/config/settings-clean.template.json`
-2. Paste into `{PROJECT_OUTPUT}/.claude/settings.json`
-
-This pre-approves all agent operations on registry files, stories, test cases, and config files. See `config/PERMISSIONS-SETUP.md` for detailed instructions.
-
 ---
 
 ## Key Conventions
