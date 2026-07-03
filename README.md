@@ -1,11 +1,19 @@
 # PipelineQA — Multi-Agent System
 
-A QA Test Case Generation Pipeline that operates as a multi-agent system within GitHub Copilot. Each agent has a specific role with strictly scoped permissions.
+A QA Test Case Generation Pipeline that operates as a multi-agent system. Each agent has a specific role with strictly scoped permissions. **Supported on both GitHub Copilot and Claude Code.**
+
+## Platform Support
+
+- **GitHub Copilot Chat** — Use agent picker (`@`) in VS Code
+- **Claude Code** — Use slash commands (`/`) in Claude or command palette
+
+See [CLAUDE.md](CLAUDE.md) for Claude Code setup and command reference.
 
 ## Quick Start
 
 ### Prerequisites
-- VS Code with GitHub Copilot Chat extension
+- **GitHub Copilot:** VS Code with GitHub Copilot Chat extension
+- **Claude Code:** Claude with code editing support
 - Jira MCP server configured (only required if your stories are in Jira — see GETTING-STARTED.md)
 
 ### Usage with GitHub Copilot
