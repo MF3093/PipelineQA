@@ -7,6 +7,14 @@
 
 ---
 
+## 📋 Disclaimer
+
+This audit was performed on a live FormDesk-Aircraft project run during PipelineQA development. All test results and hardening applied are **generic and reusable** — they validate core agent behavior, rule enforcement, and edge case handling that apply consistently to any project structure following the PipelineQA path schema, regardless of project name, team size, or story source (Jira/ADO).
+
+Project-specific content (FormDesk-Aircraft, H20-NNN story keys, JetNet details) appears only in examples and test fixtures for historical reference. The findings, fixes, and verification procedures are **project-agnostic**.
+
+---
+
 ## Scorecard
 
 | Category | Tests | Pass | Fail → Fixed | Notes |
