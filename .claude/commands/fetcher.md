@@ -1,16 +1,8 @@
 # Fetcher Agent Command
 
-Read and execute the agent definition at `.github/agents/fetcher.agent.md` exactly as written.
+Read and execute the agent definition at `.claude/agents/fetcher.md` exactly as written.
 
-Apply the tool name mapping from CLAUDE.md:
-- `read_file` → `Read` tool
-- `grep_search` → `Grep` tool (NEVER on `fetched-stories.json`, `fetched-epics.json`, or `pipeline-state.json` — use `Read` tool only)
-- `file_search` → `Glob` tool
-- `run_in_terminal` → `Bash` tool
-- `edit_file` → `Edit` tool
-- `create_file` → `Write` tool
-- `tool_search` → `ToolSearch` tool
-- `mcp_atlassian-mcp_getJiraIssue` → MCP (same name, via ToolSearch)
+Apply the tool name mapping defined in CLAUDE.md (Tool Name Mapping table).
 
 ## Inputs
 
@@ -25,7 +17,7 @@ To resolve `{PROJECT_OUTPUT}`:
 
 ## Instructions
 
-1. Follow the Fetcher's Role, Rules, Trigger Conditions, and Execution Steps from `.github/agents/fetcher.agent.md` exactly
+1. Follow the Fetcher's Role, Rules, Trigger Conditions, and Execution Steps from `.claude/agents/fetcher.md` exactly
 2. Apply all 11 Global Rules from CLAUDE.md
 3. Apply all Path Schema rules from CLAUDE.md
 4. Use `ToolSearch` as the FIRST action (before any Jira MCP call) to load `mcp_atlassian-mcp_getJiraIssue`
@@ -42,7 +34,7 @@ To resolve `{PROJECT_OUTPUT}`:
 
 ## Exception Handling
 
-Follow the Exception Handling table in `.github/agents/fetcher.agent.md` for:
+Follow the Exception Handling table in `.claude/agents/fetcher.md` for:
 - Already-fetched stories (skip with message)
 - Missing required fields (halt entire batch)
 - Null epic descriptions (NEEDS_REVIEW flag, continue batch)

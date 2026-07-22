@@ -1,81 +1,92 @@
-# PipelineQA — Multi-Agent System
+# PipelineQA — Multi-Agent QA System
 
 A QA Test Case Generation Pipeline that operates as a multi-agent system. Each agent has a specific role with strictly scoped permissions. **Supported on both GitHub Copilot and Claude Code.**
 
-## Platform Support
+---
 
-- **GitHub Copilot Chat** — Use agent picker (`@`) in VS Code
-- **Claude Code** — Use slash commands (`/`) in Claude or command palette
+## Documentation
 
-See [CLAUDE.md](CLAUDE.md) for Claude Code setup and command reference.
+Five human-facing docs cover this project; `CLAUDE.md` and `.github/copilot-instructions.md` are minimal agent operating context, not human guides.
 
-## Quick Start
+### Quick Links
 
-### Prerequisites
-- **GitHub Copilot:** VS Code with GitHub Copilot Chat extension
-- **Claude Code:** Claude with code editing support
-- Jira MCP server configured (only required if your stories are in Jira — see GETTING-STARTED.md)
+| For... | Read this |
+|--------|-----------|
+| New users (setup & workflows, both systems) | [GETTING-STARTED.md](GETTING-STARTED.md) |
+| Agent roster, commands, syntax (both systems) | [QUICK-REFERENCE.md](QUICK-REFERENCE.md) |
+| Keeping both systems in sync | [MAINTENANCE.md](MAINTENANCE.md) |
+| Claude Code agent operating context | [CLAUDE.md](CLAUDE.md) |
+| Copilot agent operating context | [.github/copilot-instructions.md](.github/copilot-instructions.md) |
 
-### Usage with GitHub Copilot
+---
 
-Select an agent from the agent picker (`@`) in Copilot Chat. The Orchestrator is the main entry point.
+## Quick Overview
 
-| Agent | Purpose |
-|-------|---------|
-| `@orchestrator` | Main entry point — coordinates the full pipeline |
-| `@fetcher` | Reads stories from Jira/ADO and saves raw snapshots |
-| `@parser` | Normalizes raw snapshots into structured ParsedStory JSON |
-| `@story-analyzer` | Surfaces discrepancies and coverage gaps |
-| `@context-builder` | Captures stable project-wide information |
-| `@story-prioritizer` | Creates risk-based test prioritization matrix |
-| `@tc-generator` | Generates precise, atomic test cases |
-| `@tc-reviewer` | Cross-story TC analysis (standalone) |
+### 8 Agents
 
-### Pipeline Phases
+Orchestrator • Fetcher • Parser • Story Analyzer • Context Builder • Story Prioritizer • TC Generator • TC Reviewer
 
-1. **Phase 1 — Early Analysis**: Fetch → Parse → Story Analyze
-2. **First Run Only — Project Context**: Context Build → Gate 2 approval
-3. **Phase 2 — TC Generation**: Story Prioritizer → TC Generate
+See [QUICK-REFERENCE.md — 8 Agents](QUICK-REFERENCE.md#8-agents) for descriptions.
 
-Key approval gates: **Gate 2** — project context, **Gate 3** — priority matrix, **Gate 4** — test cases per story (`yes` / `edit` / `reject` at each).
+### 3 Phases
+
+1. **Phase 1** — Fetch → Parse → Story Analyze
+2. **Phase 2** — Context Build (first run only)
+3. **Phase 3** — Prioritize → Generate Test Cases
+
+### Platform Support
+
+- **GitHub Copilot Chat** — Agent picker (`@`) in VS Code → See [GETTING-STARTED.md](GETTING-STARTED.md)
+- **Claude Code** — Slash commands (`/`) → See [GETTING-STARTED.md](GETTING-STARTED.md)
+
+---
 
 ## Project Structure
 
 ```
-.github/
-├── copilot-instructions.md    ← Project-wide Copilot instructions
-├── agents/                    ← Custom Copilot agents (.agent.md)
-│   ├── orchestrator.agent.md
-│   ├── fetcher.agent.md
-│   ├── parser.agent.md
-│   ├── story-analyzer.agent.md
-│   ├── context-builder.agent.md
-│   ├── story-prioritizer.agent.md
-│   ├── tc-generator.agent.md
-│   └── tc-reviewer.agent.md
-├── instructions/              ← Auto-loaded rules (scoped to agents)
-│   ├── global-rules.instructions.md
-│   └── path-schema.instructions.md
-└── skills/                    ← Cross-agent procedural specs
-    ├── assumption-tracker.md
-    └── prereq-checker.md
-
-config/                        ← Templates for project configuration
-docs/                          ← Testing documentation and runbooks
-test-harness/                  ← Fixtures and test cases for agent validation
+.github/agents/                     ← Copilot agent definitions
+.github/instructions/               ← Global rules & path schema (Copilot)
+.claude/agents/                     ← Claude Code agent definitions
+.claude/instructions/               ← Global rules & path schema (Claude Code)
+projects.json                       ← Project registry (output paths)
+GETTING-STARTED.md                  ← Step-by-step setup guide (both systems)
+QUICK-REFERENCE.md                  ← Agents, commands, syntax (both systems)
+CLAUDE.md                           ← Claude Code agent operating context
+.github/copilot-instructions.md     ← Copilot agent operating context
+MAINTENANCE.md                      ← Sync & maintenance
 ```
 
-## Key Conventions
+---
 
-- All rules in `.github/instructions/global-rules.instructions.md` apply to every agent
-- All file paths follow `.github/instructions/path-schema.instructions.md`
-- Projects registered in `projects.json` with output paths
-- Never invent content — log as assumption (`A-NNN`, `Q-NNN`, `B-NNN`, `D-NNN`)
-- Approval gates use strict protocol: `yes` / `edit` / `reject`
-- Never overwrite approved files without explicit permission
+## System Principles
 
-## Security
+- **11 Global Rules** — Applied consistently to all agents (`.claude/instructions/global-rules.md` / `.github/instructions/global-rules.instructions.md`)
+- **8 Path Rules (P-1 to P-8)** — Define folder structure (`.claude/instructions/path-schema.md` / `.github/instructions/path-schema.instructions.md`)
+- **Strict Approval Gates** — 3 options per gate, whitelisted responses only
+- **Minimum Permissions** — Each agent touches only assigned files
+- **Security First** — Prompt injection & credential scanning on all external input
+- **Dual Maintenance** — Both Copilot and Claude Code receive identical updates
 
-- All external inputs scanned for prompt injection (Rule 6)
-- Agents have minimum permissions — no cross-boundary access
-- Story sources are read-only — never modify source issues
+---
+
+## Getting Started
+
+1. **First time?** → [GETTING-STARTED.md](GETTING-STARTED.md)
+2. **Need agents/commands?** → [QUICK-REFERENCE.md](QUICK-REFERENCE.md)
+3. **Keeping systems in sync?** → [MAINTENANCE.md](MAINTENANCE.md)
+
+---
+
+## FAQ
+
+**Where do I start if I'm new?**
+[GETTING-STARTED.md](GETTING-STARTED.md).
+
+**How do I invoke agents in Claude Code vs Copilot?**
+[QUICK-REFERENCE.md — Claude Code Commands](QUICK-REFERENCE.md#claude-code-commands) and [QUICK-REFERENCE.md — GitHub Copilot Commands](QUICK-REFERENCE.md#github-copilot-commands).
+
+**What are the approval gates?**
+4 gates: Gate 1 (fetched), Gate 2 (context), Gate 3 (priority), Gate 4 (test cases). See [QUICK-REFERENCE.md — Approval Gate Responses](QUICK-REFERENCE.md#approval-gate-responses).
+
+**How do I keep Copilot and Claude Code in sync?**
+[MAINTENANCE.md](MAINTENANCE.md).

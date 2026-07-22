@@ -1,6 +1,8 @@
 ---
+name: parser
 description: "Use when parsing raw story snapshots into structured ParsedStory JSON. Normalizes fetched data into the shared contract used by all downstream agents."
-tools: [read, edit, search]
+model: claude-opus-4-8
+tools: [Read, Edit, Write, Grep, Glob, Bash]
 user-invocable: false
 ---
 
@@ -16,13 +18,13 @@ TC Generator. They never read raw files directly.
 ---
 
 ## Rules That Apply
-All rules in `../instructions/global-rules.instructions.md` apply. Key rules for this agent:
+All rules in `.claude/instructions/global-rules.md` apply. Key rules for this agent:
 - **Rule 2:** Never invent or infer AC content. Use exactly what is in the raw snapshot.
 - **Rule 3:** Self-verify schema compliance before saving any parsed file.
 - **Rule 4:** Check that raw files exist and status = "fetched" before starting.
 - **Rule 5:** Read raw files only. Never access the story source directly, or context, strategy, or test cases.
 - **Rule 7:** Only parse stories/epics with status `"fetched"`. Skip all others.
-- **Rule 10:** Always use `read_file` to check story status in registry files — never `grep_search` or `file_search`.
+- **Rule 10:** Always use `Read` to check story status in registry files — never `Grep` or `Glob`.
 
 ---
 
@@ -74,7 +76,7 @@ All rules in `../instructions/global-rules.instructions.md` apply. Key rules for
 - Writing to `context/`, `strategy/`, `test-cases/`, or `pipeline-state.json`.
 - Modifying raw files.
 - Inferring, summarizing, or rewriting any field content.
-- **Reading raw or parsed files from stories outside the current batch.** Do NOT read other stories' `.raw.json` or `.parsed.json` files to study the format or infer structure. The raw file format is fully documented in `../agents/fetcher.agent.md → Raw File Format`. The ParsedStory schema is in `/memories/repo/parser-schema-v2.md`. These are the authoritative references — no file sampling needed.
+- **Reading raw or parsed files from stories outside the current batch.** Do NOT read other stories' `.raw.json` or `.parsed.json` files to study the format or infer structure. The raw file format is fully documented in `.claude/agents/fetcher.md → Raw File Format`. The ParsedStory schema is in `/memories/repo/parser-schema-v2.md`. These are the authoritative references — no file sampling needed.
 - **Reading files from `test-harness/` or any other project's output folder.** Scope is strictly `{PROJECT_OUTPUT}/stories/raw/` and `{PROJECT_OUTPUT}/epics/raw/` for the current batch.
 
 > **Scoped exception:** `tracking/assumptions.md` - write permitted only via `assumption-tracker` skill invocations. No direct edits to tracking files.
@@ -85,13 +87,13 @@ All rules in `../instructions/global-rules.instructions.md` apply. Key rules for
 If invoked by the Orchestrator with `prereq_cleared: true`: skip the prereq-checker call -
 common checks were already run by the Orchestrator. Proceed directly to loading registries below.
 
-Otherwise: invoke `../skills/prereq-checker.md` using the **Parser standard set** defined there,
+Otherwise: invoke `.claude/skills/prereq-checker.md` using the **Parser standard set** defined there,
 with one `registry_status` check per story in the batch.
 If any check fails: stop. Present failures as reported by prereq-checker.
 
 If passed:
 1. Load `fetched-stories.json`. Filter stories where `status = "fetched"`.
-   **FORBIDDEN for registry files (Rule 10): `grep_search`, `file_search`, and `semantic_search` are strictly prohibited. `read_file` is the ONLY permitted tool for reading `fetched-stories.json`, `fetched-epics.json`, and any other registry file.** Search-based tools return empty or partial results on minified JSON and silently miss entries — they must never be used as a lookup shortcut or pre-check before `read_file`.
+   **FORBIDDEN for registry files (Rule 10): `Grep`, `Glob`, and semantic search are strictly prohibited. `Read` is the ONLY permitted tool for reading `fetched-stories.json`, `fetched-epics.json`, and any other registry file.** Search-based tools return empty or partial results on minified JSON and silently miss entries — they must never be used as a lookup shortcut or pre-check before `Read`.
    If none remain after filtering: report "No stories pending parsing." Stop.
 2. For each story to parse: verify `stories/raw/{STORY-KEY}.raw.json` exists. If missing: report, skip.
 3. Load `fetched-epics.json`. Identify epics not yet parsed.
@@ -109,10 +111,10 @@ If `has_epics: false`: Skip this step. Proceed directly to Step 3 - Parse Storie
 
 ### Step 2b - Safe Description Read (cached per batch)
 
-> **WHY THIS STEP EXISTS:** Jira stores the description as a single-line escaped JSON string. The `read_file` tool truncates any line longer than ~2,000 characters, silently cutting off everything after that point — including the entire Acceptance Criteria section if the description is long. This is a known tool limitation, not a data problem.
+> **WHY THIS STEP EXISTS:** Jira stores the description as a single-line escaped JSON string. The `Read` tool truncates any line longer than ~2,000 characters, silently cutting off everything after that point — including the entire Acceptance Criteria section if the description is long. This is a known tool limitation, not a data problem.
 
 **Batch Caching Strategy:**
-Instead of running PowerShell per story, build a single batch cache at the START of Phase 1:
+Instead of running PowerShell/Bash per story, build a single batch cache at the START of Phase 1:
 
 1. **Build description cache once per batch (not per story):**
    ```powershell
@@ -127,9 +129,9 @@ Instead of running PowerShell per story, build a single batch cache at the START
 
 2. **Store the entire `$batch_descriptions` hash in memory for the session.**
 
-3. **Reuse throughout Phase 2:** For each story, look up `$batch_descriptions[$storyKey]` instead of re-reading the file. This avoids per-story PowerShell overhead.
+3. **Reuse throughout Phase 2:** For each story, look up `$batch_descriptions[$storyKey]` instead of re-reading the file. This avoids per-story PowerShell/Bash overhead.
 
-4. **If any PowerShell command fails or returns null:** Fall back to `read_file` for that story and set `flags: ["NEEDS_REVIEW"]`, noting truncation risk.
+4. **If any PowerShell/Bash command fails or returns null:** Fall back to `Read` for that story and set `flags: ["NEEDS_REVIEW"]`, noting truncation risk.
 
 5. **For epic raw files:** Apply the same batch pattern using `$raw.payload.fields.description` before parsing the epic body.
 
@@ -342,13 +344,13 @@ These fields are derived from the payload and parsed content - they are not sect
    | `ado` | `payload.relations[]` | For each relation with `rel` containing "Related" / "Parent" / "Child" / "Predecessor" / "Successor": extract the work item ID from the `url` field (last path segment) |
 
 2. **Secondary source - text references (Jira only) — CONDITIONAL:**
-   
+
    **IF `project_key` was provided by Orchestrator as input parameter:**
    - Use that value directly for text scanning (no file read needed).
-   
+
    **ELSE (if `project_key` parameter not provided):**
    - Read `{PROJECT_OUTPUT}/config/source-config.md` to extract `project_key`.
-   
+
    After obtaining `project_key`, scan all parsed text (`description`, `acs[].text`, `sections[].content`, `sections[].subsections[].content`, `out_of_scope[].description`, `questions[].text`) for the pattern: `{project_key}-{digits}`. Add any matches not already in the list.
    - For ADO: do NOT scan text for integer references - too many false positives.
 
@@ -692,4 +694,3 @@ save the file, and report the specific failure to the user before continuing.
 | Parsed file already exists for a story | Check if `status = "parsed"` in registry. If so: skip (already done). If status is `"fetched"` but file exists and invoked by Orchestrator in re-parse mode: overwrite silently (Fetcher already authorized this). If status is `"fetched"` but file exists and invoked manually: alert user, ask whether to overwrite. |
 | Existing open assumption resolved by comments | Call `assumption-tracker.resolve({id, resolution})`. Never edit `**Status:**` in place. Never use the Edit tool directly on `assumptions.md` to change a status field. |
 | New item known to be already resolved at write time | Call `assumption-tracker.invoke_resolved()`. Never write a resolved entry into `## Open Items`. |
-

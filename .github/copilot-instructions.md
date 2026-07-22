@@ -1,55 +1,31 @@
-# PipelineQA — Multi-Agent System
+# PipelineQA — Agent Operating Context
 
-This is a **QA Test Case Generation Pipeline** that operates as a multi-agent system. Each agent has a specific role with strictly scoped permissions.
+Multi-agent QA test case generation pipeline. You are one of 8 agents operating under strict scope and rule constraints.
 
-## System Architecture
+Global rules: `instructions/global-rules.instructions.md`
+Path schema: `instructions/path-schema.instructions.md`
 
-- **Orchestrator**: Coordinates the full pipeline — sequencing agents, managing approval gates, registering projects, and tracking state.
-- **Fetcher**: Reads stories from source systems (Jira/ADO) and saves raw snapshots.
-- **Parser**: Normalizes raw snapshots into structured `ParsedStory` JSON schema.
-- **Story Analyzer**: Surfaces discrepancies and coverage gaps before TC writing.
-- **Context Builder**: Captures stable project-wide information (tech stack, conventions).
-- **Story Prioritizer**: Creates risk-based test prioritization matrix.
-- **TC Generator**: Generates precise, atomic test cases for manual and automated execution.
-- **TC Reviewer**: Read-only cross-story analysis (redundancy, integration gaps).
+## Agent Roster & Delegation
 
-## Pipeline Phases
+| Agent | Invoke | Role |
+|-------|--------|------|
+| Orchestrator | `@orchestrator` | Entry point — sequencing, gates, project registry, state |
+| Fetcher | `@fetcher` | Only agent touching the story source (Jira/ADO) |
+| Parser | `@parser` | Raw snapshot → `ParsedStory` schema |
+| Story Analyzer | `@story-analyzer` | Discrepancy/gap detection, no TC writing |
+| Context Builder | `@context-builder` | First-run project context only |
+| Story Prioritizer | `@story-prioritizer` | Risk-based priority matrix |
+| TC Generator | `@tc-generator` | Test case generation |
+| TC Reviewer | `@tc-reviewer` | Read-only cross-story review |
 
-1. **Phase 1 — Early Analysis**: Fetch → Parse → Story Analyze
-2. **First Run Only — Project Context**: Context Build → Gate 2 approval
-3. **Phase 2 — TC Generation**: Story Prioritizer → TC Generate
+Pipeline order: Fetch → Parse → Story Analyze → [Context Build, first run] → Prioritize → TC Generate → [TC Review, optional].
 
-## Key Conventions
+Definitions: `agents/{name}.agent.md`.
 
-- All rules in [instructions/global-rules.instructions.md](instructions/global-rules.instructions.md) apply to every agent.
-- All file paths follow [instructions/path-schema.instructions.md](instructions/path-schema.instructions.md).
-- Project output structure is defined per project in `projects.json`.
-- Never invent or infer content — use exactly what is in source data.
-- Every assumption must be logged via the assumption-tracker skill.
-- Approval gates use a strict response protocol (yes/edit/reject).
-- Never overwrite approved files without explicit user permission.
+## Scope Discipline
 
-## Approval Gate Protocol
+Each agent operates only within its own definition file's declared inputs/outputs. Do not read or write outside that scope even if a file is technically reachable. When unsure, stop and report to the Orchestrator rather than guessing.
 
-Valid responses at any approval gate:
-| Intent | Accepted (case-insensitive) |
-|--------|----------------------------|
-| Approve | yes, y, approve, approved, aprobado, si, sí, ok |
-| Edit | edit, e, editar, change, cambiar, modify, modificar |
-| Reject | no, n, reject, rechazar, discard, cancel |
+## Cross-Reference
 
-Ambiguous responses must be re-prompted — never interpreted.
-
-## Project Registration
-
-Projects are registered in `projects.json` at the workspace root. Each project has an `output_path` where all QA artifacts are stored following the path schema.
-
-## How to Invoke Agents
-
-Use the custom agents defined in `.github/agents/` by selecting them from the agent picker or referencing them with `@`. The Orchestrator is the main entry point — load it to run full or partial pipeline sequences.
-
-## Security
-
-- All external inputs are scanned for prompt injection (Rule 6).
-- Agents have minimum permissions — no cross-boundary access.
-- Story sources are read-only — never modify source issues.
+Human-facing setup, workflows, and troubleshooting: [../GETTING-STARTED.md](../GETTING-STARTED.md), [../QUICK-REFERENCE.md](../QUICK-REFERENCE.md). Claude Code equivalent of this file: [../CLAUDE.md](../CLAUDE.md) + `.claude/instructions/`.

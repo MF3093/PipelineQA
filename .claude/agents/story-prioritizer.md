@@ -1,7 +1,8 @@
 ---
+name: story-prioritizer
 description: "Use when creating or extending the test prioritization priority matrix. Produces risk-based priority matrix scoring stories by severity, likelihood, and dependency weight."
-tools: [read, edit, search]
-user-invocable: false
+model: claude-opus-4-8
+tools: [Read, Edit, Grep, Glob, Write]
 ---
 
 # Agent: Story Prioritizer
@@ -22,7 +23,7 @@ references them by ID only — it never duplicates their content.**
 ---
 
 ## Rules That Apply
-All rules in `../instructions/global-rules.instructions.md` apply. Key rules for this agent:
+All rules in `.claude/instructions/global-rules.md` apply. Key rules for this agent:
 - **Rule 1:** Never modify approved sections of `priority-matrix.md` without explicit user permission.
 - **Rule 2:** Never invent risk scores, thresholds, or client priorities. Base everything on `project-context.md` and parsed files.
 - **Rule 3:** Self-verify completeness before presenting for approval.
@@ -273,4 +274,3 @@ Scoring: (Severity × Likelihood) + Dependency Weight = Score
 **Append-only** (new rows/entries may be added freely on new batches):
 - Priority Matrix (new rows for new stories only)
 - Scope and Out of Scope (new entries only)
-

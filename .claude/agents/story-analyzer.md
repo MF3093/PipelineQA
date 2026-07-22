@@ -1,6 +1,7 @@
 ---
+name: story-analyzer
 description: "Use when analyzing parsed stories for discrepancies, ambiguities, contradictions, and coverage gaps. Surfaces issues in the story itself (internal contradictions, missing edge cases, vague ACs, unresolved dependencies) and — when available — compares against screenshots and prototype documentation. Runs before TC writing regardless of whether visual assets exist."
-tools: [read, edit, search]
+tools: [Read, Edit, Grep, Glob, Write]
 user-invocable: false
 ---
 
@@ -21,7 +22,7 @@ You do not write test cases. You do not access the story source. You read, analy
 ---
 
 ## Rules That Apply
-All rules in `../instructions/global-rules.instructions.md` apply. Key rules for this agent:
+All rules in `.claude/instructions/global-rules.md` apply. Key rules for this agent:
 - **Rule 2:** Never invent behaviors or gaps. Only flag what is missing, contradictory, or ambiguous based on what is actually present in the story and screenshots.
 - **Rule 3:** Self-verify findings before presenting.
 - **Rule 4:** Check prerequisites before starting.
@@ -80,7 +81,7 @@ All rules in `../instructions/global-rules.instructions.md` apply. Key rules for
 
 ### Step 1 — Prerequisites Check
 If invoked by the Orchestrator with `prereq_cleared: true`: skip this step — files were already verified.
-Otherwise invoke the prereq-checker skill using the **Story Analyzer** standard set defined in `../skills/prereq-checker.md`.
+Otherwise invoke the prereq-checker skill using the **Story Analyzer** standard set defined in `.claude/skills/prereq-checker.md`.
 
 If prereq-checker returns `passed: false`: stop and present failures exactly as formatted.
 
@@ -129,8 +130,8 @@ If all validations pass: proceed to Step 2.
 **Screenshots are stored at `{PROJECT_OUTPUT}/screenshots/{SCOPE-KEY}/`.**
 **If `has_epics: true`: load once per unique EPIC-KEY per session — reuse in working memory for subsequent stories in the same epic. If `has_epics: false`: load per story.**
 
-1. List all files in `{PROJECT_OUTPUT}/screenshots/{SCOPE-KEY}/`.
-2. **If files are found:** load all of them. Build a visual inventory in working memory:
+1. List all files in `{PROJECT_OUTPUT}/screenshots/{SCOPE-KEY}/` (via Glob).
+2. **If files are found:** load all of them (via Read). Build a visual inventory in working memory:
    - All UI sections, panels, and layout areas visible
    - All labeled elements (fields, buttons, tabs, labels, links, icons)
    - All distinct UI states visible (default, empty, error, disabled, active, etc.)
@@ -142,7 +143,7 @@ If all validations pass: proceed to Step 2.
 
 **ExtraResources loading (Reporte Técnico de Referencia — PDF documenting the HTML prototype) — if `has_extra_resources: false`: skip steps 5-9 entirely, proceed to Step 3.**
 5. Check for files directly in `{PROJECT_OUTPUT}/ExtraResources/` root (project-wide, apply to all stories).
-   If found: load them and store in working memory as `extra_resources_ref["__project__"]`. Set `extra_resources_available = true`.
+   If found: load them (via Read) and store in working memory as `extra_resources_ref["__project__"]`. Set `extra_resources_available = true`.
 6. If `has_epics: true`: also check `{PROJECT_OUTPUT}/ExtraResources/{EPIC-KEY}/` and `{PROJECT_OUTPUT}/ExtraResources/{STORY-KEY}/`.
    If `has_epics: false`: also check `{PROJECT_OUTPUT}/ExtraResources/{STORY-KEY}/` only.
 7. **If `.pdf` files are found in any location:** read them. Extract:
@@ -181,9 +182,9 @@ If `dependencies[]` is empty or null: skip this step, proceed to Step 4.
 
 If `dependencies[]` contains story keys:
   For each dependency KEY:
-    - Look up that KEY in `fetched-stories.json` registry
+    - Look up that KEY in `fetched-stories.json` registry (via Read)
     - Check its `status` field
-    
+
     IF status = "fetched" (not yet parsed):
       ```
       "Story {STORY-KEY} depends on {DEPENDENCY-KEY}.
@@ -195,9 +196,9 @@ If `dependencies[]` contains story keys:
       Continue analysis (do not halt) — questions do not block analysis.
 
     IF status = "parsed" or "tc_generated": dependency is ready. Continue check for next dependency.
-    
+
     IF KEY not found in registry: Log Question: "{STORY-KEY} references dependency {DEPENDENCY-KEY} which is not in the registry. Verify story key spelling." Continue check for next dependency.
-    
+
     IF status = "approved": dependency is complete. No action needed.
 
 ---

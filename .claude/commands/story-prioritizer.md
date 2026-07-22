@@ -1,14 +1,8 @@
 # Story Prioritizer Agent Command
 
-Read and execute the agent definition at `.github/agents/story-prioritizer.agent.md` exactly as written.
+Read and execute the agent definition at `.claude/agents/story-prioritizer.md` exactly as written.
 
-Apply the tool name mapping from CLAUDE.md:
-- `read_file` → `Read` tool
-- `grep_search` → `Grep` tool (NEVER on `fetched-stories.json`, `fetched-epics.json`, or `pipeline-state.json` — use `Read` tool only)
-- `file_search` → `Glob` tool
-- `run_in_terminal` → `Bash` tool
-- `edit_file` → `Edit` tool
-- `create_file` → `Write` tool
+Apply the tool name mapping defined in CLAUDE.md (Tool Name Mapping table).
 
 ## Inputs
 
@@ -23,7 +17,7 @@ To resolve `{PROJECT_OUTPUT}`:
 
 ## Instructions
 
-1. Follow the Story Prioritizer's Role, Rules, Trigger Conditions, and Execution Steps from `.github/agents/story-prioritizer.agent.md` exactly
+1. Follow the Story Prioritizer's Role, Rules, Trigger Conditions, and Execution Steps from `.claude/agents/story-prioritizer.md` exactly
 2. Apply all 11 Global Rules from CLAUDE.md
 3. Apply all Path Schema rules from CLAUDE.md
 4. Check prerequisites: `context_approved: true` in `pipeline-state.json` (HALT if not approved)
@@ -60,7 +54,7 @@ When adding new stories to an already-approved matrix:
 
 ## Exception Handling
 
-Follow the Exception Handling table in `.github/agents/story-prioritizer.agent.md` for:
+Follow the Exception Handling table in `.claude/agents/story-prioritizer.md` for:
 - Context not approved (halt at Step 1)
 - Null epic_key (score story without epic context)
 - has_epics: false projects (never open epics/ folder)

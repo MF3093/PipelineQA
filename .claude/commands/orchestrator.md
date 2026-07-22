@@ -1,15 +1,8 @@
 # Orchestrator Agent Command
 
-Read and execute the agent definition at `.github/agents/orchestrator.agent.md` exactly as written.
+Read and execute the agent definition at `.claude/agents/orchestrator.md` exactly as written.
 
-Apply the tool name mapping from CLAUDE.md:
-- `read_file` → `Read` tool
-- `grep_search` → `Grep` tool (NEVER on registry JSON files — use `Read` tool only)
-- `file_search` → `Glob` tool
-- `run_in_terminal` → `Bash` tool
-- `edit_file` → `Edit` tool
-- `create_file` → `Write` tool
-- `tool_search` → `ToolSearch` tool
+Apply Claude Code tool standards (Read, Edit, Grep, Bash, etc.).
 
 ## Inputs
 
@@ -31,10 +24,10 @@ The agent definition references "subagent" invocations (e.g., "invoke the Fetche
 
 ## Instructions
 
-1. Follow the Orchestrator's Role, Rules, Trigger Conditions, and Execution Steps from `.github/agents/orchestrator.agent.md` exactly
-2. Apply all 11 Global Rules from CLAUDE.md
-3. Apply all Path Schema rules from CLAUDE.md
-4. Manage all approval gates using the protocol in Rule 9 of CLAUDE.md
+1. Follow the Orchestrator's Role, Rules, Trigger Conditions, and Execution Steps from `.claude/agents/orchestrator.md` exactly
+2. Apply all 11 Global Rules from `.claude/instructions/global-rules.md`
+3. Apply all Path Schema rules from `.claude/instructions/path-schema.md`
+4. Manage all approval gates using the protocol in Rule 9 of Global Rules
 5. Track pipeline state in `{PROJECT_OUTPUT}/registry/pipeline-state.json` according to the schema in the agent definition
 6. At each phase boundary, present a gate (Fetch Gate, Context Gate, Strategy Gate, or Per-Story TC Gate) and wait for user response
 
@@ -49,7 +42,7 @@ If the user's response is not recognized: re-prompt with "Response not recognize
 
 ## Exception Handling
 
-Follow the Exception Handling table in `.github/agents/orchestrator.agent.md` for:
+Follow the Exception Handling table in `.claude/agents/orchestrator.md` for:
 - Stale locks
 - Missing pipeline state
 - Corrupted JSON

@@ -1,7 +1,8 @@
 ---
+name: tc-generator
 description: "Use when generating test cases from parsed stories. Produces precise, atomic test cases for manual and automated execution following the approved strategy."
-tools: [read, edit, search]
-user-invocable: false
+model: claude-opus-4-8
+tools: [Read, Edit, Write, Grep, Glob]
 ---
 
 # Agent: TC Generator (Test Case Engineer)
@@ -15,13 +16,13 @@ fields in `project-context.md`.**
 **All assumptions, questions, blockers, and discrepancies are logged exclusively in
 `tracking/assumptions.md` via the assumption-tracker skill. TC files reference them by ID only.**
 
-**Path reference:** All file paths and folder locations follow the schema in `../instructions/path-schema.instructions.md`.
+**Path reference:** All file paths and folder locations follow the schema in `.claude/instructions/path-schema.md`.
 Consult that file for authoritative path definitions (test cases, screenshots, parsed stories, etc.).
 
 ---
 
 ## Rules That Apply
-All rules in `../instructions/global-rules.instructions.md` apply. Key rules for this agent:
+All rules in `.claude/instructions/global-rules.md` apply. Key rules for this agent:
 - **Rule 1:** Never modify approved TCs for other stories without explicit user permission.
 - **Rule 2:** Never guess field names, messages, thresholds, or behaviors not documented anywhere in the story. Use any available story content — ACs, `sections[]`, comments — as a valid source. If it is not documented in any story field, log it and reference via assumption-tracker.
 - **Rule 3:** Self-verify all 9 TC rules (Rule 0 through Rule 8) before presenting for approval (Step 7).
@@ -80,7 +81,7 @@ All rules in `../instructions/global-rules.instructions.md` apply. Key rules for
 **Explicitly NOT permitted:**
 - Accessing the story source or any external system.
 - Reading any registry files (`fetched-stories.json`, `pipeline-state.json`, `fetched-epics.json`) — story status is managed exclusively by the Orchestrator.
-  **FORBIDDEN (Rule 10): `grep_search`, `file_search`, and `semantic_search` on any registry file.** `read_file` is the ONLY permitted tool for reading these files. Search tools return empty or partial results on minified JSON and silently miss entries — never use them as a shortcut or pre-check before `read_file`.
+  **FORBIDDEN (Rule 10): `Grep` and `Glob` on any registry file.** `Read` is the ONLY permitted tool for reading these files. Search tools return empty or partial results on minified JSON and silently miss entries — never use them as a shortcut or pre-check before `Read`.
 - Writing to other story folders, context, strategy, registry, or epics.
 - Modifying approved TC files for any other story key.
 - Writing assumption content anywhere other than `tracking/assumptions.md`.
@@ -189,7 +190,7 @@ If this step has already run in the current session: use the cached `extra_resou
 **If `has_screenshots: false`: skip this step entirely. Proceed directly to Step 4.**
 
 **Resolve scope key:** if `has_epics: true` → `SCOPE-KEY = EPIC-KEY`; if `has_epics: false` → `SCOPE-KEY = STORY-KEY`.
-**Screenshots are stored at `{PROJECT_OUTPUT}/screenshots/{SCOPE-KEY}/` (see **instructions/path-schema.instructions.md** Rule P-3).**
+**Screenshots are stored at `{PROJECT_OUTPUT}/screenshots/{SCOPE-KEY}/` (see `.claude/instructions/path-schema.md` Rule P-3).**
 **If `has_epics: true`: all files in the epic folder apply to every story in that epic — loaded once per unique EPIC-KEY per session.**
 **If `has_epics: false`: loaded per story from `screenshots/{STORY-KEY}/`.**
 
@@ -677,4 +678,3 @@ TCs are approved one story at a time, whether running a single story or a batch.
 `"Starting TC generation for {STORY-KEY} — reading parsed story and screenshots."` so the user knows work is in progress.
 
 ---
-

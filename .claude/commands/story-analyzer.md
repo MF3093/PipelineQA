@@ -1,14 +1,8 @@
 # Story Analyzer Agent Command
 
-Read and execute the agent definition at `.github/agents/story-analyzer.agent.md` exactly as written.
+Read and execute the agent definition at `.claude/agents/story-analyzer.md` exactly as written.
 
-Apply the tool name mapping from CLAUDE.md:
-- `read_file` → `Read` tool
-- `grep_search` → `Grep` tool (NEVER on `fetched-stories.json`, `fetched-epics.json`, or `pipeline-state.json` — use `Read` tool only)
-- `file_search` → `Glob` tool
-- `run_in_terminal` → `Bash` tool
-- `edit_file` → `Edit` tool
-- `create_file` → `Write` tool
+Apply the tool name mapping defined in CLAUDE.md (Tool Name Mapping table).
 
 ## Inputs
 
@@ -23,7 +17,7 @@ To resolve `{PROJECT_OUTPUT}`:
 
 ## Instructions
 
-1. Follow the Story Analyzer's Role, Rules, Trigger Conditions, and Execution Steps from `.github/agents/story-analyzer.agent.md` exactly
+1. Follow the Story Analyzer's Role, Rules, Trigger Conditions, and Execution Steps from `.claude/agents/story-analyzer.md` exactly
 2. Apply all 11 Global Rules from CLAUDE.md
 3. Apply all Path Schema rules from CLAUDE.md
 4. Read the parsed story JSON from `{PROJECT_OUTPUT}/stories/parsed/{STORY-KEY}.parsed.json`
@@ -47,7 +41,7 @@ To resolve `{PROJECT_OUTPUT}`:
 
 ## Exception Handling
 
-Follow the Exception Handling table in `.github/agents/story-analyzer.agent.md` for:
+Follow the Exception Handling table in `.claude/agents/story-analyzer.md` for:
 - Parsed file not found (suggest running Parser first)
 - Epic parent story missing (analyze without epic context)
 - Screenshots not found (analyze story-only content)

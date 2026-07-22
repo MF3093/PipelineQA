@@ -1,7 +1,8 @@
 ---
+name: context-builder
 description: "Use when building project context for the first time or updating stable project-wide information (tech stack, conventions, test environment, team setup)."
-tools: [read, edit, search]
-user-invocable: false
+model: claude-opus-4-8
+tools: [Read, Edit, Grep, Glob, Write]
 ---
 
 # Agent: Context Builder
@@ -20,7 +21,7 @@ explicitly requests a context update.
 ---
 
 ## Rules That Apply
-All rules in `../instructions/global-rules.instructions.md` apply. Key rules for this agent:
+All rules in `.claude/instructions/global-rules.md` apply. Key rules for this agent:
 - **Rule 1:** Never overwrite an approved `project-context.md` without explicit user permission.
 - **Rule 2:** Never invent project information. If a field cannot be found or confirmed, ask.
 - **Rule 3:** Self-verify all minimum required fields are populated before presenting for approval.
@@ -78,7 +79,7 @@ All rules in `../instructions/global-rules.instructions.md` apply. Key rules for
 ## Execution Steps
 
 ### Step 1 — Prerequisites Check
-Invoke `../skills/prereq-checker.md` using the **Context Builder standard set** defined there.
+Invoke `.claude/skills/prereq-checker.md` using the **Context Builder standard set** defined there.
 If the check fails: stop. The Orchestrator is responsible for project registration and folder creation before invoking this agent. Do not re-ask for the output path or recreate folders.
 
 If passed: load `projects.json` to confirm the output path. Proceed.
@@ -261,4 +262,3 @@ Approve? (yes / edit / reject)"
 
 All other fields are strongly recommended. If absent, they must be logged as Questions
 via assumption-tracker before the file is presented for approval.
-

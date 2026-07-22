@@ -1,25 +1,40 @@
 # Getting Started with PipelineQA
 
-This guide walks you through setting up and running the QA pipeline for the first time.
+This guide walks you through setting up and running the QA pipeline for the first time, on **either GitHub Copilot or Claude Code** (or both).
+
+**For agent roster, commands, and syntax, see [QUICK-REFERENCE.md](QUICK-REFERENCE.md). For Claude Code agent operating context, see [CLAUDE.md](CLAUDE.md). For Copilot agent operating context, see [.github/copilot-instructions.md](.github/copilot-instructions.md).**
 
 ---
 
 ## Prerequisites
 
+**GitHub Copilot:**
+
 | Requirement | Notes |
 |---|---|
 | VS Code | Latest stable version |
 | GitHub Copilot Chat extension | Must be installed and signed in |
-| Jira MCP server | Required only if your stories are in Jira. See [MCP setup](#mcp-setup-jira) below |
+| Jira MCP server | Required only if your stories are in Jira. See [MCP setup](#step-2--mcp-setup-jira) below |
+
+**Claude Code:**
+
+| Requirement | Notes |
+|---|---|
+| Claude Code CLI | Installed and authenticated (`claude` on PATH) |
+| Jira MCP server | Required only if your stories are in Jira. See [MCP setup](#step-2--mcp-setup-jira) below |
 
 ---
 
 ## Step 1 — Open the Workspace
 
-Open the `PipelineQA` folder in VS Code:
-
+**Copilot:** Open the `PipelineQA` folder in VS Code:
 ```
 File → Open Folder → select the PipelineQA folder
+```
+
+**Claude Code:** Open a terminal in the `PipelineQA` folder and run:
+```
+claude
 ```
 
 ---
@@ -28,7 +43,7 @@ File → Open Folder → select the PipelineQA folder
 
 > Skip this step if your stories are in Azure DevOps or you are not using Jira.
 
-`.vscode/mcp.json` is excluded from version control (it may contain personal tokens). You must create it manually:
+**Copilot:** `.vscode/mcp.json` is excluded from version control (it may contain personal tokens). You must create it manually:
 
 1. Create the file `.vscode/mcp.json` in the workspace root with the following content:
 
@@ -48,15 +63,37 @@ File → Open Folder → select the PipelineQA folder
 4. Sign in to Atlassian when prompted
 5. Confirm `MCPJira` shows as **connected**
 
+**Claude Code:** MCP servers for Claude Code are configured in `.mcp.json` at the workspace root (create it if it doesn't exist — it's also excluded from version control):
+
+```json
+{
+  "mcpServers": {
+    "MCPJira": {
+      "type": "http",
+      "url": "https://mcp.atlassian.com/v1/mcp"
+    }
+  }
+}
+```
+
+1. Restart Claude Code, or run `/mcp` inside a session to check server status
+2. Sign in to Atlassian when prompted
+3. Confirm `MCPJira` shows as **connected**
+
 ---
 
 ## Step 3 — Register Your Project
 
-Open Copilot Chat, select the `@orchestrator` agent, and type:
-
+**Copilot:** Open Copilot Chat, select the `@orchestrator` agent, and type:
 ```
 Start a new project
 ```
+
+**Claude Code:** In a Claude Code session, run:
+```
+/orchestrator
+```
+and tell it you want to start a new project.
 
 The Orchestrator will ask you for:
 
@@ -102,11 +139,16 @@ Project Name: YourProject
 
 ## Step 5 — Run the Pipeline
 
-In Copilot Chat with `@orchestrator`, start a run:
-
+**Copilot:** In Copilot Chat with `@orchestrator`, start a run:
 ```
 @orchestrator I want to run the pipeline
 ```
+
+**Claude Code:** In a session, start a run:
+```
+/orchestrator
+```
+and tell it you want to run the pipeline.
 
 The Orchestrator will:
 1. List your registered projects — select one by number
@@ -288,9 +330,16 @@ All artifacts are saved inside the output directory you configured:
 
 For new stories on an already-registered project:
 
+**Copilot:**
 ```
 Run the pipeline for stories MYPROJ-110, MYPROJ-111
 ```
+
+**Claude Code:**
+```
+/orchestrator
+```
+then tell it to run stories `MYPROJ-110, MYPROJ-111`.
 
 The Context Builder is **skipped** — it reuses the approved `project-context.md`. Only new, unprocessed stories are picked up.
 
@@ -300,7 +349,11 @@ The Context Builder is **skipped** — it reuses the approved `project-context.m
 
 | Problem | Fix |
 |---|---|
-| `MCPJira` not connected | Re-authenticate via `MCP: List Servers` in the Command Palette |
-| Orchestrator says project not found | Run `Start a new project` to register it |
+| `MCPJira` not connected (Copilot) | Re-authenticate via `MCP: List Servers` in the Command Palette |
+| `MCPJira` not connected (Claude Code) | Run `/mcp` to check status; verify `.mcp.json` exists and is valid; restart Claude Code |
+| Orchestrator says project not found | Run `Start a new project` (Copilot) or `/orchestrator` (Claude Code) to register it |
 | Gate response not recognized | Use only the accepted values listed above — no punctuation |
 | Agent skips a story | Check `registry/fetched-stories.json` — the story may already be marked as approved |
+| Agent not showing in agent/command picker | Copilot: verify the file exists in `.github/agents/` and has YAML frontmatter starting with `---`, then reload Copilot Chat. Claude Code: verify the command exists in `.claude/commands/`, then restart the CLI |
+| Permission denied on read/write | Copilot: `File → Trust Folder`, restart Copilot Chat. Claude Code: check `.claude/settings.json` permissions |
+| File path not found | Copy the exact `output_path` from `projects.json`. Use absolute paths only, e.g. `C:\Users\YourName\Documents\MyAppQA` |
