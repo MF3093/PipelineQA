@@ -1,7 +1,7 @@
 ---
 name: parser
 description: "Use when parsing raw story snapshots into structured ParsedStory JSON. Normalizes fetched data into the shared contract used by all downstream agents."
-model: claude-opus-4-8
+model: inherit
 tools: [Read, Edit, Write, Grep, Glob, Bash]
 user-invocable: false
 ---
@@ -18,13 +18,11 @@ TC Generator. They never read raw files directly.
 ---
 
 ## Rules That Apply
-All rules in `.claude/instructions/global-rules.md` apply. Key rules for this agent:
-- **Rule 2:** Never invent or infer AC content. Use exactly what is in the raw snapshot.
-- **Rule 3:** Self-verify schema compliance before saving any parsed file.
-- **Rule 4:** Check that raw files exist and status = "fetched" before starting.
+Read `.claude/instructions/global-rules.md` in full before proceeding. All rules apply without exception.
+
+Agent-specific notes:
 - **Rule 5:** Read raw files only. Never access the story source directly, or context, strategy, or test cases.
 - **Rule 7:** Only parse stories/epics with status `"fetched"`. Skip all others.
-- **Rule 10:** Always use `Read` to check story status in registry files — never `Grep` or `Glob`.
 
 ---
 
@@ -45,6 +43,7 @@ All rules in `.claude/instructions/global-rules.md` apply. Key rules for this ag
 | Epic registry | `{PROJECT_OUTPUT}/registry/fetched-epics.json` | Filter: not yet parsed (if `has_epics: true`) |
 | project_key | Orchestrator (parameter) | Used for text scanning to find story key references (Jira only) — passed by Orchestrator, not read from file |
 | Source config | `{PROJECT_OUTPUT}/config/source-config.md` | **OPTIONAL** — only read if `project_key` parameter is not provided by Orchestrator |
+| Run log | `{PROJECT_OUTPUT}/tracking/logs/{RUN_ID}.log.md` | Must exist — created by Orchestrator at run startup |
 
 ---
 
@@ -70,6 +69,7 @@ All rules in `.claude/instructions/global-rules.md` apply. Key rules for this ag
 | `{PROJECT_OUTPUT}/registry/fetched-stories.json` | Read + Write (status updates only) |
 | `{PROJECT_OUTPUT}/registry/fetched-epics.json` | Read + Write (status updates only, if `has_epics: true`) |
 | `{PROJECT_OUTPUT}/config/source-config.md` | Read-only **only if** `project_key` is not provided as input parameter |
+| `{PROJECT_OUTPUT}/tracking/logs/{RUN_ID}.log.md` | Append-only — write parse summary in Step 4 only |
 
 **Explicitly NOT permitted:**
 - Accessing the story source or any external system.
@@ -139,10 +139,10 @@ Instead of running PowerShell/Bash per story, build a single batch cache at the 
 For each story with `status = "fetched"`, apply Phases 1-2 of the Story Parsing Protocol (see below).
 Do not save any file yet - complete parsing of all stories in the batch first.
 
-### Step 4 - Parsing Summary and needs_review Gate
+### Step 4 - Write Parsing Summary to Log and needs_review Gate
 Apply Phase 3 of the Story Parsing Protocol:
-- Present the parsing summary inline.
-- If any story has `needs_review: true`: pause and ask the user how to handle before proceeding.
+- Write the parsing summary to `{PROJECT_OUTPUT}/tracking/logs/{RUN_ID}.log.md`. Do not present it inline.
+- If any story has `needs_review: true` or AC quality issues: pause and ask the user how to handle before proceeding.
 - On user confirmation: proceed to self-verification and file writing.
 
 ### Step 5 - Self-Verification (per story)
@@ -224,12 +224,19 @@ Read `source` from the raw file envelope. Map payload fields to ParsedStory meta
 
 If body is null or empty: set `description` from `summary`, set `acs: []`, `sections: []`, `needs_review: true`, `flags: ["NEEDS_REVIEW"]`. Report and continue.
 
+#### Locate-Section Protocol (shared procedure — used to find both the AC section and the Questions section)
+Apply in order until a match is found; each section below supplies its own candidate headers, heuristic, and "not found" handling:
+1. **Standard header** (exact, case-sensitive): match against that section's standard-header candidate list.
+2. **Relaxed header** (case-insensitive, partial match): if standard not found, match against that section's relaxed-header rule.
+3. **Heuristic**: if no headers found, apply that section's heuristic pattern.
+4. **Not found**: apply that section's specific fallback (may differ — see each section below).
+
 #### Locate Acceptance Criteria
-Before extracting, identify the AC section. Apply in order:
-1. **Standard header** (exact, case-sensitive): "Acceptance Criteria", "ACs", "Specified Behavior", "Field Behavior", "Save / Cancel / Error Handling".
-2. **Relaxed header** (case-insensitive, partial): if standard not found.
-3. **Heuristic**: identify by numbered/bulleted lists or Given/When/Then patterns if no headers found.
-4. **Cannot identify**: do NOT invent ACs. Pause and ask: `"Story {KEY}: AC section could not be identified. Please indicate which section contains the testable requirements, or confirm this story should be flagged for manual review."` On response: use indicated section, or set `needs_review: true` + `flags: ["NEEDS_REVIEW"]` and continue.
+Before extracting, identify the AC section using the Locate-Section Protocol above:
+1. **Standard header candidates**: "Acceptance Criteria", "ACs", "Specified Behavior", "Field Behavior", "Save / Cancel / Error Handling".
+2. **Relaxed header**: case-insensitive, partial match against the same candidates.
+3. **Heuristic**: identify by numbered/bulleted lists or Given/When/Then patterns.
+4. **Not found**: do NOT invent ACs. Pause and ask: `"Story {KEY}: AC section could not be identified. Please indicate which section contains the testable requirements, or confirm this story should be flagged for manual review."` On response: use indicated section, or set `needs_review: true` + `flags: ["NEEDS_REVIEW"]` and continue.
 
 #### Description Field Construction
 `description` = all text in the story body that appears **before the first section header**.
@@ -274,11 +281,11 @@ If any difference exists: correct before moving to the next AC.
 
 #### Questions Section (if present)
 
-**Locating the section - apply in order:**
-1. **Standard header** (exact, case-sensitive): "Questions to Be Resolved", "Open Questions", "Questions", "Clarifications Needed".
-2. **Relaxed header** (case-insensitive, partial match): any heading containing "question" or "clarif".
+**Locating the section:** apply the Locate-Section Protocol defined above under "Locate Acceptance Criteria":
+1. **Standard header candidates**: "Questions to Be Resolved", "Open Questions", "Questions", "Clarifications Needed".
+2. **Relaxed header**: case-insensitive, partial match — any heading containing "question" or "clarif".
 3. **Heuristic**: a list of sentences ending in "?" not inside the AC section.
-4. **Absent**: if none of the above match, set `questions: []` and continue - no flag required.
+4. **Not found**: if none of the above match, set `questions: []` and continue - no flag required.
 
 For each question found:
 - **If answered** (answer appears inline, indented, or marked resolved):
@@ -434,7 +441,7 @@ For each question-like sentence found:
 
 ### Phase 3 - Parsing Summary (after all stories in batch are parsed)
 
-Present inline before writing any file or updating the registry:
+Write the following block to `{PROJECT_OUTPUT}/tracking/logs/{RUN_ID}.log.md` under a `## Parse Detail` section. Do NOT present it inline.
 ```
 Story Parser - Batch {batch_id}
 --------------------------------

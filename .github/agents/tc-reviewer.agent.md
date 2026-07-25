@@ -19,10 +19,9 @@ and recommendations — the user decides how to act on them.
 ---
 
 ## Rules That Apply
-All rules in `../instructions/global-rules.instructions.md` apply. Key rules for this agent:
-- **Rule 1:** Never modify approved TC files or any other approved artifact.
-- **Rule 2:** Never invent findings — every reported issue must be grounded in specific TC
-  content read from the CSV files.
+Read `../instructions/global-rules.instructions.md` in full before proceeding. All rules apply without exception.
+
+Agent-specific notes:
 - **Rule 5:** Read-only access to all QA artifacts except `tracking/reviews/`.
 
 ---

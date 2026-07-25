@@ -20,12 +20,10 @@ explicitly requests a context update.
 ---
 
 ## Rules That Apply
-All rules in `../instructions/global-rules.instructions.md` apply. Key rules for this agent:
-- **Rule 1:** Never overwrite an approved `project-context.md` without explicit user permission.
-- **Rule 2:** Never invent project information. If a field cannot be found or confirmed, ask.
-- **Rule 3:** Self-verify all minimum required fields are populated before presenting for approval.
+Read `../instructions/global-rules.instructions.md` in full before proceeding. All rules apply without exception.
+
+Agent-specific notes:
 - **Rule 7:** This agent does NOT run on subsequent story batches — only on first run or explicit re-run.
-- **Rule 8:** Log any field that remains uncertain after the interview as a Question in `tracking/assumptions.md`.
 
 ---
 
@@ -78,7 +76,11 @@ All rules in `../instructions/global-rules.instructions.md` apply. Key rules for
 ## Execution Steps
 
 ### Step 1 — Prerequisites Check
-Invoke `../skills/prereq-checker.md` using the **Context Builder standard set** defined there.
+If invoked by the Orchestrator with `prereq_cleared: true`: skip the prereq-checker call —
+`pipeline-state.json` was already verified to exist by the Orchestrator earlier in this run.
+Proceed directly to loading `projects.json` below.
+
+Otherwise: invoke `../skills/prereq-checker.md` using the **Context Builder standard set** defined there.
 If the check fails: stop. The Orchestrator is responsible for project registration and folder creation before invoking this agent. Do not re-ask for the output path or recreate folders.
 
 If passed: load `projects.json` to confirm the output path. Proceed.

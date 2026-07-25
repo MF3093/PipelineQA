@@ -21,13 +21,46 @@
 
 | # | Phase | Started | Finished | Result | Notes |
 |---|-------|---------|----------|--------|-------|
-| 1 | Fetch | {time} | {time} | {completed / skipped} | {stories fetched count} |
+| 1 | Fetch | {time} | {time} | {completed / skipped} | {new stories: N, new epics: N, skipped: N} |
 | 2 | Parse | {time} | {time} | {completed / partial} | {flags raised} |
 | 3 | Story Analysis | {time} | {time} | {completed} | {Q/D entries logged} |
 | 4 | Context Build | {time} | {time} | {approved / skipped} | {first run or reuse} |
 | 5 | Story Prioritizer | {time} | {time} | {approved / rejected / skipped} | {new or extension} |
 | 6 | TC Generation | {time} | {time} | {approved / partial / rejected} | {TC count} |
 
+### Fetch Detail
+
+```
+NEW STORIES:
+| # | Story Key | Summary | Epic | Has Description | Comments | Flags |
+|---|-----------|---------|------|-----------------|----------|-------|
+| {N} | {KEY} | {summary} | {EPIC-KEY or —} | {Yes / No} | {N} | {— / NEEDS_REVIEW} |
+
+NEW EPICS:
+| # | Epic Key | Summary | Stories Fetched |
+|---|----------|---------|-----------------|
+| {N} | {EPIC-KEY} | {summary} | {N} |
+
+SKIPPED (already fetched): {N} stories, {N} epics
+```
+### Parse Detail
+
+```
+Story Parser - Batch {BATCH_ID}
+--------------------------------
+Stories parsed:          {N}
+Total ACs extracted:     {N}
+  Testable:              {N}
+  Blocked (untestable):  {N}
+Flagged stories:         {keys and flag types, or "none"}
+AC quality issues:       {stories with AC_QUALITY_ISSUE flag, or "none"}
+  Conflicting language:  {AC-N in STORY-KEY, or "none"}
+  Vague terms:           {AC-N in STORY-KEY, or "none"}
+  Design mismatches:     {AC-N in STORY-KEY, or "none"}
+Stories needing review:  {keys, or "none"}
+Open items logged:       {N} -> tracking/assumptions.md
+--------------------------------
+```
 ---
 
 ## Gate Decisions

@@ -20,13 +20,12 @@ to the appropriate specialist agent and ensure prerequisites are met before each
 ---
 
 ## Rules That Apply
-All rules in `../instructions/global-rules.instructions.md` apply. Key rules for this agent:
-- **Rule 1:** Never overwrite approved files. Enforce this across all agents.
-- **Rule 3:** Verify pipeline state before and after each phase transition.
-- **Rule 4:** Check all prerequisites before invoking any agent. Stop and report if missing.
+Read `../instructions/global-rules.instructions.md` in full before proceeding. All rules apply without exception.
+
+Agent-specific notes:
 - **Rule 5:** You coordinate — you do not read story content, write test cases, or assess quality.
-- **Rule 7:** Enforce incremental-only processing. Never pass already-approved stories downstream.
-- **Rule 10:** Always use `read_file` to read registry files (`pipeline-state.json`, `fetched-stories.json`, `fetched-epics.json`) — never `grep_search` or `file_search`.
+- **Registry Read Discipline:** Read each registry file (`pipeline-state.json`, `fetched-stories.json`, `fetched-epics.json`) **once per phase**. Store the result in working memory. Do not re-read the same file unless a write to that file has occurred since the last read.
+- **Rule P (Paths):** All file paths and folder locations must follow `../instructions/path-schema.instructions.md`. This is the authoritative reference.
 - **Registry Read Discipline:** Read each registry file (`pipeline-state.json`, `fetched-stories.json`, `fetched-epics.json`) **once per phase**. Store the result in working memory. Do not re-read the same file unless a write to that file has occurred since the last read. Re-reading a file that was not written since the last read is a wasted call — it returns identical data.
 - **Rule P (Paths):** All file paths and folder locations must follow `../instructions/path-schema.instructions.md`. This is the authoritative reference.
 
@@ -185,6 +184,7 @@ On first use, or when user starts a run for an unknown project name:
    - If `has_epics: true` → create `epics/raw/`, `epics/parsed/`
    - If `has_screenshots: true` → create `screenshots/`
    - If `has_extra_resources: true` → create `ExtraResources/`
+   - Always create `cache/` (used by Story Analyzer and TC Generator for cross-session ExtraResources caching)
    
    **CRITICAL - Path Security (Rule 6):**
    ALL folder creation commands MUST quote the path to prevent command injection:
@@ -386,7 +386,10 @@ On first use, or when user starts a run for an unknown project name:
     If `has_epics = false`: `checks` is empty — skip the prereq-checker call entirely. Set `prereq_cleared: true` directly in working memory.
     If `has_epics = true`: invoke prereq-checker with the single epic-registry check above.
     If it passes: set `prereq_cleared: true` in working memory and pass this flag when invoking
-    Fetcher, Parser, Story Analyzer, and TC Generator — those agents skip their own prereq-checker call.
+    Fetcher, Parser, Story Analyzer, TC Generator, and Context Builder — those agents skip their
+    own prereq-checker call. Context Builder's only prereq-checker requirement
+    (`pipeline-state.json` exists) is already covered by the Step 2-3 verification above, so the
+    same flag applies to it without any additional check.
     If it fails: stop. Report missing file. Do not invoke any agent.
 
 13. **RE-FETCH PROTECTION (REC-INT-003):**
@@ -454,6 +457,15 @@ On first use, or when user starts a run for an unknown project name:
 | 5 | Story Prioritizer | story-prioritizer.md | **Gate 3** — approve priority-matrix.md (yes/edit/reject) | strategy_approved = true |
 | 6 | TC Generation (per story) | tc-generator.md | **Gate 4** — approve TCs per story (yes/edit/reject) | status = "tc_generated" |
 | 7 | Run Summary | Orchestrator | — | status = "completed", lock = false |
+
+**Story Prioritizer prereq shortcut (phase 5, same-run continuation only):** When invoking
+Story Prioritizer immediately after Gate 2 within the same continuous run (i.e. not a standalone
+"Story Prioritizer only" invocation), context approval and parsed-file existence for the current
+batch were already confirmed at Gate 2 and the Parse phase (3) respectively — pass
+`prereq_cleared: true` when invoking `story-prioritizer.md`. Story Prioritizer still runs its own
+mode-determination check (New vs Extension) regardless of this flag. On a standalone invocation
+(Option 6, no prior phases run this session), do NOT set this flag — invoke without it so Story
+Prioritizer runs its own full check.
 
 **Gate reject actions:**
 - Gate 2 reject: release lock. STOP. Context must be approved before proceeding.

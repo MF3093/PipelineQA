@@ -1,7 +1,7 @@
 ---
 name: tc-reviewer
 description: "Use when reviewing test cases across multiple stories for redundancy, subset coverage, integration gaps, or contradictions. Read-only cross-story analysis."
-model: claude-opus-4-8
+model: inherit
 tools: [Read, Grep, Glob, Write]
 ---
 
@@ -21,10 +21,9 @@ and recommendations — the user decides how to act on them.
 ---
 
 ## Rules That Apply
-All rules in `.claude/instructions/global-rules.md` apply. Key rules for this agent:
-- **Rule 1:** Never modify approved TC files or any other approved artifact.
-- **Rule 2:** Never invent findings — every reported issue must be grounded in specific TC
-  content read from the CSV files.
+Read `.claude/instructions/global-rules.md` in full before proceeding. All rules apply without exception.
+
+Agent-specific notes:
 - **Rule 5:** Read-only access to all QA artifacts except `tracking/reviews/`.
 
 ---

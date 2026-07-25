@@ -21,15 +21,14 @@ Consult that file for authoritative path definitions (test cases, screenshots, p
 ---
 
 ## Rules That Apply
-All rules in `../instructions/global-rules.instructions.md` apply. Key rules for this agent:
-- **Rule 1:** Never modify approved TCs for other stories without explicit user permission.
+Read `../instructions/global-rules.instructions.md` in full before proceeding. All rules apply without exception.
+
+Agent-specific notes:
 - **Rule 2:** Never guess field names, messages, thresholds, or behaviors not documented anywhere in the story. Use any available story content — ACs, `sections[]`, comments — as a valid source. If it is not documented in any story field, log it and reference via assumption-tracker.
 - **Rule 3:** Self-verify all 9 TC rules (Rule 0 through Rule 8) before presenting for approval (Step 7).
-- **Rule 4:** Verify all prerequisites exist and are approved before generating TCs for any story.
 - **Rule 5:** Read from approved files only. Write only to the current story's test-cases folder.
 - **Rule 6:** Every TC is self-contained and runnable in any order — never assume a previous TC has been executed.
 - **Rule 7:** Never regenerate TCs for stories with status `tc_generated` or `approved`.
-- **Rule 8:** Every gap, uncertainty, discrepancy, and blocker must be logged via assumption-tracker before presenting.
 
 ---
 
@@ -51,6 +50,7 @@ All rules in `../instructions/global-rules.instructions.md` apply. Key rules for
 | Screenshots (if `has_screenshots: true`) | `{PROJECT_OUTPUT}/screenshots/{EPIC-KEY}/` (if `has_epics: true`) or `screenshots/{STORY-KEY}/` (if `has_epics: false`) | If `has_epics: true`: all files in the epic folder apply to every story in that epic, loaded once per unique EPIC-KEY per session. If `has_epics: false`: loaded per story from the story-key subfolder. |
 | ExtraResources (if `has_extra_resources: true`) | `{PROJECT_OUTPUT}/ExtraResources/` (root and `{EPIC-KEY}/` if `has_epics: true`, and/or `{STORY-KEY}/`) | Scanned per story/epic at Step 2a. Used to resolve open questions and inform AC interpretation. |
 | Existing assumptions | `{PROJECT_OUTPUT}/tracking/assumptions.md` | Read once at session start. Append during run without re-reading. Re-read only to check for duplicates before adding a new entry. |
+| ExtraResources cache | `{PROJECT_OUTPUT}/cache/extra-resources-summary.md` | If present, used instead of reloading root ExtraResources originals |
 
 ---
 
@@ -74,6 +74,7 @@ All rules in `../instructions/global-rules.instructions.md` apply. Key rules for
 | `{PROJECT_OUTPUT}/stories/parsed/{STORY-KEY}.parsed.json` | Read-only |
 | `{PROJECT_OUTPUT}/screenshots/{EPIC-KEY}/` (if `has_epics: true`) or `screenshots/{STORY-KEY}/` (if `has_epics: false`) (if `has_screenshots: true`) | Read-only |
 | `{PROJECT_OUTPUT}/ExtraResources/` (if `has_extra_resources: true`) | Read-only |
+| `{PROJECT_OUTPUT}/cache/extra-resources-summary.md` (if `has_extra_resources: true`) | Read-only |
 | `{PROJECT_OUTPUT}/test-cases/` | Write |
 | `{PROJECT_OUTPUT}/tracking/assumptions.md` | Write (via assumption-tracker skill only) |
 
@@ -148,29 +149,31 @@ If `has_epics: true`:
 If this step has already run in the current session: use the cached `extra_resources_cache` in working memory. Do not re-list or re-read any folder.
 
 ```
-1. List all contents of {PROJECT_OUTPUT}/ExtraResources/ — once per session.
+1. Check if `{PROJECT_OUTPUT}/cache/extra-resources-summary.md` exists on disk.
+   - Found: read it into working memory as `extra_resources_cache["__project__"]`.
+     Set `extra_resources_available = true`. Skip to step 3.
+   - Not found: proceed with step 2.
+2. List all contents of {PROJECT_OUTPUT}/ExtraResources/ — once per session.
    Separate into: root-level files (no subfolder) and subfolders.
    Store subfolders as `extra_resources_index` in working memory.
-2. Load any files found directly in the root (not inside a subfolder) using the rules in step 5.
+3. Load any files found directly in the root (not inside a subfolder) using the rules in step 6.
    Store extracted facts in working memory: `extra_resources_cache["__project__"]`.
    These apply to ALL stories in the batch.
-3. Collect the set of UNIQUE epic_keys across all stories in the current batch.
-   Stories with no `epic_key` (null or absent) are excluded from this step — they are covered by their story-key subfolder in step 4.
-4. For each non-null unique epic_key:
+4. Collect the set of UNIQUE epic_keys across all stories in the current batch.
+   Stories with no `epic_key` (null or absent) are excluded from this step — they are covered by their story-key subfolder in step 5.
+5. For each non-null unique epic_key:
    a. Check `extra_resources_index` for a subfolder matching that epic_key
       (e.g. ExtraResources/PROJ-EPIC-1/).
-   b. If found: list its contents and load all files using the rules in step 5.
+   b. If found: list its contents and load all files using the rules in step 6.
    c. Store extracted facts in working memory: `extra_resources_cache[epic_key]`.
    If no stories have an epic_key, skip this step entirely.
 5. For each story-key entry in `extra_resources_index` (e.g. ExtraResources/PROJ-101/):
-   a. Load its contents using the rules in step 5.
+   a. Load its contents using the rules in step 6.
    b. Store extracted facts in working memory: `extra_resources_cache[story_key]`.
 6. File handling rules:
-   - .pdf  → read immediately. Summarize key facts relevant to the story's ACs. Common types: technical specs, design documents, prototype documentation.
+   - `.pdf` / `.html` / `.md` → read immediately. Summarize key facts relevant to the story's ACs. Common types: technical specs, design documents, prototype documentation.
      Extract: UI element names, field labels, layout structure, validations, navigation flows, and functional behavior.
      Treat as a UI/functional reference (same purpose as screenshots).
-   - .html → read immediately. Extract UI element names, field labels, layout structure, and functional behavior.
-     Treat as a visual/functional reference (same purpose as screenshots).
    - .docx → do NOT attempt to read. Say immediately:
      "ExtraResources contains '{filename}' which cannot be read as .docx.
       Please save it as PDF or paste the content here." Wait for user.

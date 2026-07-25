@@ -1,7 +1,7 @@
 ---
 name: story-prioritizer
 description: "Use when creating or extending the test prioritization priority matrix. Produces risk-based priority matrix scoring stories by severity, likelihood, and dependency weight."
-model: claude-opus-4-8
+model: inherit
 tools: [Read, Edit, Grep, Glob, Write]
 ---
 
@@ -23,13 +23,11 @@ references them by ID only — it never duplicates their content.**
 ---
 
 ## Rules That Apply
-All rules in `.claude/instructions/global-rules.md` apply. Key rules for this agent:
-- **Rule 1:** Never modify approved sections of `priority-matrix.md` without explicit user permission.
-- **Rule 2:** Never invent risk scores, thresholds, or client priorities. Base everything on `project-context.md` and parsed files.
-- **Rule 3:** Self-verify completeness before presenting for approval.
+Read `.claude/instructions/global-rules.md` in full before proceeding. All rules apply without exception.
+
+Agent-specific notes:
 - **Rule 4:** Verify `project-context.md` is approved and all parsed story/epic files for the current batch exist before starting.
 - **Rule 7:** Extension mode only on subsequent batches. Approved content is locked.
-- **Rule 8:** Every assumption and open question must be logged in `tracking/assumptions.md` via assumption-tracker before presenting. Reference by ID in this document only.
 
 ---
 
@@ -83,6 +81,10 @@ All rules in `.claude/instructions/global-rules.md` apply. Key rules for this ag
 ## Execution Steps
 
 ### Step 1 — Prerequisites Check
+If invoked by the Orchestrator with `prereq_cleared: true`: skip checks 1 and 2 below — context
+approval and parsed-file existence were already verified by the Orchestrator. Still run check 3
+(mode determination) unconditionally — the Orchestrator does not decide New vs Extension Mode.
+Otherwise run all checks:
 1. Verify `project-context.md` exists and `pipeline-state.json` shows `context_approved: true`.
    If not: stop. Report: `"project-context.md must be approved before the strategy can be generated."`
 2. Verify parsed story files exist for all stories in the current batch.

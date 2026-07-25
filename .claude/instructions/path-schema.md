@@ -42,6 +42,8 @@ All QA artifacts for a project are stored in `{PROJECT_OUTPUT}` as defined in `p
 │   ├── archive/                     ← Archived assumption batches
 │   ├── logs/{RUN-ID}.log.md         ← One log per run
 │   └── reviews/                     ← TC Reviewer cross-story/integration reports
+├── cache/
+│   └── extra-resources-summary.md  ← Written by Story Analyzer; read by TC Generator (avoids reload)
 └── config/source-config.md          ← Copied from template at registration
 ```
 
@@ -97,7 +99,7 @@ ExtraResources/
 | Parser | `stories/raw/` | `stories/parsed/` | Always. `epics/parsed/` only if `has_epics: true` |
 | Context Builder | `stories/parsed/` | `context/project-context.md` | — |
 | Story Prioritizer | `stories/parsed/`, `context/` | `strategy/priority-matrix.md`, `strategy/strategy-versions/` | Reads `epics/parsed/` only if `has_epics: true` |
-| TC Generator | `stories/parsed/` | `test-cases/` | Reads `screenshots/` only if `has_screenshots: true`; reads `ExtraResources/` only if `has_extra_resources: true` |
+| TC Generator | `stories/parsed/` | `test-cases/` | Reads `screenshots/` only if `has_screenshots: true`; reads `ExtraResources/` only if `has_extra_resources: true`; reads `cache/extra-resources-summary.md` if present (fallback to ExtraResources root) |
 | Story Analyzer | `stories/parsed/` | (none) | Reads `screenshots/` only if `has_screenshots: true`; reads `epics/parsed/` only if `has_epics: true` |
 | TC Reviewer | `test-cases/`, `strategy/`, `tracking/` | `tracking/reviews/` (optional, user-confirmed) | Read-only cross-story analysis |
 | Orchestrator | `registry/` (all) | `registry/` (all) | Manages folder creation per flags |
