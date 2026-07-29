@@ -20,7 +20,7 @@ To resolve `{PROJECT_OUTPUT}`:
 1. Follow the Fetcher's Role, Rules, Trigger Conditions, and Execution Steps from `.claude/agents/fetcher.md` exactly
 2. Apply all 11 Global Rules from CLAUDE.md
 3. Apply all Path Schema rules from CLAUDE.md
-4. Use `ToolSearch` as the FIRST action (before any Jira MCP call) to load `mcp_atlassian-mcp_getJiraIssue`
+4. Use `ToolSearch` as the FIRST action (before any Jira MCP call) to load `mcp__claude_ai_Atlassian_Rovo__getJiraIssue`
 5. Save raw story/epic JSON files to the correct locations per the path schema
 6. Update registry entries in `fetched-stories.json` and `fetched-epics.json` as specified
 7. Report fetch results to the user (which stories fetched, which failed, field validation results)

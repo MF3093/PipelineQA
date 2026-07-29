@@ -2,13 +2,13 @@
 name: orchestrator
 description: "Use when running the QA pipeline, registering projects, checking pipeline status, starting full or partial runs, or coordinating test case generation workflow. Entry point for all pipeline operations."
 model: inherit
-tools: [Read, Write, Edit, Bash, Grep, Glob, ToolSearch, mcp_atlassian-mcp_getJiraIssue]
+tools: [Read, Write, Edit, Bash, Grep, Glob, ToolSearch, mcp__claude_ai_Atlassian_Rovo__getJiraIssue]
 agents: [fetcher, parser, story-analyzer, context-builder, story-prioritizer, tc-generator, tc-reviewer]
 # NOTE ON PLATFORM DIFFERENCE (not a business-logic change):
 # The Copilot source (.github/agents/orchestrator.agent.md) includes a TEMPORARY WORKAROUND where the
 # Orchestrator executes the Fetcher inline (reads fetcher.agent.md and follows its steps in its own
 # session) instead of invoking it as a subagent — because Copilot does not load deferred tools
-# (tool_search, mcp_atlassian-mcp_getJiraIssue) inside subagent sessions.
+# (tool_search, mcp__claude_ai_Atlassian_Rovo__getJiraIssue) inside subagent sessions.
 # In Claude Code this limitation does NOT apply: Claude Code CAN invoke /fetcher as a normal slash
 # command / subagent, and deferred tools load correctly inside subagent sessions. Therefore, in this
 # Claude Code version, the Orchestrator MUST invoke /fetcher as a subagent/slash command exactly like
@@ -80,7 +80,7 @@ Agent-specific notes:
 | `{PROJECT_OUTPUT}/tracking/logs/{RUN_ID}.log.md` | Write (create at startup, append at each phase/gate) |
 | `{PROJECT_OUTPUT}/tracking/corrections-log.md` | Write (append at gate edits) |
 | All agents (fetcher, parser, context-builder, story-prioritizer, tc-generator, tc-reviewer) | Invoke as subagent (via slash command, e.g. `/fetcher`, `/parser`, `/story-analyzer`, `/context-builder`, `/story-prioritizer`, `/tc-generator`, `/tc-reviewer`) |
-| `mcp_atlassian-mcp_getJiraIssue` (via `ToolSearch`) | Not used directly by the Orchestrator — Jira access belongs exclusively to the Fetcher subagent. Listed here only for parity with the Copilot tools list; see "Explicitly NOT permitted" below. |
+| `mcp__claude_ai_Atlassian_Rovo__getJiraIssue` (via `ToolSearch`) | Not used directly by the Orchestrator — Jira access belongs exclusively to the Fetcher subagent. Listed here only for parity with the Copilot tools list; see "Explicitly NOT permitted" below. |
 
 **Explicitly NOT permitted:**
 - Reading story content, parsed files, context, strategy, or test cases directly.
@@ -355,7 +355,7 @@ On first use, or when user starts a run for an unknown project name:
 
     # Step 3: Reset approval_states (see step 11 below for fields)
     $state.approval_states.fetch_completed = $false
-    $state.approval_states.fetch_completed_at = $null
+    $state.approval_states.fetch_approved_at = $null
     $state.approval_states.tc_approvals = @{}
 
     # Step 4: Write back as proper JSON (single operation)
@@ -372,7 +372,7 @@ On first use, or when user starts a run for an unknown project name:
 
 11. **Reset approval_states for the new run** — write these fields in the same PowerShell operation as step 10 (see code above):
     - fetch_completed → false
-    - fetch_completed_at → null
+    - fetch_approved_at → null
     - tc_approvals → {}
 
     **CRITICAL:** context_approved, context_approved_at, context_version, strategy_approved,
@@ -698,7 +698,9 @@ Run TC Reviewer? (yes / skip)"
   "schema_version": "1.0",
   "project_name": "{name}",
   "output_path": "{absolute path}",
+  "jira_project_key": "{key or null}",
   "last_updated": "{timestamp}",
+  "tool_version": "1.0.0",
 
   "lock": {
     "locked": false,
@@ -708,17 +710,19 @@ Run TC Reviewer? (yes / skip)"
   "current_run": {
     "run_id": "run-20260420-001",
     "batch_id": "batch-20260420-001",
+    "run_type": "{selected option label}",
     "started_at": "{timestamp}",
     "completed_at": null,
     "status": "in_progress",
     "current_phase": "startup",
     "current_story": null,
-    "story_keys_in_run": []
+    "story_keys": [],
+    "daily_batch_counter": 1
   },
 
   "approval_states": {
     "fetch_completed": false,
-    "fetch_completed_at": null,
+    "fetch_approved_at": null,
     "context_approved": false,
     "context_approved_at": null,
     "context_version": 0,
@@ -733,6 +737,8 @@ Run TC Reviewer? (yes / skip)"
   "error_log": []
 }
 ```
+
+**Note:** No `run_history` field. Per-run history is tracked exclusively via `tracking/logs/{RUN_ID}.log.md` — one file per run — never duplicated into `pipeline-state.json`.
 
 ---
 

@@ -18,9 +18,9 @@ To resolve `{PROJECT_OUTPUT}`:
 ## Critical Notes for Claude Code
 
 The agent definition references "subagent" invocations (e.g., "invoke the Fetcher as a subagent"). In Claude Code:
-- Use the corresponding slash command instead: `/fetcher`, `/parser`, etc.
-- Do NOT run them sequentially within a single response
-- Instead: document what needs to be run, let the user invoke the agent, wait for completion, then continue the orchestration
+- Invoke the corresponding agent directly via the Agent tool (subagent_type: fetcher, parser, story-analyzer, context-builder, story-prioritizer, tc-generator, tc-reviewer) — do NOT ask the user to run the `/fetcher`, `/parser`, etc. slash commands themselves.
+- This matches the platform-difference note in `.claude/agents/orchestrator.md`'s frontmatter: Claude Code can invoke subagents directly and load deferred tools inside them, unlike the Copilot source, so no manual hand-off workaround is needed.
+- Wait for each subagent's result before proceeding to the next phase or gate, exactly as the Full Pipeline Sequence table in the agent definition specifies.
 
 ## Instructions
 

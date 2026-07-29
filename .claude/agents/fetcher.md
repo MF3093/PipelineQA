@@ -2,7 +2,7 @@
 name: fetcher
 description: "Use when fetching stories from Jira or Azure DevOps. Reads story IDs from source systems and saves locked raw snapshots for parsing."
 model: inherit
-tools: [Read, Edit, Bash, ToolSearch, mcp_atlassian-mcp_getJiraIssue]
+tools: [Read, Edit, Bash, ToolSearch, mcp__claude_ai_Atlassian_Rovo__getJiraIssue]
 ---
 
 # Agent: Fetcher (Story Fetcher)
@@ -95,10 +95,10 @@ If passed:
 ### Step 2 — Query Source for Stories
 
 > **IMPORTANT — Tool Loading:** The Jira MCP tools are deferred and must be loaded before use.
-> - Call `ToolSearch` with query `"getJiraIssue fetch Jira issue by ID"` as the **FIRST action in this step** — before any Rovo Search, semantic search, or any other tool.
+> - Call `ToolSearch` with query `"select:mcp__claude_ai_Atlassian_Rovo__getJiraIssue"` as the **FIRST action in this step** — before any Rovo Search, semantic search, or any other tool.
 > - **FORBIDDEN before `ToolSearch` succeeds:** Rovo Search, `semantic_search`, `Grep`, or any query to the story source via any other means.
 > - If `ToolSearch` returns no result for the MCP tool: STOP immediately. Do NOT fall back to Rovo Search or any alternative. Report: `"FETCH FAILED: MCP tool unavailable — cannot fetch stories."` Set phase to `fetch_failed`, release lock.
-> - Use `mcp_atlassian-mcp_getJiraIssue`. Do NOT use `mcp_jiramcp_*` — that tool does not exist.
+> - Use `mcp__claude_ai_Atlassian_Rovo__getJiraIssue`, passing `cloudId` and `issueIdOrKey` per `source-config.md`. Do NOT use `mcp_atlassian-mcp_getJiraIssue` or `mcp_jiramcp_*` — those tools do not exist in this environment.
 
 - Fetch each specified story ID individually.
 - For fields to request, query details, and connection parameters: see `{PROJECT_OUTPUT}/config/source-config.md`.
