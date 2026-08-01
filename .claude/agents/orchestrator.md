@@ -75,16 +75,18 @@ Agent-specific notes:
 |---|---|
 | `projects.json` (tool root) | Read + Write |
 | `{PROJECT_OUTPUT}/registry/pipeline-state.json` | Read + Write |
-| `{PROJECT_OUTPUT}/registry/fetched-stories.json` | Read-only |
+| `{PROJECT_OUTPUT}/registry/fetched-stories.json` | Read-only, **except:** write `status → "tc_generated"` and `tc_generated_at` at Gate 4 approval, coalesced with the `pipeline-state.json` write in the same operation (see "TC generation — coalesced per-story writes" below). This is the one named exception — see note below on why it differs from Fetcher/Parser. |
 | `{PROJECT_OUTPUT}/registry/fetched-epics.json` | Read-only |
 | `{PROJECT_OUTPUT}/tracking/logs/{RUN_ID}.log.md` | Write (create at startup, append at each phase/gate) |
 | `{PROJECT_OUTPUT}/tracking/corrections-log.md` | Write (append at gate edits) |
 | All agents (fetcher, parser, context-builder, story-prioritizer, tc-generator, tc-reviewer) | Invoke as subagent (via slash command, e.g. `/fetcher`, `/parser`, `/story-analyzer`, `/context-builder`, `/story-prioritizer`, `/tc-generator`, `/tc-reviewer`) |
 | `mcp__claude_ai_Atlassian_Rovo__getJiraIssue` (via `ToolSearch`) | Not used directly by the Orchestrator — Jira access belongs exclusively to the Fetcher subagent. Listed here only for parity with the Copilot tools list; see "Explicitly NOT permitted" below. |
 
+**Note on registry write ownership:** Fetcher and Parser each write their own phase's `fetched-stories.json` status transition directly (`— → "fetched"`, `"fetched" → "parsed"`) — they own that write because it's a single-file, single-phase update. TC Generation is the deliberate exception: `tc-generator.md` explicitly forbids the TC Generator from touching any registry file, because that transition must be coalesced across two files (`fetched-stories.json` status + `pipeline-state.json` tc_approvals/current_story) in one combined write, right after a Gate 4 approval. The Orchestrator is the only agent touching both files at that point, so it performs the coalesced write. This is a narrow, named exception — not a general pattern for the Orchestrator to write registry files elsewhere.
+
 **Explicitly NOT permitted:**
 - Reading story content, parsed files, context, strategy, or test cases directly.
-- Writing to any folder other than `registry/pipeline-state.json`, `projects.json`, and `tracking/logs/`.
+- Writing to any folder other than `registry/pipeline-state.json`, `projects.json`, `tracking/logs/`, and the single named `fetched-stories.json` exception above.
 - Performing QA analysis, risk assessment, or TC generation.
 - Bypassing approval gates under any circumstance.
 - Executing the fetch phase inline. **(Platform difference from Copilot source — see frontmatter note above.)** In Claude Code, the Orchestrator invokes `/fetcher` as a subagent/slash command like any other agent. It never reads `fetcher.agent.md`/`fetcher.md` and executes its steps in its own session.
@@ -202,7 +204,8 @@ On first use, or when user starts a run for an unknown project name:
    NEVER use unquoted paths in terminal commands. Paths may contain special characters
    (backticks, semicolons, etc.) that could execute arbitrary commands if not escaped.
 
-   Copy `config/source-config.template.md` → `{PROJECT_OUTPUT}/config/source-config.md`.
+   Copy `{TOOL_ROOT}/config/source-config.template.md` → `{PROJECT_OUTPUT}/config/source-config.md`.
+   **Note:** `{TOOL_ROOT}/config/` is this tool's own config directory (where the orchestrator agent files live) — NOT `{PROJECT_OUTPUT}/config/`, which only ever holds the project's own `source-config.md` copy. Template files are never duplicated into the project folder.
    Instruct the user: "Fill in `{PROJECT_OUTPUT}/config/source-config.md` before running the pipeline.
    Set story_source, project_key, and the connection fields for your platform."
 
@@ -210,7 +213,7 @@ On first use, or when user starts a run for an unknown project name:
    - registry/fetched-stories.json → { "schema_version": "1.0", "last_updated": "", "stories": [] }
    - registry/fetched-epics.json  → only if `has_epics: true` → { "schema_version": "1.0", "last_updated": "", "epics": [] }
    - registry/pipeline-state.json → (full schema below, all values at initial state)
-   - tracking/corrections-log.md  → Copy from `config/corrections-log.template.md`
+   - tracking/corrections-log.md  → Copy from `{TOOL_ROOT}/config/corrections-log.template.md`
 
 7. Report: "Project '{name}' registered. Output path: {path}. Ready to start the pipeline."
 8. Proceed to Run Startup.
@@ -368,7 +371,7 @@ On first use, or when user starts a run for an unknown project name:
     - Handles any existing whitespace variations
     - Is maintainable and future-proof
 
-10b. **Create run log:** Copy `config/run-log.template.md` → `{PROJECT_OUTPUT}/tracking/logs/{RUN_ID}.log.md`. Fill in Run Metadata fields (run ID, batch ID, project, started at, run type, story keys). Leave phase log and gate decisions empty — they are populated as the run progresses.
+10b. **Create run log:** Copy `{TOOL_ROOT}/config/run-log.template.md` (this tool's own config directory, not `{PROJECT_OUTPUT}/config/`) → `{PROJECT_OUTPUT}/tracking/logs/{RUN_ID}.log.md`. Fill in Run Metadata fields (run ID, batch ID, project, started at, run type, story keys). Leave phase log and gate decisions empty — they are populated as the run progresses.
 
 11. **Reset approval_states for the new run** — write these fields in the same PowerShell operation as step 10 (see code above):
     - fetch_completed → false
@@ -457,11 +460,27 @@ On first use, or when user starts a run for an unknown project name:
 | 2 | Fetch | `/fetcher` (subagent — Claude Code invokes it as a normal slash command/subagent, not inline. See platform-difference note.) | — | — |
 | 3 | Parse | `/parser` | — | stories status = "parsed" |
 | 3b | Story Analysis | `/story-analyzer` | — | findings logged to assumptions.md |
+| 3b-gate | Story Analysis Review | Orchestrator | **Gate 2b** — continue/pause | current_run.status = "paused" if paused |
 | 3c | Context Build | `/context-builder` | **Gate 2** — approve project-context.md (yes/edit/reject) | context_approved = true — skip if already approved |
 | 4 | Strategy Scope Check | Orchestrator | — | — |
 | 5 | Story Prioritizer | `/story-prioritizer` | **Gate 3** — approve priority-matrix.md (yes/edit/reject) | strategy_approved = true |
 | 6 | TC Generation (per story) | `/tc-generator` | **Gate 4** — approve TCs per story (yes/edit/reject) | status = "tc_generated" |
 | 7 | Run Summary | Orchestrator | — | status = "completed", lock = false |
+
+**Gate 2b — Story Analysis Review:**
+Fires immediately after the Story Analysis phase (3b), before Context Build/Strategy Scope Check.
+- **Trigger condition:** only presents if Story Analyzer logged one or more NEW Open Items (Assumption/Question/Blocker/Discrepancy) this batch. If zero new items were logged, skip silently — do not gate on nothing.
+- **Presentation:** list each new Open Item from this batch — ID, story key, one-line description. Example:
+  ```
+  Story Analysis surfaced N new open item(s) this batch:
+    D-026 — H20-384 — [description]
+    Q-057 — H20-380 — [description]
+    ...
+  Continue to Context Build / Prioritization, or pause here to resolve them first? (continue / pause)
+  ```
+- **Accepted responses:** `continue`, `c` → proceed to phase 3c as normal, items remain open and tracked (not a blocker, just a checkpoint). `pause`, `p` → set `pipeline-state.json → current_run.status = "paused"`, release lock, STOP. On next startup, resume picks up at Context Build for this batch.
+- Any other input: re-prompt — "Please respond with continue or pause."
+- Log the decision in the run log's Gate Decisions section like any other gate.
 
 **Story Prioritizer prereq shortcut (phase 5, same-run continuation only):** When invoking
 Story Prioritizer immediately after Gate 2 within the same continuous run (i.e. not a standalone
@@ -475,7 +494,9 @@ Prioritizer runs its own full check.
 **Gate reject actions:**
 - Gate 2 reject: release lock. STOP. Context must be approved before proceeding.
 - Gate 3 reject: restore archived strategy. Release lock. STOP.
-- Gate 4 reject: ask "skip / stop" — skip continues to next story; stop sets status = "paused".
+- Gate 4 reject: ask "skip / stop" —
+  - **skip:** the story's `fetched-stories.json` status remains `"parsed"` (unchanged — do NOT set `tc_generated`), but add `"TC_GENERATION_SKIPPED"` to its `flags[]` array so a future run doesn't treat it as untouched or silently retry it without the rejection context. Clear `pipeline-state.json → current_run.current_story` for this story, then continue to the next story in the batch.
+  - **stop:** sets `current_run.status = "paused"`, release lock, halt the run entirely (no further stories processed this run).
 
 **Gate input enforcement (mandatory at every gate):**
 At every gate, ONLY accept exact valid responses:
@@ -610,7 +631,11 @@ Before presenting the summary, execute the following in order:
      project_output: {PROJECT_OUTPUT}
    })
    ```
-   This archives ALL entries currently in the Resolved Items section of `assumptions.md`, regardless of which batch they came from. Use the returned `archived_count` and `archive_path` in the summary output below.
+   This archives ALL entries currently in the Resolved Items section of `assumptions.md`, regardless of which batch they came from — every completed run performs a full sweep, not just the current batch's entries. Never leave older resolved items behind to accumulate.
+
+   **Safety cap:** If the sweep would archive more than 50 resolved entries in one operation (e.g. a first-time catch-up on a project with a long backlog), STOP before writing. List the distinct batch IDs involved and their entry counts, and ask: "This will archive {N} resolved entries across {M} batches ({list}). Proceed? (yes / no)" — yes → proceed with the full sweep; no → archive only the current batch's resolved entries instead, and note in the run summary that older entries remain unarchived pending user confirmation.
+
+   Use the returned `archived_count` and `archive_path` in the summary output below.
 
 2. **Write pipeline-state.json** in a single operation:
    - Set `current_run.status = "completed"` and `current_run.completed_at = now`.

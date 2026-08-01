@@ -605,23 +605,42 @@ If a TC field has no value for a required column: use the tool's documented empt
 The primary export file is the only output. No `.md` backup is generated.
 
 ### Test data requirements file (`test-data-requirements.md`)
-One file for the full batch — created on the first story, appended for each subsequent story.
+One file for the project — created on the first story ever generated, appended for each subsequent story across every batch. Do NOT create per-story or per-epic copies — test data is frequently shared across sibling stories (e.g. two stories in the same epic reusing the same aircraft record), and splitting the file would duplicate entries or force cross-file references.
 Location: `{PROJECT_OUTPUT}/test-cases/test-data-requirements.md`
 
-Structure per entry:
+**File structure (fixed — do not deviate):**
 ```markdown
-## TD-{NNN} — {Short description}
+# Test Data Requirements
+
+## Index
+| TD ID | Description | Required By |
+|-------|-------------|-------------|
+| TD-001 | {short description} | H20-52, H20-53 |
+| TD-002 | {short description} | H20-70 |
+...
+
+---
+
+## TD-001 — {Short description}
 **Required by:** {story keys}
 **Description:** {what data is needed and why}
 **Minimum:** {minimum quantity required}
 **Data needed:** {specific field values, IDs, or states required}
+
+---
+
+## TD-002 — {Short description}
+...
 ```
 
 Rules:
-- Assign TD-NNN IDs sequentially across the full batch run.
-- Before adding a new entry: check if the requirement is already covered by an existing TD entry — if so, add the new story key to "Required by" instead of creating a duplicate.
+- Assign TD-NNN IDs sequentially across the full project (not per-batch) — check the highest existing ID before assigning a new one.
+- **Insert new entries in ID-ascending order**, both in the Index table and in the full-entry section below it — do not append new entries at the end of the file regardless of ID. If TD-047 is being added and TD-046/TD-048 already exist, it goes between them in both places.
+- **Use only the flat `## TD-NNN` heading scheme.** Never introduce a story-grouped heading (e.g. `## H20-314 — ...`) as an alternative organizational unit within this file — story association belongs in the "Required by" field, not in a second heading hierarchy.
+- Before adding a new entry: check if the requirement is already covered by an existing TD entry — if so, add the new story key to its "Required by" field (in both the Index row and the full entry) instead of creating a duplicate.
 - Include any environment-level data dependency (e.g. database table contents, cookie state, URL parameters).
-- After the last story: add an "## Open Items" section listing any TD entries that depend on Q-001 (environment availability) or require dev team confirmation.
+- After the last story in a batch: append any new TD entries that depend on unresolved questions or dev-team confirmation directly into the single project-level "## Open Items" section (create it once, near the top after the Index, if it doesn't yet exist — do not create a second "## Open Items" section elsewhere in the file).
+- **Encoding:** write/append using UTF-8 without BOM corruption — if using PowerShell `Set-Content`/`Out-File`, always pass `-Encoding utf8`. Em-dashes and other non-ASCII characters must render correctly, not as mojibake.
 
 ---
 
