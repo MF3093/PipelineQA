@@ -14,6 +14,7 @@ Five human-facing docs cover this project; `CLAUDE.md` and `.github/copilot-inst
 |--------|-----------|
 | New users (setup & workflows, both systems) | [GETTING-STARTED.md](GETTING-STARTED.md) |
 | Agent roster, commands, syntax (both systems) | [QUICK-REFERENCE.md](QUICK-REFERENCE.md) |
+| Architecture diagram (agents, phases, data flow) | [docs/architecture.md](docs/architecture.md) |
 | Keeping both systems in sync | [MAINTENANCE.md](MAINTENANCE.md) |
 | Claude Code agent operating context | [CLAUDE.md](CLAUDE.md) |
 | Copilot agent operating context | [.github/copilot-instructions.md](.github/copilot-instructions.md) |
