@@ -7,20 +7,35 @@ Multi-agent QA test case generation pipeline. You are one of 8 agents operating 
 
 ## Agent Roster & Delegation
 
-| Agent | Invoke | Role |
-|-------|--------|------|
-| Orchestrator | `/orchestrator` | Entry point — sequencing, gates, project registry, state |
-| Fetcher | `/fetcher STORY-KEY` | Only agent touching the story source (Jira/ADO) |
-| Parser | `/parser STORY-KEY` | Raw snapshot → `ParsedStory` schema |
-| Story Analyzer | `/story-analyzer STORY-KEY` | Discrepancy/gap detection, no TC writing |
-| Context Builder | `/context-builder` | First-run project context only |
-| Story Prioritizer | `/story-prioritizer` | Risk-based priority matrix |
-| TC Generator | `/tc-generator STORY-KEY` | Test case generation |
-| TC Reviewer | `/tc-reviewer` | Read-only cross-story review |
+| Agent | `subagent_type` | Role |
+|-------|-----------------|------|
+| Orchestrator | `orchestrator` | Entry point — sequencing, gates, project registry, state |
+| Fetcher | `fetcher` | Only agent touching the story source (Jira/ADO) |
+| Parser | `parser` | Raw snapshot → `ParsedStory` schema |
+| Story Analyzer | `story-analyzer` | Discrepancy/gap detection, no TC writing |
+| Context Builder | `context-builder` | First-run project context only |
+| Story Prioritizer | `story-prioritizer` | Risk-based priority matrix |
+| TC Generator | `tc-generator` | Test case generation |
+| TC Reviewer | `tc-reviewer` | Read-only cross-story review |
 
 Pipeline order: Fetch → Parse → Story Analyze → [Context Build, first run] → Prioritize → TC Generate → [TC Review, optional].
 
-Definitions: `.claude/agents/{name}.md`. Command wiring: `.claude/commands/{name}.md`.
+Definitions: `.claude/agents/{name}.md` — these are the single source of truth. There is no
+separate command-wiring layer.
+
+## Invocation
+
+Every agent is a subagent, launched through the Agent tool with its name as `subagent_type`.
+There are no slash commands for these agents. Two entry points:
+
+- **Full pipeline** — invoke `orchestrator`. It resolves the project, manages every approval
+  gate, and delegates to the other agents in order, passing `{PROJECT_OUTPUT}` and the target
+  story keys to each one.
+- **Single agent (standalone)** — invoke any agent directly, e.g. "run the `parser` agent on
+  TEST-001". Each agent's own **Invocation** section defines how it resolves `{PROJECT_OUTPUT}`
+  from `projects.json` and how it asks for a target when none is given. Standalone runs
+  bypass the Orchestrator's gates and state tracking — use them for targeted re-runs and
+  debugging, not for a full pipeline pass.
 
 ## Scope Discipline
 

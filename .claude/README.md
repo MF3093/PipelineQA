@@ -19,21 +19,23 @@ See `.claude/agents/` directory for 8 agents:
 ### View Instructions
 
 See `.claude/instructions/` directory for:
-- `global-rules.md` - 11 global rules applying to all agents
+- `global-rules.md` - Global rules applying to all agents
 - `path-schema.md` - Standard folder structure and path rules
 
-### Use Slash Commands
+### Invoke an Agent
+
+Every agent is a subagent, launched through the Agent tool with its name as `subagent_type`.
+There are no slash commands. Ask for one by name, for example:
 
 ```
-/orchestrator        # Run pipeline
-/parser TEST-1       # Parse stories
-/fetcher             # Fetch from Jira/ADO
-/story-analyzer      # Analyze discrepancies
-/context-builder     # Build project context
-/story-prioritizer   # Create priority matrix
-/tc-generator        # Generate test cases
-/tc-reviewer         # Review cross-story
+run the orchestrator agent          # full pipeline, with all approval gates
+run the parser agent on TEST-1      # single agent, standalone
+run the tc-reviewer agent           # read-only cross-story review
 ```
+
+A standalone run resolves `{PROJECT_OUTPUT}` from `projects.json` itself (see each agent's
+**Invocation** section) and bypasses the Orchestrator's gates and state tracking. Use it for
+targeted re-runs and debugging; use the Orchestrator for a full pass.
 
 ## Migration Information
 
@@ -61,8 +63,6 @@ See these files for details:
 ├── instructions/
 │   ├── global-rules.md
 │   └── path-schema.md
-├── commands/
-│   └── [8 command files for slash commands]
 └── README.md (this file)
 ```
 
@@ -74,9 +74,9 @@ All original GitHub Copilot agents remain unchanged in `.github/agents/` and `.g
 
 Start with individual agent testing:
 ```
-/orchestrator
-/parser TEST-STORY-1
-/fetcher
+run the orchestrator agent
+run the parser agent on TEST-STORY-1
+run the fetcher agent
 ```
 
 Then proceed to Phase 1 and Phase 2 full pipeline tests.
@@ -88,7 +88,6 @@ See `MIGRATION_REPORT.md` for complete testing recommendations.
 - **Agent details:** See individual `.claude/agents/*.md` files
 - **Rules:** See `.claude/instructions/global-rules.md`
 - **Paths:** See `.claude/instructions/path-schema.md`
-- **Commands:** See `.claude/commands/*.md` for usage examples
 
 ---
 

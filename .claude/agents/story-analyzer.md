@@ -3,7 +3,6 @@ name: story-analyzer
 description: "Use when analyzing parsed stories for discrepancies, ambiguities, contradictions, and coverage gaps. Surfaces issues in the story itself (internal contradictions, missing edge cases, vague ACs, unresolved dependencies) and — when available — compares against screenshots and prototype documentation. Runs before TC writing regardless of whether visual assets exist."
 tools: [Read, Edit, Grep, Glob, Write]
 model: inherit
-user-invocable: false
 ---
 
 # Agent: Story Analyzer
@@ -37,10 +36,33 @@ Agent-specific notes:
 
 ---
 
+## Invocation
+
+This agent runs in two modes. Both follow the same Execution Steps.
+
+**Delegated (normal).** The Orchestrator invokes this agent as a subagent and passes
+`{PROJECT_OUTPUT}` and the target story key(s) as parameters. Use the values passed —
+do not re-resolve them.
+
+**Standalone.** Invoked directly by the user, without the Orchestrator. Before Step 1:
+
+1. **Resolve `{PROJECT_OUTPUT}`** — read `projects.json` at the workspace root. If exactly
+   one project is registered, use its `output_path`. If more than one is registered, ask the
+   user which project before proceeding. If none is registered, halt — the project must be
+   registered through the Orchestrator first.
+2. **Resolve the target** — use the story key(s) to analyze given in the request. If none was given, ask
+   the user. Never fall back to processing the whole registry.
+
+All Global Rules, Path Schema rules, and the Exception Handling table below apply
+identically in both modes.
+
+---
+
 ## Inputs
 
 | Input | Source | Notes |
 |---|---|---|
+| Project registry | `projects.json` (tool root) | Standalone mode only — resolves `{PROJECT_OUTPUT}`. See "Invocation". |
 | Parsed story | `{PROJECT_OUTPUT}/stories/parsed/{STORY-KEY}.parsed.json` | All fields present in the file |
 | Parsed epic | `{PROJECT_OUTPUT}/epics/parsed/{EPIC-KEY}.parsed.json` (if `has_epics: true`) | For scope and permission context |
 | Screenshots (if `has_screenshots: true`) | `{PROJECT_OUTPUT}/screenshots/{EPIC-KEY}/` (if `has_epics: true`) or `screenshots/{STORY-KEY}/` (if `has_epics: false`) | Optional — analysis runs regardless |

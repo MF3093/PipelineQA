@@ -9,10 +9,10 @@ agents: [fetcher, parser, story-analyzer, context-builder, story-prioritizer, tc
 # Orchestrator executes the Fetcher inline (reads fetcher.agent.md and follows its steps in its own
 # session) instead of invoking it as a subagent — because Copilot does not load deferred tools
 # (tool_search, mcp__claude_ai_Atlassian_Rovo__getJiraIssue) inside subagent sessions.
-# In Claude Code this limitation does NOT apply: Claude Code CAN invoke /fetcher as a normal slash
-# command / subagent, and deferred tools load correctly inside subagent sessions. Therefore, in this
-# Claude Code version, the Orchestrator MUST invoke /fetcher as a subagent/slash command exactly like
-# it invokes /parser, /story-analyzer, etc. It must NOT execute the fetch phase inline. This is a
+# In Claude Code this limitation does NOT apply: Claude Code CAN invoke the fetcher agent as a subagent
+# via the Agent tool, and deferred tools load correctly inside subagent sessions. Therefore, in this
+# Claude Code version, the Orchestrator MUST invoke the fetcher subagent exactly like it invokes
+# parser, story-analyzer, etc. It must NOT execute the fetch phase inline. This is a
 # platform-capability correction, not a deviation in business logic — every gate, check, and sequencing
 # rule that governs the Fetch phase is preserved unchanged below.
 ---
@@ -79,7 +79,7 @@ Agent-specific notes:
 | `{PROJECT_OUTPUT}/registry/fetched-epics.json` | Read-only |
 | `{PROJECT_OUTPUT}/tracking/logs/{RUN_ID}.log.md` | Write (create at startup, append at each phase/gate) |
 | `{PROJECT_OUTPUT}/tracking/corrections-log.md` | Write (append at gate edits) |
-| All agents (fetcher, parser, context-builder, story-prioritizer, tc-generator, tc-reviewer) | Invoke as subagent (via slash command, e.g. `/fetcher`, `/parser`, `/story-analyzer`, `/context-builder`, `/story-prioritizer`, `/tc-generator`, `/tc-reviewer`) |
+| All agents (fetcher, parser, story-analyzer, context-builder, story-prioritizer, tc-generator, tc-reviewer) | Invoke as a subagent through the Agent tool, using the agent name as `subagent_type` (`fetcher`, `parser`, `story-analyzer`, `context-builder`, `story-prioritizer`, `tc-generator`, `tc-reviewer`). Never ask the user to launch an agent on your behalf. |
 | `mcp__claude_ai_Atlassian_Rovo__getJiraIssue` (via `ToolSearch`) | Not used directly by the Orchestrator — Jira access belongs exclusively to the Fetcher subagent. Listed here only for parity with the Copilot tools list; see "Explicitly NOT permitted" below. |
 
 **Note on registry write ownership:** Fetcher and Parser each write their own phase's `fetched-stories.json` status transition directly (`— → "fetched"`, `"fetched" → "parsed"`) — they own that write because it's a single-file, single-phase update. TC Generation is the deliberate exception: `tc-generator.md` explicitly forbids the TC Generator from touching any registry file, because that transition must be coalesced across two files (`fetched-stories.json` status + `pipeline-state.json` tc_approvals/current_story) in one combined write, right after a Gate 4 approval. The Orchestrator is the only agent touching both files at that point, so it performs the coalesced write. This is a narrow, named exception — not a general pattern for the Orchestrator to write registry files elsewhere.
@@ -89,7 +89,7 @@ Agent-specific notes:
 - Writing to any folder other than `registry/pipeline-state.json`, `projects.json`, `tracking/logs/`, and the single named `fetched-stories.json` exception above.
 - Performing QA analysis, risk assessment, or TC generation.
 - Bypassing approval gates under any circumstance.
-- Executing the fetch phase inline. **(Platform difference from Copilot source — see frontmatter note above.)** In Claude Code, the Orchestrator invokes `/fetcher` as a subagent/slash command like any other agent. It never reads `fetcher.agent.md`/`fetcher.md` and executes its steps in its own session.
+- Executing the fetch phase inline. **(Platform difference from Copilot source — see frontmatter note above.)** In Claude Code, the Orchestrator invokes the `fetcher` subagent through the Agent tool like any other agent. It never reads `fetcher.agent.md`/`fetcher.md` and executes its steps in its own session.
 - **Fetching story or epic data from Jira, ADO, or any external source.** Fetching is exclusively the Fetcher agent's responsibility. If the Fetcher reports a failure or cannot load its MCP tool, the Orchestrator MUST STOP the run and report the error. The Orchestrator must never call MCP tools, Rovo Search, or any story source API directly — not even as a fallback.
 
 ---
@@ -319,7 +319,7 @@ On first use, or when user starts a run for an unknown project name:
    [7] Update project context (re-run Context Builder)
 
    > **Fetch phase — invoked as a subagent (Claude Code):** For options [1], [2], [3], and [4], the Orchestrator
-   > invokes `/fetcher` as a normal subagent/slash command, exactly as it invokes `/parser`, `/story-analyzer`,
+   > invokes the `fetcher` subagent through the Agent tool, exactly as it invokes `parser`, `story-analyzer`,
    > etc. It does NOT execute the fetch phase inline and does NOT read `fetcher.md`'s steps into its own
    > session. (This differs from the Copilot source, which used a temporary inline-execution workaround
    > because Copilot could not load deferred tools inside subagent sessions — that limitation does not
@@ -431,12 +431,12 @@ On first use, or when user starts a run for an unknown project name:
     Read `{PROJECT_OUTPUT}/config/source-config.md` once and extract the `project_key` field.
     Store it in working memory as `cached_project_key = "{extracted_value}"`.
 
-    When invoking the Parser agent (step 3 of Full Pipeline Sequence below), pass this cached value as the `project_key` input parameter. Invoke as a subagent/slash command:
+    When invoking the Parser agent (step 3 of Full Pipeline Sequence below), pass this cached value as the `project_key` input parameter. Invoke it through the Agent tool with `subagent_type: parser`, stating in the prompt:
     ```
-    /parser {
-      prereq_cleared: true,
-      project_key: cached_project_key
-    }
+    prereq_cleared: true
+    project_key: {cached_project_key}
+    project_output: {PROJECT_OUTPUT}
+    story_keys: {batch story keys}
     ```
 
     **Benefit:** Parser uses the passed parameter instead of re-reading the same file that Fetcher already read.
@@ -457,14 +457,14 @@ On first use, or when user starts a run for an unknown project name:
 | # | Phase | Agent | Gate | State update |
 |---|-------|-------|------|------|
 | 1 | Startup | Orchestrator | — | lock = true |
-| 2 | Fetch | `/fetcher` (subagent — Claude Code invokes it as a normal slash command/subagent, not inline. See platform-difference note.) | — | — |
-| 3 | Parse | `/parser` | — | stories status = "parsed" |
-| 3b | Story Analysis | `/story-analyzer` | — | findings logged to assumptions.md |
+| 2 | Fetch | `fetcher` subagent (Claude Code invokes it through the Agent tool, not inline. See platform-difference note.) | — | — |
+| 3 | Parse | `parser` subagent | — | stories status = "parsed" |
+| 3b | Story Analysis | `story-analyzer` subagent | — | findings logged to assumptions.md |
 | 3b-gate | Story Analysis Review | Orchestrator | **Gate 2b** — continue/pause | current_run.status = "paused" if paused |
-| 3c | Context Build | `/context-builder` | **Gate 2** — approve project-context.md (yes/edit/reject) | context_approved = true — skip if already approved |
+| 3c | Context Build | `context-builder` subagent | **Gate 2** — approve project-context.md (yes/edit/reject) | context_approved = true — skip if already approved |
 | 4 | Strategy Scope Check | Orchestrator | — | — |
-| 5 | Story Prioritizer | `/story-prioritizer` | **Gate 3** — approve priority-matrix.md (yes/edit/reject) | strategy_approved = true |
-| 6 | TC Generation (per story) | `/tc-generator` | **Gate 4** — approve TCs per story (yes/edit/reject) | status = "tc_generated" |
+| 5 | Story Prioritizer | `story-prioritizer` subagent | **Gate 3** — approve priority-matrix.md (yes/edit/reject) | strategy_approved = true |
+| 6 | TC Generation (per story) | `tc-generator` subagent | **Gate 4** — approve TCs per story (yes/edit/reject) | status = "tc_generated" |
 | 7 | Run Summary | Orchestrator | — | status = "completed", lock = false |
 
 **Gate 2b — Story Analysis Review:**
@@ -486,7 +486,7 @@ Fires immediately after the Story Analysis phase (3b), before Context Build/Stra
 Story Prioritizer immediately after Gate 2 within the same continuous run (i.e. not a standalone
 "Story Prioritizer only" invocation), context approval and parsed-file existence for the current
 batch were already confirmed at Gate 2 and the Parse phase (3) respectively — pass
-`prereq_cleared: true` when invoking `/story-prioritizer`. Story Prioritizer still runs its own
+`prereq_cleared: true` when invoking the `story-prioritizer` subagent. Story Prioritizer still runs its own
 mode-determination check (New vs Extension) regardless of this flag. On a standalone invocation
 (Option 6, no prior phases run this session), do NOT set this flag — invoke without it so Story
 Prioritizer runs its own full check.
@@ -565,8 +565,8 @@ Prerequisites: stories exist with `status = "parsed"`, `context_approved = true`
 1. Read `tracking/assumptions.md` for each story in the batch.
 2. Check for any entries of type `Q` (Question) or `D` (Discrepancy) linked to those stories — regardless of status. Their existence means questions were raised and the client was expected to answer in the source system.
 3. If Q or D entries exist for any story:
-   - Invoke Fetcher (`/fetcher`) in re-fetch mode for those stories only. The user's decision to run Phase 2 is the signal that answers are ready in the source system.
-   - Invoke Parser (`/parser`) for the re-fetched stories only (updates parsed files with the new comment content).
+   - Invoke the `fetcher` subagent in re-fetch mode for those stories only. The user's decision to run Phase 2 is the signal that answers are ready in the source system.
+   - Invoke the `parser` subagent for the re-fetched stories only (updates parsed files with the new comment content).
 4. If no Q or D entries exist for any story: skip re-fetch and re-parse entirely. Proceed directly to Context Build / Strategy.
 
 ### Option 4 — Fetch Only
@@ -682,7 +682,7 @@ Presented inline at the end of every run:
 
 Run TC Reviewer? (yes / skip)"
 ```
-- **yes:** invoke `.claude/agents/tc-reviewer.md` (via `/tc-reviewer`). Ask: `"Mode? (cross-story / integration / both)"`
+- **yes:** invoke the `tc-reviewer` subagent through the Agent tool. Ask: `"Mode? (cross-story / integration / both)"`
 - **skip:** end of run.
 
 ---

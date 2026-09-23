@@ -21,25 +21,29 @@ This page is for **quick lookups only**. For step-by-step setup and workflows, s
 
 ---
 
-## Claude Code Commands
+## Claude Code Invocation
 
-All commands use **slash syntax** (`/`):
+Every agent is a **subagent**. There are no slash commands — ask for the agent by name and
+Claude Code launches it through the Agent tool:
 
 ```
-/orchestrator              # Register project or run pipeline
-/fetcher STORY-KEY         # Fetch story from Jira/ADO
-/parser STORY-KEY [...]    # Parse one or more stories
-/story-analyzer STORY-KEY  # Analyze single story
-/context-builder           # Build project context (first run)
-/story-prioritizer         # Create priority matrix
-/tc-generator STORY-KEY    # Generate test cases
-/tc-reviewer               # Cross-story analysis (optional)
+run the orchestrator agent                    # Register project or run pipeline
+run the fetcher agent on STORY-KEY            # Fetch story from Jira/ADO
+run the parser agent on STORY-KEY [...]       # Parse one or more stories
+run the story-analyzer agent on STORY-KEY     # Analyze single story
+run the context-builder agent                 # Build project context (first run)
+run the story-prioritizer agent               # Create priority matrix
+run the tc-generator agent on STORY-KEY       # Generate test cases
+run the tc-reviewer agent                     # Cross-story analysis (optional)
 ```
 
 **Example:**
 ```
-/parser TEST-FMT-001 TEST-FMT-002
+run the parser agent on TEST-FMT-001 and TEST-FMT-002
 ```
+
+Running an agent by itself skips the Orchestrator's approval gates and state tracking. Use
+the Orchestrator for a full pipeline pass; use a single agent for targeted re-runs.
 
 ---
 
@@ -69,14 +73,14 @@ All commands use **agent picker syntax** (`@`) + natural language:
 
 | Task | Claude Code | Copilot |
 |------|---|---|
-| **Run full pipeline** | `/orchestrator` | `@orchestrator: Run full pipeline` |
-| **Fetch stories** | `/fetcher STORY-KEY` | `@fetcher: Fetch STORY-KEY` |
-| **Parse stories** | `/parser STORY-KEY` | `@parser: Parse STORY-KEY` |
-| **Analyze story** | `/story-analyzer STORY-KEY` | `@story-analyzer: Analyze STORY-KEY` |
-| **Build context** | `/context-builder` | `@context-builder: Build context` |
-| **Create priority matrix** | `/story-prioritizer` | `@story-prioritizer: Create matrix` |
-| **Generate test cases** | `/tc-generator STORY-KEY` | `@tc-generator: Generate TCs` |
-| **Review test cases** | `/tc-reviewer` | `@tc-reviewer: Review TCs` |
+| **Run full pipeline** | `run the orchestrator agent` | `@orchestrator: Run full pipeline` |
+| **Fetch stories** | `run the fetcher agent on STORY-KEY` | `@fetcher: Fetch STORY-KEY` |
+| **Parse stories** | `run the parser agent on STORY-KEY` | `@parser: Parse STORY-KEY` |
+| **Analyze story** | `run the story-analyzer agent on STORY-KEY` | `@story-analyzer: Analyze STORY-KEY` |
+| **Build context** | `run the context-builder agent` | `@context-builder: Build context` |
+| **Create priority matrix** | `run the story-prioritizer agent` | `@story-prioritizer: Create matrix` |
+| **Generate test cases** | `run the tc-generator agent on STORY-KEY` | `@tc-generator: Generate TCs` |
+| **Review test cases** | `run the tc-reviewer agent` | `@tc-reviewer: Review TCs` |
 
 ---
 
@@ -86,7 +90,7 @@ All commands use **agent picker syntax** (`@`) + natural language:
 
 **Claude Code:**
 ```
-/orchestrator
+run the orchestrator agent
 → Follow prompts for project name, output path, flags (epics, screenshots, resources)
 ```
 
@@ -102,7 +106,7 @@ All commands use **agent picker syntax** (`@`) + natural language:
 
 **Claude Code:**
 ```
-/orchestrator run
+run the orchestrator agent, full pipeline
 → Select project
 → Enter story IDs: MYPROJ-101, MYPROJ-102
 ```
@@ -120,7 +124,7 @@ All commands use **agent picker syntax** (`@`) + natural language:
 
 **Claude Code:**
 ```
-/parser TEST-FMT-001
+run the parser agent on TEST-FMT-001
 ```
 
 **Copilot:**
@@ -134,7 +138,7 @@ All commands use **agent picker syntax** (`@`) + natural language:
 
 **Claude Code:**
 ```
-/story-analyzer TEST-FMT-001
+run the story-analyzer agent on TEST-FMT-001
 ```
 
 **Copilot:**

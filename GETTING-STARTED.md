@@ -89,9 +89,9 @@ claude
 Start a new project
 ```
 
-**Claude Code:** In a Claude Code session, run:
+**Claude Code:** In a Claude Code session, ask for the agent by name:
 ```
-/orchestrator
+run the orchestrator agent
 ```
 and tell it you want to start a new project.
 
@@ -146,7 +146,7 @@ Project Name: YourProject
 
 **Claude Code:** In a session, start a run:
 ```
-/orchestrator
+run the orchestrator agent
 ```
 and tell it you want to run the pipeline.
 
@@ -337,7 +337,7 @@ Run the pipeline for stories MYPROJ-110, MYPROJ-111
 
 **Claude Code:**
 ```
-/orchestrator
+run the orchestrator agent
 ```
 then tell it to run stories `MYPROJ-110, MYPROJ-111`.
 
@@ -351,9 +351,9 @@ The Context Builder is **skipped** — it reuses the approved `project-context.m
 |---|---|
 | `MCPJira` not connected (Copilot) | Re-authenticate via `MCP: List Servers` in the Command Palette |
 | `MCPJira` not connected (Claude Code) | Run `/mcp` to check status; verify `.mcp.json` exists and is valid; restart Claude Code |
-| Orchestrator says project not found | Run `Start a new project` (Copilot) or `/orchestrator` (Claude Code) to register it |
+| Orchestrator says project not found | Run `Start a new project` (Copilot) or `run the orchestrator agent` (Claude Code) to register it |
 | Gate response not recognized | Use only the accepted values listed above — no punctuation |
 | Agent skips a story | Check `registry/fetched-stories.json` — the story may already be marked as approved |
-| Agent not showing in agent/command picker | Copilot: verify the file exists in `.github/agents/` and has YAML frontmatter starting with `---`, then reload Copilot Chat. Claude Code: verify the command exists in `.claude/commands/`, then restart the CLI |
+| Agent not showing in agent/command picker | Copilot: verify the file exists in `.github/agents/` and has YAML frontmatter starting with `---`, then reload Copilot Chat. Claude Code: verify the agent file exists in `.claude/agents/` and has YAML frontmatter with a `name:` field, then restart the CLI |
 | Permission denied on read/write | Copilot: `File → Trust Folder`, restart Copilot Chat. Claude Code: check `.claude/settings.json` permissions |
 | File path not found | Copy the exact `output_path` from `projects.json`. Use absolute paths only, e.g. `C:\Users\YourName\Documents\MyAppQA` |

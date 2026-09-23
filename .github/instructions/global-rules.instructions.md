@@ -158,3 +158,15 @@ Avoid all conversational filler, greetings, summaries, and introductory or concl
 - Use bullet points or short sentences.
 - Restrict all responses to under 3 sentences or 50 words unless explicitly asked for more detail.
 - This applies to all agents in all interactions.
+
+## Rule 12 — Retry Ceiling on Repeated Failures
+
+If the same tool call (same tool, same target file/endpoint/operation) fails 3 times consecutively with the same or equivalent error:
+- Stop retrying that action immediately.
+- Do not attempt a 4th identical retry.
+- Report the exact action, the error received each time, and the target (file path, endpoint, or resource) to the user.
+- Write a `blocked` entry to `pipeline-state.json` for the current story/step, including the failure reason.
+- Suggest a corrective action if one is evident (e.g., "check MCP connectivity," "verify file path exists").
+
+This does not apply to intentional, varied steps that are part of normal multi-step work (e.g., trying different valid inputs at an approval gate) — only to repeated identical failures on the same action.
+

@@ -3,7 +3,6 @@ name: parser
 description: "Use when parsing raw story snapshots into structured ParsedStory JSON. Normalizes fetched data into the shared contract used by all downstream agents."
 model: inherit
 tools: [Read, Edit, Write, Grep, Glob, Bash]
-user-invocable: false
 ---
 
 # Agent: Parser
@@ -33,10 +32,35 @@ Agent-specific notes:
 
 ---
 
+## Invocation
+
+This agent runs in two modes. Both follow the same Execution Steps.
+
+**Delegated (normal).** The Orchestrator invokes this agent as a subagent and passes
+`{PROJECT_OUTPUT}` and the target story key(s) as parameters. Use the values passed —
+do not re-resolve them.
+
+**Standalone.** Invoked directly by the user, without the Orchestrator. Before Step 1:
+
+1. **Resolve `{PROJECT_OUTPUT}`** — read `projects.json` at the workspace root. If exactly
+   one project is registered, use its `output_path`. If more than one is registered, ask the
+   user which project before proceeding. If none is registered, halt — the project must be
+   registered through the Orchestrator first.
+2. **Resolve the target** — use the story key(s) to parse given in the request. If none was given, ask
+   the user. Never fall back to processing the whole registry.
+3. **Resolve `project_key`** — read it from `{PROJECT_OUTPUT}/config/source-config.md`.
+   In delegated mode the Orchestrator passes it as a parameter instead.
+
+All Global Rules, Path Schema rules, and the Exception Handling table below apply
+identically in both modes.
+
+---
+
 ## Inputs
 
 | Input | Source | Notes |
 |---|---|---|
+| Project registry | `projects.json` (tool root) | Standalone mode only — resolves `{PROJECT_OUTPUT}`. See "Invocation". |
 | Raw story snapshots | `{PROJECT_OUTPUT}/stories/raw/{STORY-KEY}.raw.json` | Read-only, never modified |
 | Raw epic snapshots | `{PROJECT_OUTPUT}/epics/raw/{EPIC-KEY}.raw.json` | Read-only, never modified (if `has_epics: true`) |
 | Story registry | `{PROJECT_OUTPUT}/registry/fetched-stories.json` | Filter: status = "fetched" |
