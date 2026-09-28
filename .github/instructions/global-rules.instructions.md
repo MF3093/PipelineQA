@@ -112,13 +112,6 @@ Uncertainty is not a blocker — it is a tracked output.
 - Every discrepancy between prototype and story ACs must be logged as type `Discrepancy`.
 - Every TC action blocked by a constraint must be logged as type `Blocker`.
 
-**HTML Content Safety (Rule 6 / GAT-006):**
-User-provided content in assumptions.md (answers, edit reasons) may contain HTML/script tags.
-If assumptions.md is exported to HTML or imported to a web UI:
-- Sanitize all user-provided content before rendering (escape `<`, `>`, `"`, `'`, `&`)
-- OR document that assumptions.md must be treated as untrusted content before HTML export
-- Do not render assumptions.md directly in browsers without sanitization
-
 A deliverable with unlogged assumptions is incomplete.
 
 ## Rule 9 — Approval Gate Response Protocol

@@ -19,14 +19,22 @@
 
 ## Phase Log
 
-| # | Phase | Started | Finished | Result | Notes |
-|---|-------|---------|----------|--------|-------|
-| 1 | Fetch | {time} | {time} | {completed / skipped} | {new stories: N, new epics: N, skipped: N} |
-| 2 | Parse | {time} | {time} | {completed / partial} | {flags raised} |
-| 3 | Story Analysis | {time} | {time} | {completed} | {Q/D entries logged} |
-| 4 | Context Build | {time} | {time} | {approved / skipped} | {first run or reuse} |
-| 5 | Story Prioritizer | {time} | {time} | {approved / rejected / skipped} | {new or extension} |
-| 6 | TC Generation | {time} | {time} | {approved / partial / rejected} | {TC count} |
+| # | Phase | Started | Finished | Result | Tokens | Notes |
+|---|-------|---------|----------|--------|--------|-------|
+| 1 | Fetch | {time} | {time} | {completed / skipped} | {N or N+N if re-invoked} | {new stories: N, new epics: N, skipped: N} |
+| 2 | Parse | {time} | {time} | {completed / partial} | {N} | {flags raised} |
+| 3 | Story Analysis | {time} | {time} | {completed} | {N} | {Q/D entries logged} |
+| 4 | Context Build | {time} | {time} | {approved / skipped} | {N} | {first run or reuse} |
+| 5 | Story Prioritizer | {time} | {time} | {approved / rejected / skipped} | {N or N+N if re-invoked} | {new or extension} |
+| 6 | TC Generation | {time} | {time} | {approved / partial / rejected} | {N or N+N+N if re-invoked} | {TC count} |
+| — | **Total** | — | — | — | **{sum}** | — |
+
+> **Tokens column:** each cell is the `subagent_tokens` figure reported in that agent invocation's
+> completion notification. If a phase required more than one invocation (e.g., a halt-and-resume,
+> or a plan/approve/execute split), list each figure separated by `+` and let the reader sum them.
+> This column is filled in by the invoking session (whoever calls the Agent tool), not by the
+> subagent itself — a subagent has no introspective access to its own token usage; that figure is
+> only visible to the invoker, in the completion notification, after the call returns.
 
 ### Fetch Detail
 

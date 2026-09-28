@@ -2,7 +2,7 @@
 name: fetcher
 description: "Use when fetching stories from Jira or Azure DevOps. Reads story IDs from source systems and saves locked raw snapshots for parsing."
 model: inherit
-tools: [Read, Edit, Bash, ToolSearch, mcp__claude_ai_Atlassian_Rovo__getJiraIssue]
+tools: Read, Edit, Bash, ToolSearch, mcp__claude_ai_Atlassian_Rovo__getJiraIssue
 ---
 
 # Agent: Fetcher (Story Fetcher)

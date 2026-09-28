@@ -2,7 +2,7 @@
 name: tc-reviewer
 description: "Use when reviewing test cases across multiple stories for redundancy, subset coverage, integration gaps, or contradictions. Read-only cross-story analysis."
 model: inherit
-tools: [Read, Grep, Glob, Write]
+tools: Read, Grep, Glob, Write
 ---
 
 # Agent: TC Reviewer

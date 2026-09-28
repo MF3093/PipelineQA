@@ -2,7 +2,7 @@
 name: story-prioritizer
 description: "Use when creating or extending the test prioritization priority matrix. Produces risk-based priority matrix scoring stories by severity, likelihood, and dependency weight."
 model: inherit
-tools: [Read, Edit, Grep, Glob, Write]
+tools: Read, Edit, Grep, Glob, Write
 ---
 
 # Agent: Story Prioritizer
@@ -80,6 +80,7 @@ identically in both modes.
 | Priority matrix | `{PROJECT_OUTPUT}/strategy/priority-matrix.md` | New (first run) or extended (subsequent runs) |
 | Archived prior version | `{PROJECT_OUTPUT}/strategy/strategy-versions/priority-matrix-v{N}.md` | Before any extension |
 | Assumption/Question entries | `{PROJECT_OUTPUT}/tracking/assumptions.md` | Via assumption-tracker skill — all uncertainty goes here |
+| Priority plan scratch cache | `{PROJECT_OUTPUT}/cache/priority-plan-{batch_id}.json` | Written after Step 4 self-verification; read back on resume instead of re-running Step 2; deleted once the matrix is approved and written (see Step 4a). |
 
 ---
 
@@ -94,6 +95,7 @@ identically in both modes.
 | `{PROJECT_OUTPUT}/strategy/strategy-versions/` | Write (archives only) |
 | `{PROJECT_OUTPUT}/tracking/assumptions.md` | Write (via assumption-tracker skill only) |
 | `{PROJECT_OUTPUT}/registry/pipeline-state.json` | Write (strategy approval state only) |
+| `{PROJECT_OUTPUT}/cache/priority-plan-{batch_id}.json` | Read/Write (scratch only — see Step 4a) |
 
 **Explicitly NOT permitted:**
 - Accessing the story source or any external system.
@@ -156,7 +158,7 @@ Build an internal understanding of:
   - `2` — Moderate: several stories across multiple functional areas depend on it.
   - `3` — Critical blocker: without this working, most other stories on the page or flow cannot be meaningfully tested.
 
-**Cross-batch re-evaluation (Extension Mode only):** When new stories are added, re-evaluate `Dependency Weight` for ALL existing rows — new stories may introduce new dependencies on previously approved stories. Report any changes in the delta view. `Dependency Weight` and `Functional Role` are the only columns that may be updated on existing approved rows in extension runs.
+**Cross-batch re-evaluation (Extension Mode only):** When new stories are added, re-evaluate `Dependency Weight` only for existing rows that plausibly interact with the new stories: same epic key, or explicitly referenced in the new stories' `dependencies[]` or `comments[]`. Do not re-evaluate rows with no functional-area overlap with the current batch. Report any changes in the delta view, and explicitly note in the delta view that out-of-scope rows were not re-evaluated (e.g. "N existing rows outside this batch's functional areas — not re-evaluated"). `Dependency Weight` and `Functional Role` are the only columns that may be updated on existing approved rows in extension runs.
 
 **Comments as analysis input:** For each parsed story, read `comments[]` as supplementary context alongside the ACs:
 - A comment that contains unresolved debate, client pushback, or a conflicting interpretation of an AC → treat as contributing to **Likelihood** (raise by 1 if it introduces genuine ambiguity not already captured in `questions[]` or `flags[]`).
@@ -219,13 +221,43 @@ It is not saved to any file — it is for user review only.
 ### Step 4 — Self-Verification
 Before presenting for approval:
 - Priority Matrix: every story in the current batch has at least one entry.
-- Priority Matrix: every row has `Dependency Weight` and `Functional Role` populated — no blanks.
-- Priority Matrix: Score = (Severity × Likelihood) + Dependency Weight — verify arithmetic for every row.
+- Priority Matrix: every row has `Dependency Weight` and `Functional Role` populated — no blanks (these are the fields TC Generator and TC Reviewer consume).
+- Priority Matrix: Score = (Severity × Likelihood) + Dependency Weight — spot-check arithmetic on new rows only; not a per-row re-derivation (Score/Severity/Likelihood only drive the ranking display, not downstream agent behavior).
 - Priority Matrix: if the Severity amplifier was applied to any row, verify that the Open Items column of that row references an entry in `tracking/assumptions.md` that documents the absence of a visual design reference for that story.
-- Priority Matrix (extension mode): `Dependency Weight` re-evaluated for all existing rows in light of new stories — changes reported in delta view.
+- Priority Matrix (extension mode): `Dependency Weight` re-evaluated for existing rows with plausible overlap with the new batch (same epic, or referenced in `dependencies[]`/`comments[]`) — changes, and the count of rows skipped as out-of-scope, reported in delta view.
 - All stories with flags are reflected as elevated risks in the Priority Matrix.
 - No approved section has been modified except `Dependency Weight` and `Functional Role` on existing rows (extension mode only).
 - All uncertainty from this run is logged in `tracking/assumptions.md` — none written inline in strategy.
+
+### Step 4a — Persist Analysis to Scratch Cache (before the approval gate)
+
+Immediately after Step 4 self-verification passes (and before presenting Step 5), write the
+full working-memory analysis to a scratch cache file:
+
+`{PROJECT_OUTPUT}/cache/priority-plan-{batch_id}.json`
+
+Include: the risk analysis for every story in this batch (Functional Role, Severity, Likelihood,
+Score, Dependency Weight, amplifier decisions), any cross-batch Dependency Weight re-evaluations,
+the drafted Scope/Out of Scope additions, and the delta view content (Step 3C) if in Extension Mode.
+
+This file is a session scratch artifact, not a project deliverable — it exists only to survive the
+approval-gate pause. It carries no approval status of its own and is not part of the fixed
+path-schema folder list.
+
+**On resume after this gate (same batch, `batch_id` matches):**
+- Read `{PROJECT_OUTPUT}/cache/priority-plan-{batch_id}.json` instead of re-running Step 2
+  (re-reading all parsed stories, parsed epics, and project-context.md for this batch).
+- Skip straight to acting on the user's gate response using the cached analysis.
+- **edit:** apply the requested change to the cached analysis in memory, re-write the cache file,
+  re-present. Only re-run Step 2 for a story if the edit requires re-reading that story's source
+  content (not for a scoring-judgment change).
+
+**Cache lifecycle:**
+- On "yes": write `priority-matrix.md` using the cached analysis; do not re-read parsed stories or
+  epics already captured in the cache.
+- After the file is written and approved: delete the cache file.
+- If the cache file exists but its `batch_id` does not match the current run's batch: ignore it,
+  run Step 2 fresh, and overwrite it.
 
 ### Step 5 — Inline Approval Gate
 ```

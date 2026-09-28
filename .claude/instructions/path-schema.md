@@ -43,7 +43,10 @@ All QA artifacts for a project are stored in `{PROJECT_OUTPUT}` as defined in `p
 │   ├── logs/{RUN-ID}.log.md         ← One log per run
 │   └── reviews/                     ← TC Reviewer cross-story/integration reports
 ├── cache/
-│   └── extra-resources-summary.md  ← Written by Story Analyzer; read by TC Generator (avoids reload)
+│   ├── extra-resources-summary.md         ← Written by Story Analyzer; read by TC Generator (avoids reload)
+│   ├── screenshot-reference-{SCOPE-KEY}.md ← Written by Story Analyzer; read by TC Generator (avoids reload)
+│   ├── priority-plan-{batch_id}.json      ← Scratch: Story Prioritizer's plan across its approval gate; deleted after approval
+│   └── tc-plan-{batch_id}.json            ← Scratch: TC Generator's plan across its approval gate; deleted after last story written
 └── config/source-config.md          ← Copied from template at registration
 ```
 
@@ -98,9 +101,9 @@ ExtraResources/
 | Fetcher | — | `stories/raw/`, `epics/raw/` (if `has_epics: true`) | Skips epic write if has_epics: false |
 | Parser | `stories/raw/` | `stories/parsed/` | Always. `epics/parsed/` only if `has_epics: true` |
 | Context Builder | `stories/parsed/` | `context/project-context.md` | — |
-| Story Prioritizer | `stories/parsed/`, `context/` | `strategy/priority-matrix.md`, `strategy/strategy-versions/` | Reads `epics/parsed/` only if `has_epics: true` |
-| TC Generator | `stories/parsed/` | `test-cases/` | Reads `screenshots/` only if `has_screenshots: true`; reads `ExtraResources/` only if `has_extra_resources: true`; reads `cache/extra-resources-summary.md` if present (fallback to ExtraResources root) |
-| Story Analyzer | `stories/parsed/` | (none) | Reads `screenshots/` only if `has_screenshots: true`; reads `epics/parsed/` only if `has_epics: true` |
+| Story Prioritizer | `stories/parsed/`, `context/` | `strategy/priority-matrix.md`, `strategy/strategy-versions/`, `cache/priority-plan-{batch_id}.json` (scratch) | Reads `epics/parsed/` only if `has_epics: true` |
+| TC Generator | `stories/parsed/` | `test-cases/`, `cache/tc-plan-{batch_id}.json` (scratch) | Reads `screenshots/` only if `has_screenshots: true`; reads `ExtraResources/` only if `has_extra_resources: true`; reads `cache/extra-resources-summary.md` and `cache/screenshot-reference-{SCOPE-KEY}.md` if present (fallback to originals) |
+| Story Analyzer | `stories/parsed/` | `cache/extra-resources-summary.md`, `cache/screenshot-reference-{SCOPE-KEY}.md` (if `has_screenshots: true`) | Reads `screenshots/` only if `has_screenshots: true`; reads `epics/parsed/` only if `has_epics: true` |
 | TC Reviewer | `test-cases/`, `strategy/`, `tracking/` | `tracking/reviews/` (optional, user-confirmed) | Read-only cross-story analysis |
 | Orchestrator | `registry/` (all) | `registry/` (all) | Manages folder creation per flags |
 
@@ -110,7 +113,7 @@ The **Orchestrator** performs folder initialization during project registration.
 
 ### Always Create
 
-**Folders:** `registry/`, `stories/raw/`, `stories/parsed/`, `context/`, `strategy/`, `strategy/strategy-versions/`, `test-cases/`, `tracking/`, `tracking/archive/`, `tracking/reviews/`, `config/`
+**Folders:** `registry/`, `stories/raw/`, `stories/parsed/`, `context/`, `strategy/`, `strategy/strategy-versions/`, `test-cases/`, `tracking/`, `tracking/archive/`, `tracking/reviews/`, `cache/`, `config/`
 
 ### Create Conditionally
 

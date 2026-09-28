@@ -2,7 +2,7 @@
 name: parser
 description: "Use when parsing raw story snapshots into structured ParsedStory JSON. Normalizes fetched data into the shared contract used by all downstream agents."
 model: inherit
-tools: [Read, Edit, Write, Grep, Glob, Bash]
+tools: Read, Edit, Write, Grep, Glob, Bash
 ---
 
 # Agent: Parser

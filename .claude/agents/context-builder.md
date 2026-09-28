@@ -2,7 +2,7 @@
 name: context-builder
 description: "Use when building project context for the first time or updating stable project-wide information (tech stack, conventions, test environment, team setup)."
 model: inherit
-tools: [Read, Edit, Grep, Glob, Write]
+tools: Read, Edit, Grep, Glob, Write
 ---
 
 # Agent: Context Builder

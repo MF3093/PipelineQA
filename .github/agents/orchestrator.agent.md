@@ -353,7 +353,7 @@ On first use, or when user starts a run for an unknown project name:
     
     # Step 3: Reset approval_states (see step 11 below for fields)
     $state.approval_states.fetch_completed = $false
-    $state.approval_states.fetch_completed_at = $null
+    $state.approval_states.fetch_approved_at = $null
     $state.approval_states.tc_approvals = @{}
     
     # Step 4: Write back as proper JSON (single operation)
@@ -370,7 +370,7 @@ On first use, or when user starts a run for an unknown project name:
 
 11. **Reset approval_states for the new run** — write these fields in the same PowerShell operation as step 10 (see code above):
     - fetch_completed → false
-    - fetch_completed_at → null
+    - fetch_approved_at → null
     - tc_approvals → {}
     
     **CRITICAL:** context_approved, context_approved_at, context_version, strategy_approved,
@@ -516,7 +516,34 @@ At every gate decision, the Orchestrator must:
    c. If clean: store reason as-is
    
    Then append an entry to `{PROJECT_OUTPUT}/tracking/corrections-log.md` using the COR-NNN format defined in that file. Record the COR-NNN reference in the run log.
-3. Update the Phase Log table row with the phase result and timing.
+3. Update the Phase Log table row with the phase result, timing, and Tokens column.
+
+**Token logging (mandatory, per phase — fires on EVERY subagent invocation, gate or no gate):**
+This step is independent of gates and must NOT be deferred to the gate logging protocol above —
+Fetch and Parse have no gate at all, and Context Build is frequently skipped, so a rule that only
+fired at gates would systematically miss exactly those phases. Token logging is triggered by the
+subagent *completion notification itself*, not by any approval decision.
+
+The Orchestrator's own definition has no agent-invocation tool — the session that actually invokes
+each subagent (Fetcher, Parser, Story Analyzer, Context Builder, Story Prioritizer, TC Generator,
+TC Reviewer) is the one that receives that agent's token-usage figure, in the completion
+notification, after the call returns. A subagent cannot report its own token usage — it has no
+introspective access to it.
+
+**Do this immediately upon receiving each completion notification, before doing anything else**
+(before presenting a gate, before invoking the next phase's agent, before responding to the user):
+1. Read the token-usage value from the completion notification.
+2. Write it into that phase's **Tokens** cell in the run log's Phase Log table directly — do not
+   hold it in memory "to add later".
+3. If a phase required more than one invocation (halt-and-resume, or a plan/approve/execute split
+   like TC Generator's Step 5 → Step 5a resume → Step 6, or a failed/reissued invocation), append
+   the new figure to the same cell joined by `+` (e.g. `46385+160821+257729`) rather than
+   overwriting — the retries are real cost, not noise to discard.
+4. At run end, sum all Tokens cells into the **Total** row before writing Quality Signals.
+
+**Self-check before Run Summary:** scan the Phase Log table for any executed phase with an empty
+Tokens cell. If found, this is a protocol violation — go back and backfill it from conversation
+history before presenting the summary to the user.
 
 **TC generation — coalesced per-story writes:**
 For each story, two registry writes occur:
@@ -738,7 +765,7 @@ Run TC Reviewer? (yes / skip)"
 
   "approval_states": {
     "fetch_completed": false,
-    "fetch_completed_at": null,
+    "fetch_approved_at": null,
     "context_approved": false,
     "context_approved_at": null,
     "context_version": 0,

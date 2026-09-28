@@ -1,6 +1,6 @@
 ---
 description: "Use when reviewing test cases across multiple stories for redundancy, subset coverage, integration gaps, or contradictions. Read-only cross-story analysis."
-tools: [read, search]
+tools: [read, search, write]
 ---
 
 # Agent: TC Reviewer

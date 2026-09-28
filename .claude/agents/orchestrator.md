@@ -2,8 +2,7 @@
 name: orchestrator
 description: "Use when running the QA pipeline, registering projects, checking pipeline status, starting full or partial runs, or coordinating test case generation workflow. Entry point for all pipeline operations."
 model: inherit
-tools: [Read, Write, Edit, Bash, Grep, Glob, ToolSearch, mcp__claude_ai_Atlassian_Rovo__getJiraIssue]
-agents: [fetcher, parser, story-analyzer, context-builder, story-prioritizer, tc-generator, tc-reviewer]
+tools: Read, Write, Edit, Bash, Grep, Glob, ToolSearch, Task, mcp__claude_ai_Atlassian_Rovo__getJiraIssue
 # NOTE ON PLATFORM DIFFERENCE (not a business-logic change):
 # The Copilot source (.github/agents/orchestrator.agent.md) includes a TEMPORARY WORKAROUND where the
 # Orchestrator executes the Fetcher inline (reads fetcher.agent.md and follows its steps in its own
@@ -508,6 +507,33 @@ or any batch-approval phrase — MUST be treated as ambiguous. Re-present the ga
 "Please respond with yes, edit, or reject for this gate only."
 NEVER interpret a batch approval phrase as applying to the current or any future gate.
 
+**Token logging (mandatory, per phase — fires on EVERY subagent invocation, gate or no gate):**
+This step is independent of gates and must NOT be deferred to "Gate logging protocol" below —
+Fetch and Parse have no gate at all, and Context Build is frequently skipped, so a rule that only
+fired at gates would systematically miss exactly those phases. Token logging is triggered by the
+subagent *completion notification itself*, not by any approval decision.
+
+The Orchestrator's own definition has no `Agent` tool — the session that actually invokes each
+subagent (Fetcher, Parser, Story Analyzer, Context Builder, Story Prioritizer, TC Generator,
+TC Reviewer) is the one that receives that agent's `subagent_tokens` figure, in the completion
+notification, after the call returns. A subagent cannot report its own token usage — it has no
+introspective access to it.
+
+**Do this immediately upon receiving each completion notification, before doing anything else**
+(before presenting a gate, before invoking the next phase's agent, before responding to the user):
+1. Read the `subagent_tokens` value from the `<usage>` block of the notification.
+2. Write it into that phase's **Tokens** cell in the run log's Phase Log table (`Edit` the run log
+   file directly — do not hold it in memory "to add later").
+3. If a phase required more than one invocation (halt-and-resume, or a plan/approve/execute split
+   like TC Generator's Step 5 → Step 5a resume → Step 6, or a failed/reissued invocation), append
+   the new figure to the same cell joined by `+` (e.g. `46385+160821+257729`) rather than
+   overwriting — the retries are real cost, not noise to discard.
+4. At run end, sum all Tokens cells into the **Total** row before writing Quality Signals.
+
+**Self-check before Run Summary:** scan the Phase Log table for any executed phase with an empty
+Tokens cell. If found, this is a protocol violation — go back and backfill it from conversation
+history before presenting the summary to the user.
+
 **Gate logging protocol (mandatory at every gate):**
 At every gate decision, the Orchestrator must:
 1. Record the decision (yes / edit / reject) in the run log under the corresponding Gate Decisions section.
@@ -521,7 +547,26 @@ At every gate decision, the Orchestrator must:
    c. If clean: store reason as-is
 
    Then append an entry to `{PROJECT_OUTPUT}/tracking/corrections-log.md` using the COR-NNN format defined in that file. Record the COR-NNN reference in the run log.
-3. Update the Phase Log table row with the phase result and timing.
+3. Update the Phase Log table row's Result and Notes columns with the gate outcome (Tokens is already
+   handled by the Token logging step above, independent of this gate).
+
+**Before relaying a Gate 4 "yes" to TC Generator for writing:** verify
+`{PROJECT_OUTPUT}/cache/tc-plan-{batch_id}.json` actually exists on disk (`Test-Path`) before
+assuming the plan is resumable. If it does NOT exist (the prior planning invocation failed to
+persist it, per its own Step 5a), do not instruct a "proceed to write" continuation — that will
+force a contextless agent to either fabricate output or correctly refuse. Instead, re-invoke TC
+Generator fresh with full context (see below) so it re-derives the plan itself in one pass.
+
+**Never "resume" a subagent by re-invoking the Agent tool with its prior agentId as a target.**
+The Agent tool's `to`/resume mechanism requires a `SendMessage`-class tool; if that tool is not
+present in this environment's available tool list (check before relying on it), any Agent call
+referencing a previous agentId starts a brand-new, contextless agent instead — it will not
+remember the earlier plan, and per its own Fidelity Contract it should (correctly) refuse to
+fabricate output from an approval message alone. If a plan/approve/execute split agent (e.g. TC
+Generator) needs to continue after a Gate 4 "yes", either (a) confirm a real resume-capable tool
+exists first, or (b) re-invoke that subagent fresh with full context in the prompt — including the
+prior plan's key details and an explicit note that approval is already granted — so it can
+re-derive and write in one pass without a second approval round.
 
 **TC generation — coalesced per-story writes:**
 For each story, two registry writes occur:
