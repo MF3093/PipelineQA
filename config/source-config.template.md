@@ -16,7 +16,7 @@
 ## Jira
 
 ### Connection
-- **MCP Tool:** `mcp_jiramcp_*`
+- **MCP Tool:** `mcp__claude_ai_Atlassian_Rovo__getJiraIssue`
 - **Permission:** Read-only — never create, edit, comment on, transition, or modify any Jira issue
 
 ### Project

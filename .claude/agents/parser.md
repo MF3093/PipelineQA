@@ -100,7 +100,7 @@ identically in both modes.
 - Writing to `context/`, `strategy/`, `test-cases/`, or `pipeline-state.json`.
 - Modifying raw files.
 - Inferring, summarizing, or rewriting any field content.
-- **Reading raw or parsed files from stories outside the current batch.** Do NOT read other stories' `.raw.json` or `.parsed.json` files to study the format or infer structure. The raw file format is fully documented in `.claude/agents/fetcher.md → Raw File Format`. The ParsedStory schema is in `/memories/repo/parser-schema-v2.md`. These are the authoritative references — no file sampling needed.
+- **Reading raw or parsed files from stories outside the current batch.** Do NOT read other stories' `.raw.json` or `.parsed.json` files to study the format or infer structure. The raw file format is fully documented in `.claude/agents/fetcher.md → Raw File Format`. The ParsedStory schema is defined in the "ParsedStory Schema" section of this file (`.claude/agents/parser.md`). These are the authoritative references — no file sampling needed.
 - **Reading files from `test-harness/` or any other project's output folder.** Scope is strictly `{PROJECT_OUTPUT}/stories/raw/` and `{PROJECT_OUTPUT}/epics/raw/` for the current batch.
 
 > **Scoped exception:** `tracking/assumptions.md` - write permitted only via `assumption-tracker` skill invocations. No direct edits to tracking files.

@@ -95,10 +95,12 @@ identically in both modes.
 | `{PROJECT_OUTPUT}/cache/extra-resources-summary.md` | Write (create/overwrite after root ExtraResources load) |
 | `{PROJECT_OUTPUT}/cache/screenshot-reference-{SCOPE-KEY}.md` | Read + Write (create after screenshot load; read to skip reload — see Step 2) |
 | `{PROJECT_OUTPUT}/tracking/assumptions.md` | Write (via assumption-tracker skill only) |
+| `{PROJECT_OUTPUT}/registry/fetched-stories.json` | Read-only (Step 3b dependency chain validation only) |
 
 **Explicitly NOT permitted:**
 - Accessing the story source or any external system.
-- Reading or writing TC files, strategy, context, or registry files.
+- Reading or writing TC files, strategy, context, or pipeline-state.json.
+- Writing to any registry file.
 - Writing findings anywhere other than `tracking/assumptions.md`.
 - Generating test cases or TC plans.
 

@@ -84,7 +84,7 @@ Then:
 
 ### Step 2 — Load TC Data
 For each qualifying story in the batch:
-1. Read `test-cases/{STORY-KEY}-test-cases.csv`.
+1. Read `test-cases/{STORY-KEY}-test-cases.{ext}` (extension determined by project-context.md → Import Format).
 2. Build an in-memory index per story: TC ID → {Summary, Path, Test Type, AC Coverage,
    Steps, Expected Result}.
 

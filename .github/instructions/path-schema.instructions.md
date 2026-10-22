@@ -103,8 +103,8 @@ ExtraResources/
 
 | Agent | Reads | Writes | Notes |
 |-------|-------|--------|-------|
-| Fetcher | — | `stories/raw/`, `epics/raw/` (if `has_epics: true`) | Skips epic write if has_epics: false |
-| Parser | `stories/raw/` | `stories/parsed/` | Always. `epics/parsed/` only if `has_epics: true` |
+| Fetcher | — | `stories/raw/`, `epics/raw/` (if `has_epics: true`), `tracking/logs/{RUN_ID}.log.md` (append) | Skips epic write if has_epics: false |
+| Parser | `stories/raw/` | `stories/parsed/`, `tracking/logs/{RUN_ID}.log.md` (append) | Always. `epics/parsed/` only if `has_epics: true` |
 | Context Builder | `stories/parsed/` | `context/project-context.md` | — |
 | Story Prioritizer | `stories/parsed/`, `context/` | `strategy/priority-matrix.md`, `strategy/strategy-versions/`, `cache/priority-plan-{batch_id}.json` (scratch) | Reads `epics/parsed/` only if `has_epics: true` |
 | TC Generator | `stories/parsed/` | `test-cases/`, `cache/tc-plan-{batch_id}.json` (scratch) | Reads `screenshots/` only if `has_screenshots: true`; reads `ExtraResources/` only if `has_extra_resources: true`; reads `cache/extra-resources-summary.md` and `cache/screenshot-reference-{SCOPE-KEY}.md` if present (fallback to originals) |

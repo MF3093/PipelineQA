@@ -725,7 +725,7 @@ TCs are approved one story at a time, whether running a single story or a batch.
 1. Present the TC table inline with columns: `TC ID | AC | Summary | Path | Priority`.
 2. If open items exist for this story (discrepancies, blockers, skipped ACs): list them below the table before the approval prompt.
 3. Present: `"Approve test cases for {STORY-KEY}? (yes / edit / reject)"`
-   - **yes:** in a single combined write operation: write the primary export file, update `status` to `"tc_generated"` and `tc_generated_at` to the current timestamp in `registry/fetched-stories.json`, add an entry to `pipeline-state.json → tc_approvals`, and set `pipeline-state.json → current_run.current_story = null`. Then proceed to the next story.
+   - **yes:** write the primary export file. Registry updates (`status → "tc_generated"`, `tc_generated_at`, `tc_approvals`, `current_story = null`) are performed by the Orchestrator in a coalesced write — the TC Generator does not touch registry files. Then proceed to the next story.
    - **edit:** user specifies corrections. Apply, re-present the TC table. Repeat until approved.
    - **reject:** do not write file. Do not update registry. Ask: `"Skip this story and continue, or stop the run? (skip / stop)"`
      - skip → proceed to next story.

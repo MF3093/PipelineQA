@@ -255,7 +255,7 @@ On first use, or when user starts a run for an unknown project name:
      Write pipeline-state.json immediately.
      (Lock released at end of run, or on abort/pause/error.)
 
-5. CONTEXT/STRATEGY VERSION CHECK:
+4. CONTEXT/STRATEGY VERSION CHECK:
    Read pipeline-state.json → context_version and strategy_current_version.
    IF context_version > 0 AND strategy_current_version > 0:
      Check whether the strategy was approved after the last context approval:
@@ -266,7 +266,7 @@ On first use, or when user starts a run for an unknown project name:
           Recommend re-running Story Prioritizer before TC generation. Continue anyway? (yes / no)"
          no → STOP. Release lock.
 
-6. RECONCILIATION CHECK (D1):
+5. RECONCILIATION CHECK (D1):
    First, validate fetched-stories.json is parseable JSON. Run this terminal command exactly:
      `try { Get-Content "{PROJECT_OUTPUT}/registry/fetched-stories.json" -Raw | ConvertFrom-Json | Out-Null; Write-Output "VALID" } catch { Write-Output "INVALID" }`
    IF the output is "INVALID":
@@ -276,7 +276,7 @@ On first use, or when user starts a run for an unknown project name:
    IF the output is "VALID": read the file with read_file and continue.
 
    **CACHE RESULT:** Store the parsed fetched-stories.json in working memory as `cached_fetched_stories`. 
-   This result will be reused in Step 13 (RE-FETCH PROTECTION) — do not re-read the file.
+   This result will be reused in Step 12 (RE-FETCH PROTECTION) — do not re-read the file.
 
    **CONDITIONAL VALIDATION (by run type):**
    For each story in cached_fetched_stories:
@@ -300,11 +300,11 @@ On first use, or when user starts a run for an unknown project name:
      yes → reset that story's status to "parsed" in registry, clear current_story.
      skip → leave as-is, flag in run summary.
 
-7. Check if pipeline was previously paused (status = "paused"):
+6. Check if pipeline was previously paused (status = "paused"):
    If yes: "Previous run {run_id} is paused at {current_phase} for story {current_story}.
             Resume from where it stopped, or start a new run? (resume / new)"
 
-8. Ask: "What would you like to do?"
+7. Ask: "What would you like to do?"
    [1] Full run         — provide story IDs, run all phases (Fetch → Parse → Story Analysis → Context Build → Story Prioritizer → TC Generation)
    [2] Phase 1 only     — provide story IDs, early analysis (Fetch → Parse → Story Analysis)
    [3] Phase 2 only     — provide story IDs, TC generation (conditional re-fetch → Context Build (if needed) → Story Prioritizer → TC Generation)
@@ -327,9 +327,9 @@ On first use, or when user starts a run for an unknown project name:
 
    For options [1]–[4]: after selection, immediately ask: "Please provide the story IDs."
 
-9. Generate batch ID: "batch-{YYYYMMDD}-{NNN}" — NNN is a 3-digit counter (001, 002, ...) that resets to 001 each calendar day. Increment for each batch started on the same day. Store the last-used counter in `pipeline-state.json → current_run.daily_batch_counter`.
+8. Generate batch ID: "batch-{YYYYMMDD}-{NNN}" — NNN is a 3-digit counter (001, 002, ...) that resets to 001 each calendar day. Increment for each batch started on the same day. Store the last-used counter in `pipeline-state.json → current_run.daily_batch_counter`.
 
-10. **Write to pipeline-state.json → current_run (CRITICAL — use PowerShell JSON parsing, never regex):**
+9. **Write to pipeline-state.json → current_run (CRITICAL — use PowerShell JSON parsing, never regex):**
     
     **MANDATORY METHOD** (do NOT use Edit tool with regex or string replacement):
     ```powershell
@@ -351,7 +351,7 @@ On first use, or when user starts a run for an unknown project name:
       "current_story" = $null
     }
     
-    # Step 3: Reset approval_states (see step 11 below for fields)
+    # Step 3: Reset approval_states (see step 10 below for fields)
     $state.approval_states.fetch_completed = $false
     $state.approval_states.fetch_approved_at = $null
     $state.approval_states.tc_approvals = @{}
@@ -366,18 +366,18 @@ On first use, or when user starts a run for an unknown project name:
     - Handles any existing whitespace variations
     - Is maintainable and future-proof
 
-10b. **Create run log:** Copy `{TOOL_ROOT}/config/run-log.template.md` (this tool's own config directory, not `{PROJECT_OUTPUT}/config/`) → `{PROJECT_OUTPUT}/tracking/logs/{RUN_ID}.log.md`. Fill in Run Metadata fields (run ID, batch ID, project, started at, run type, story keys). Leave phase log and gate decisions empty — they are populated as the run progresses.
+9b. **Create run log:** Copy `{TOOL_ROOT}/config/run-log.template.md` (this tool's own config directory, not `{PROJECT_OUTPUT}/config/`) → `{PROJECT_OUTPUT}/tracking/logs/{RUN_ID}.log.md`. Fill in Run Metadata fields (run ID, batch ID, project, started at, run type, story keys). Leave phase log and gate decisions empty — they are populated as the run progresses.
 
-11. **Reset approval_states for the new run** — write these fields in the same PowerShell operation as step 10 (see code above):
+10. **Reset approval_states for the new run** — write these fields in the same PowerShell operation as step 9 (see code above):
     - fetch_completed → false
     - fetch_approved_at → null
     - tc_approvals → {}
     
     **CRITICAL:** context_approved, context_approved_at, context_version, strategy_approved,
     strategy_approved_at, and strategy_current_version are project-level and must NOT be reset.
-12. Run centralized prereq checks before invoking any downstream agent this run — skip checks for files already confirmed earlier in this Run Startup sequence:
+11. Run centralized prereq checks before invoking any downstream agent this run — skip checks for files already confirmed earlier in this Run Startup sequence:
     - `projects.json` was already read successfully in Step 1 — do not re-check.
-    - `fetched-stories.json` was already validated and read in Step 6 (cached as `cached_fetched_stories`) — do not re-check.
+    - `fetched-stories.json` was already validated and read in Step 5 (cached as `cached_fetched_stories`) — do not re-check.
     - `pipeline-state.json` was already verified to exist and read in Steps 2-3 — do not re-check.
     - Only the epic registry has not yet been confirmed this run:
     ```
@@ -395,10 +395,10 @@ On first use, or when user starts a run for an unknown project name:
     same flag applies to it without any additional check.
     If it fails: stop. Report missing file. Do not invoke any agent.
 
-13. **RE-FETCH PROTECTION (REC-INT-003):**
+12. **RE-FETCH PROTECTION (REC-INT-003):**
     **For options [1], [2], [3], [4] only (any option involving Fetch phase):**
     
-    **Use cached_fetched_stories from Step 6** — do NOT re-read the file. 
+    **Use cached_fetched_stories from Step 5** — do NOT re-read the file. 
     For each story key provided by the user:
       - Check its `status` field in cached_fetched_stories
       - If status = "parsed" or "tc_generated" or "approved":
@@ -420,7 +420,7 @@ On first use, or when user starts a run for an unknown project name:
         no → release lock, STOP
         yes → proceed with Fetch for remaining stories
 
-14. **PROJECT_KEY CACHING (optimization to avoid Parser re-reading source-config):**
+13. **PROJECT_KEY CACHING (optimization to avoid Parser re-reading source-config):**
     After the Fetch phase completes (before invoking Parser):
     
     Read `{PROJECT_OUTPUT}/config/source-config.md` once and extract the `project_key` field.
@@ -547,7 +547,7 @@ history before presenting the summary to the user.
 
 **TC generation — coalesced per-story writes:**
 For each story, two registry writes occur:
-1. **At generation start:** write `current_story = {STORY-KEY}` to `pipeline-state.json`. This enables crash recovery — if the session ends mid-generation, startup Step 6 will detect the in-progress story.
+1. **At generation start:** write `current_story = {STORY-KEY}` to `pipeline-state.json`. This enables crash recovery — if the session ends mid-generation, startup Step 5 will detect the in-progress story.
 2. **At Gate 4 approval:** write pipeline-state.json, `fetched-stories.json`, and any other registry changes in a single combined operation: `current_story = null` + `tc_approvals` entry + story status change. Do not write separate updates for each micro-transition within a single story's generation cycle.
 
 **Strategy Scope Check (mandatory before TC generation, even in TC-only runs):**
@@ -659,13 +659,13 @@ Before presenting the summary, execute the following in order:
 
    Use the returned `archived_count` and `archive_path` in the summary output below.
 
-2. **Write pipeline-state.json** in a single operation:
+3. **Write pipeline-state.json** in a single operation:
    - Set `current_run.status = "completed"` and `current_run.completed_at = now`.
    - Set `lock.locked = false` and `lock.locked_at = null`.
 
    This write must happen immediately — do not split across multiple writes to avoid leaving the lock held.
 
-3. **Write run log** to `{PROJECT_OUTPUT}/tracking/logs/{RUN-ID}.log.md`:
+4. **Write run log** to `{PROJECT_OUTPUT}/tracking/logs/{RUN-ID}.log.md`:
    - Use the `run-log.template.md` template.
    - Populate all sections: Run Metadata, Phase Log, Gate Decisions, Quality Signals, Incidents.
    - This log is the permanent record of this run — use it for historical queries and audits.
@@ -709,7 +709,7 @@ Run TC Reviewer? (yes / skip)"
 
 ---
 
-## Status Report (option 7)
+## Status Report
 
 ```
 "Pipeline Status — {Project Name}

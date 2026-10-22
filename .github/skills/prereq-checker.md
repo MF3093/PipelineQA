@@ -84,8 +84,6 @@ Resolve the above and retry."
 | Story Analyzer | Story Analyzer | parsed story file + story registry status + assumptions.md |
 | TC Generator | TC Generator | context_approved + strategy_approved + parsed story + 2 TBD field checks |
 | TC Reviewer | TC Reviewer | projects.json + priority-matrix.md + assumptions.md |
-| Bug Reporter | Bug Reporter | projects.json + story registry + epic registry (+ TC file in Mode A) |
-
 Full check definitions for each profile:
 
 ### Fetcher
@@ -151,17 +149,6 @@ checks: [
   { type: "file_exists", path: "{PROJECT_OUTPUT}/tracking/assumptions.md", label: "Assumptions log" }
 ]
 // Additional runtime check (not via prereq-checker): ≥ 2 TC files must exist in test-cases/
-```
-
-### Bug Reporter
-```
-checks: [
-  { type: "file_exists", path: "projects.json", label: "Project registry" },
-  { type: "file_exists", path: "{PROJECT_OUTPUT}/registry/fetched-stories.json", label: "Story registry" },
-  { type: "file_exists", path: "{PROJECT_OUTPUT}/registry/fetched-epics.json", label: "Epic registry" }
-]
-// Mode A only — after story key is resolved from TC ID:
-// { type: "file_exists", path: "{PROJECT_OUTPUT}/test-cases/{STORY-KEY}-test-cases.csv", label: "Test case file for {STORY-KEY}" }
 ```
 
 ---
