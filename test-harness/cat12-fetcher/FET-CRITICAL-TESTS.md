@@ -31,8 +31,6 @@
 - Registry NOT updated (no partial state)
 ```
 
-**Actual Result:** ⏳ PENDING EXECUTION
-
 ---
 
 ## FET-007: Partial Batch Failure
@@ -78,8 +76,6 @@ Story #3 (H20-201):
   - Only fetched if user selected "yes" at halt
   - If fetched: should succeed
 ```
-
-**Actual Result:** ⏳ PENDING EXECUTION
 
 ---
 
@@ -128,8 +124,6 @@ User notification:
   - At resume: "Rate limit cooldown complete. Resuming fetch..."
 ```
 
-**Actual Result:** ⏳ PENDING EXECUTION
-
 ---
 
 ## How to Simulate
@@ -151,14 +145,5 @@ User notification:
 
 ---
 
-## Recording Results
-
-Results logged to: `docs/adversarial-testing.md` → Category 12 (Fetcher)
-
-Format:
-```
-| FET-006 | Jira timeout after 60s | [Description] | [Actual Result] | [Hardening] |
-| FET-007 | Partial batch failure | [Description] | [Actual Result] | [Hardening] |
-| FET-008 | Rate limiting 429 | [Description] | [Actual Result] | [Hardening] |
-```
+Results logged in `docs/adversarial-testing.md` → Category 12.
 

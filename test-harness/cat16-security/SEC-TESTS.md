@@ -23,8 +23,6 @@
 - Email never written to disk unredacted
 ```
 
-**Actual Result:** TBD
-
 ---
 
 ## SEC-002: Passwords Not in TC Output
@@ -43,8 +41,6 @@
 - Test case references password requirements by rule, not example
 - Logs do NOT contain any password-like strings
 ```
-
-**Actual Result:** TBD
 
 ---
 
@@ -66,20 +62,16 @@
 - All sensitive data flagged as [REDACTED — token detected]
 ```
 
-**Actual Result:** TBD
-
 ---
 
 ## Execution Plan
 
-| Test | Setup | Actual Result | Pass Criteria |
-|------|-------|---------------|---|
-| **SEC-001** | Story AC with email, TC Generator run | Email removed or redacted in CSV | PII not exposed in test case files |
-| **SEC-002** | Story AC with password rule, TC Generator run | Password rule tested, no literal passwords in CSV or logs | No passwords in output |
-| **SEC-003** | ExtraResources or story field with token, pipeline run | Token redacted in all downstream files | Secrets not leaked to assumptions/logs |
+| Test | Setup | Pass Criteria |
+|------|-------|---|
+| **SEC-001** | Story AC with email, TC Generator run | PII not exposed in test case files |
+| **SEC-002** | Story AC with password rule, TC Generator run | No passwords in output |
+| **SEC-003** | ExtraResources or story field with token, pipeline run | Secrets not leaked to assumptions/logs |
 
 ---
 
-## Recording Results
-
-Log to: `docs/adversarial-testing.md` → Category 16 (Security - Sensitive Data)
+Results logged in `docs/adversarial-testing.md` → Category 16.

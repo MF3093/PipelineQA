@@ -1,21 +1,42 @@
 {
+  "schema_version": "1.0",
   "project_name": "ORC-002-TEST",
-  "project_key": "ORC2",
-  "run_id": "orc-002-init-2026-06-22",
-  "phase": "initialization",
-  "status": "active",
+  "output_path": "test-harness/orc-002-minimal",
+  "jira_project_key": "ORC2",
+  "last_updated": "2026-06-22T00:00:00Z",
+  "tool_version": "1.0.0",
+
   "lock": {
-    "acquired_at": "2026-06-22T00:00:00Z",
-    "acquired_by": "orchestrator",
-    "expires_at": "2026-06-22T01:00:00Z"
+    "locked": false,
+    "locked_at": null
   },
-  "context_approved": false,
-  "context_approved_at": null,
-  "context_version": 0,
-  "strategy_approved": false,
-  "strategy_approved_at": null,
-  "strategy_version": 0,
-  "tc_approvals": [],
-  "run_history": [],
-  "last_updated": "2026-06-22T00:00:00Z"
+
+  "current_run": {
+    "run_id": null,
+    "batch_id": null,
+    "run_type": null,
+    "started_at": null,
+    "completed_at": null,
+    "status": null,
+    "current_phase": "initialization",
+    "current_story": null,
+    "story_keys": [],
+    "daily_batch_counter": 0
+  },
+
+  "approval_states": {
+    "fetch_completed": false,
+    "fetch_approved_at": null,
+    "context_approved": false,
+    "context_approved_at": null,
+    "context_version": 0,
+    "strategy_approved": false,
+    "strategy_approved_at": null,
+    "strategy_current_version": 0,
+    "scoped_story_keys": [],
+    "scoped_epic_keys": [],
+    "tc_approvals": {}
+  },
+
+  "error_log": []
 }

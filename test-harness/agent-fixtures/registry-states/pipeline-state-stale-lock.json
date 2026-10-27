@@ -17,7 +17,8 @@
     "status": "in_progress",
     "current_phase": "tc_generation",
     "current_story": null,
-    "story_keys_in_run": ["TEST-001", "TEST-002"]
+    "story_keys": ["TEST-001", "TEST-002"],
+    "daily_batch_counter": 1
   },
 
   "approval_states": {
@@ -32,7 +33,5 @@
     "scoped_story_keys": [],
     "scoped_epic_keys": [],
     "tc_approvals": {}
-  },
-
-  "run_history": []
+  }
 }

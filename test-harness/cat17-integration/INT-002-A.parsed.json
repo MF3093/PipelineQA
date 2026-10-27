@@ -1,0 +1,29 @@
+{
+  "key": "TEST-INT-A",
+  "summary": "Flight Status Display — Real-Time Updates",
+  "status": "parsed",
+  "priority": "High",
+  "epic_key": "TEST-EPIC-INT",
+  "description": "As an operations manager, I want to see real-time flight status updates so that I can monitor fleet operations.",
+  "acs": [
+    { "id": "AC-1", "text": "Flight status refreshes every 30 seconds without page reload." },
+    { "id": "AC-2", "text": "Status color coding: green (on time), yellow (delayed), red (cancelled)." },
+    { "id": "AC-3", "text": "Clicking a flight row opens the detail panel with gate, ETA, and crew info." }
+  ],
+  "out_of_scope": [],
+  "questions": [],
+  "sections": [],
+  "figma_links": [],
+  "linked_stories": [],
+  "dependencies": ["TEST-INT-B"],
+  "comments": [
+    {
+      "author": "PM",
+      "created": "2026-06-20T10:00:00Z",
+      "body": "This story depends on TEST-INT-B for the crew API integration. Do not start TC gen until B is parsed."
+    }
+  ],
+  "needs_review": false,
+  "flags": [],
+  "extraction_quality": "standard"
+}

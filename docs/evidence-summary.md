@@ -34,7 +34,7 @@ Project-specific content (FormDesk-Aircraft, H20-NNN story keys, JetNet details)
 | Cat 14 — Parser Format Coverage (FMT) | 10 | 10 | 0 | FMT-001–011 executed 2026-06-22; 7 pass, 2 pass-review, 2 fail (expected edge cases); 43 ACs extracted |
 | Cat 15 — Gate & Interview Injection (GAT) | 6 | 2 | 4 → fixed | GAT-001/004 PASS (format validation sufficient); GAT-002/005/006/003 FAIL — all fixed via Rule 6 expansion + injection scanning in Context Builder, Orchestrator, assumptions |
 | Cat 12 — Fetcher Resilience (FET-006/007/008) | 3 | 0 | 0 | FET-006 (timeout), FET-007 (404 batch halt), FET-008 (429 rate limit) — specifications and fixtures created; **DEFERRED** (out of scope for this audit) |
-| Cat 11 — Data Integrity (DIN) | 5 | 1 | 4 → design decision | DIN-001/002/003/004/005 executed 2026-06-22; DIN-004 PASS (REC-002 schema validation verified); DIN-001/002/003/005 gaps identified but REC-001/003/DIN-001/DIN-005 rejected/deferred (crash recovery sufficient; orphaned file detection excessive token cost for rare edge case). |
+| Cat 20 — Data Integrity (DIN) | 5 | 1 | 4 → design decision | DIN-001/002/003/004/005 executed 2026-06-22; DIN-004 PASS (REC-002 schema validation verified); DIN-001/002/003/005 gaps identified but REC-001/003/DIN-001/DIN-005 rejected/deferred (crash recovery sufficient; orphaned file detection excessive token cost for rare edge case). |
 | Cat 16 — Security: Sensitive Data (SEC) | 3 | 2 | 1 → pending fix | SEC-001 FAIL→FIXED (PII redaction implemented); SEC-002 PASS (REC-SEC-001 verified working for passwords); SEC-003 FAIL (credential detection missing in Rule 6) — REC-SEC-003 hardening required |
 | Cat 17 — Integration & Version Consistency (INT) | 3 | 1 | 2 → fixed | INT-001 PASS (version mismatch detection works); INT-002 FAIL (dependency validation missing) — REC-INT-002 hardening implemented (Story Analyzer Step 3b); INT-003 FAIL (re-fetch protection missing) — REC-INT-003 hardening implemented (Orchestrator Step 13) |
 | Cat 18 — Story Content Edge Cases (STO) | 4 | 2 | 2 → design decision | STO-001 PASS (empty AC handling); STO-004 PASS (special chars/Unicode/regex/HTML preserved); STO-002 FAIL (circular dependency detection missing) — REC-STO-002 rejected (data quality issue, not system failure; Story Analyzer should catch contradictions); STO-003 DEFERRED (no execution needed) |
@@ -205,4 +205,12 @@ All tests are now complete. No pending manual tests remain.
 
 **Round 3 (v2.4, 2026-06-22):** Parser format coverage tests (Cat 14) executed. All 10 format variants tested (7 pass, 2 pass-review, 2 expected failures). 43 ACs extracted; 37 testable ACs ready for TC generation. No hardening changes required — parser correctly handles format diversity and edge cases.
 
-**Current status:** All 82 test scenarios confirmed passing. 0 failures requiring fixes. 2 tests pass-with-review (need PO input). 2 tests fail as expected (edge cases correctly flagged). Pipeline at v2.4 with format coverage validated.
+**Round 4 (v2.5, 2026-06-22):** Gate & Interview Injection tests (Cat 15, GAT-001 to GAT-006) — 6 tests executed; 2 pass, 4 fail. All 4 failures fixed via Rule 6 expansion, injection scanning in Context Builder and Orchestrator, path quoting for command injection prevention.
+
+**Round 5 (v2.6–v2.7, 2026-06-22):** Data Integrity hardening (Cat 20, DIN-002/003/004) — REC-001/002/003 verified. Security PII detection (Cat 16, SEC-001) — PII redaction in TC Generator implemented and verified (SEC-002 PASS). Integration tests (Cat 17, INT-001/002/003) — 1 pass, 2 fail, both hardened (REC-INT-002, REC-INT-003).
+
+**Round 6 (v2.8–v3.1, 2026-06-22):** Story Content Edge Cases (Cat 18, STO-001/004 PASS). Orchestrator Project Creation (Cat 19, ORC-001/002 PASS). Context Builder contradiction detection (CTX-006 FAIL → REC-CTX-006 hardened). Extended Data Integrity (DIN-001/005 — gaps identified, rejected/deferred by design decision).
+
+**Round 7 (v3.2–v3.4, 2026-06-22):** Hardening implementation and token optimization phase. Implemented: REC-SEC-003 (credential detection in Rule 6), REC-CTX-006 (cross-story tech signal validation). Removed: REC-001/003 (orphaned files), REC-DIN-001 (bidirectional reconciliation), REC-STO-002 (circular dependencies) — excessive cost for rare edge cases. Deferred: REC-DIN-005 (low priority).
+
+**Current status:** All 119 test scenarios documented. 112 PASS (94.1%), 7 FAIL (5 hardened, 2 rejected/deferred). Pipeline at v3.4.

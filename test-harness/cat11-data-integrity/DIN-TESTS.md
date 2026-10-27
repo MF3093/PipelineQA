@@ -1,4 +1,4 @@
-# Category 11 — Data Integrity Tests (DIN)
+# Category 20 — Data Integrity Tests (DIN)
 
 **Tests:** DIN-002, DIN-003, DIN-004  
 **Priority:** 🟡 HIGH (orphaned files, schema mismatch can corrupt pipeline state)  
@@ -45,8 +45,6 @@ On ignore:
 - Continue run
 ```
 
-**Actual Result:** ⏳ PENDING EXECUTION
-
 ---
 
 ## DIN-003: TC CSV Exists But Not Registered
@@ -90,8 +88,6 @@ On ignore:
 - Flag in tracking/assumptions.md
 - Risk: TCs might be re-generated, creating duplicates
 ```
-
-**Actual Result:** ⏳ PENDING EXECUTION
 
 ---
 
@@ -140,28 +136,17 @@ On halt:
 - User must manually investigate/fix
 ```
 
-**Actual Result:** ⏳ PENDING EXECUTION
-
 ---
 
 ## Execution Plan
 
-| Test | Setup | Actual Result | Pass Criteria |
-|------|-------|---------------|---------------|
-| **DIN-002** | Create orphaned raw file | Alert shown, recovery offered | File detected, user given options |
-| **DIN-003** | Create orphaned TC file | Alert shown, recovery offered | File detected, clean resolution |
-| **DIN-004** | Create invalid parsed file | Schema validation fails, error shown | Mismatch detected, halt/skip/rerun |
+| Test | Setup | Pass Criteria |
+|------|-------|---------------|
+| **DIN-002** | Create orphaned raw file | File detected, user given options |
+| **DIN-003** | Create orphaned TC file | File detected, clean resolution |
+| **DIN-004** | Create invalid parsed file | Mismatch detected, halt/skip/rerun |
 
 ---
 
-## Recording Results
-
-Log to: `docs/adversarial-testing.md` → Category 11 (Data Integrity)
-
-Format:
-```
-| DIN-002 | Raw file orphaned | [Expected] | [Actual] | [Hardening] |
-| DIN-003 | TC file orphaned | [Expected] | [Actual] | [Hardening] |
-| DIN-004 | Schema mismatch | [Expected] | [Actual] | [Hardening] |
-```
+Results logged in `docs/adversarial-testing.md` → Category 20.
 

@@ -120,7 +120,7 @@ Verifies the Orchestrator does not re-ask registration questions for a known pro
 ### ORC-004 — Run Menu: Invalid Input Rejected
 
 **What is being tested:**
-Menu input enforcement: "Accept ONLY a single digit 1–8. Any other input — including phrases — must be rejected."
+Menu input enforcement: "Accept ONLY a single digit 1–7. Any other input — including phrases — must be rejected."
 
 **Pre-conditions:**
 - At least one project registered in `projects.json`
@@ -131,15 +131,19 @@ Menu input enforcement: "Accept ONLY a single digit 1–8. Any other input — i
    - `run the pipeline`
    - `yes`
    - `0`
+   - `8`
    - `9`
    - `full run`
    - ` ` (blank)
+   - `1.5`
+   - `-1`
+   - `99`
 
 **Expected behavior:**
 For each input:
 - Orchestrator does NOT interpret it as any option
-- Re-presents the full 1–8 menu
-- Says: `"Please select an option by entering a number from 1 to 8."`
+- Re-presents the full 1–7 menu
+- Says: `"Please select an option by entering a number from 1 to 7."`
 
 **Failure modes:**
 - Any of the above inputs triggers a pipeline action
@@ -363,10 +367,10 @@ Run Startup behavior when a registered project's `output_path` no longer exists 
 
 ---
 
-### ORC-013 — Option 8: Re-run Context Builder Flow
+### ORC-013 — Option 7: Re-run Context Builder Flow
 
 **What is being tested:**
-Option 8 (Update project context): confirmation prompt, current version archived, new draft produced, Gate 2 re-approval required.
+Option 7 (Update project context): confirmation prompt, current version archived, new draft produced, Gate 2 re-approval required.
 
 **Fixture:** `ORC-013-pipeline-state.fixture.json`
 
@@ -376,7 +380,7 @@ Option 8 (Update project context): confirmation prompt, current version archived
 2. Ensure `{PROJECT_OUTPUT}/context/project-context.md` exists
 
 **Steps:**
-1. Load `@orchestrator`, select project, choose Option 8
+1. Load `@orchestrator`, select project, choose Option 7
 
 **Expected behavior:**
 - Orchestrator confirms: `"project-context.md is already approved. Re-running will archive the current version. Continue? (yes / no)"`

@@ -17,7 +17,8 @@
     "status": null,
     "current_phase": null,
     "current_story": null,
-    "story_keys_in_run": []
+    "story_keys": [],
+    "daily_batch_counter": 0
   },
 
   "approval_states": {
@@ -34,5 +35,5 @@
     "tc_approvals": {}
   },
 
-  "run_history": []
+  "error_log": []
 }

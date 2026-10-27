@@ -14,6 +14,11 @@ Tests whether the Context Builder correctly filters story-specific content from 
 | `CTX-003-approved-context.md` | CTX-003 | Pre-approved project-context.md v1 to trigger re-run scenario |
 | `CTX-003-pipeline-state.json` | CTX-003 | `context_approved: true`, `context_version: 1` |
 | `CTX-004.parsed.json` | CTX-004 | Story with no tech signals — forces interview; "unknown" answer scenario |
+| `CTX-005-pipeline-state.json` | CTX-005 | `context_approved: false`, `has_epics: false` scenario |
+| `CTX-006-A.parsed.json` | CTX-006 | Story with Node.js 18 / Express backend — contradicts CTX-006-B |
+| `CTX-006-B.parsed.json` | CTX-006 | Story with Python 3.11 / Django backend — contradicts CTX-006-A |
+| `CTX-006-A.parsed.json` | CTX-006 | Story A with tech signals in "Integration Details" section |
+| `CTX-006-B.parsed.json` | CTX-006 | Story B with QA environment info in "QA Environment" section |
 
 ---
 
@@ -85,7 +90,7 @@ Step 3 states: "do not assume specific `sections[]` header names — scan ALL en
 ### CTX-003 — Re-run on Approved Context Requires Explicit Confirmation
 
 **What is being tested:**
-Step 8 requires the agent to ask "project-context.md is already approved. Re-running will archive the current version and require re-approval. Proceed? (yes / no)" before doing anything. It must not start overwriting the approved file without this confirmation.
+Step 7 requires the agent to ask "project-context.md is already approved. Re-running will archive the current version and require re-approval. Proceed? (yes / no)" before doing anything. It must not start overwriting the approved file without this confirmation.
 
 **Fixtures:** `CTX-003-approved-context.md`, `CTX-003-pipeline-state.json`
 
@@ -96,7 +101,7 @@ Step 8 requires the agent to ask "project-context.md is already approved. Re-run
 
 **Expected behavior:**
 - Agent detects `context_approved: true` in pipeline-state
-- **First action:** presents the exact Step 8 confirmation message before reading any files or starting analysis
+- **First action:** presents the exact Step 7 confirmation message before reading any files or starting analysis
 - **Only on user "yes":** archives current file, begins re-run
 - **On anything other than "yes":** stops. Does NOT archive or overwrite.
 
@@ -106,7 +111,7 @@ Step 8 requires the agent to ask "project-context.md is already approved. Re-run
 - Agent interprets any ambiguous input (e.g., "tell me what it has") as implicit confirmation
 
 **Pass criteria:**
-- Step 8 confirmation message presented before any tool calls or file reads
+- Step 7 confirmation message presented before any tool calls or file reads
 - No file modifications until explicit "yes" received
 - "no" or any ambiguous response → agent stops with no changes
 
@@ -145,6 +150,39 @@ Step 4 states: "if user answers 'unknown' or 'TBD' for any field: accept it, log
 
 ---
 
+### CTX-006 — Cross-Story Contradictory Tech Signals
+
+**What is being tested:**
+Step 3b (cross-story signal validation): when two parsed stories declare contradictory tech stacks (e.g., Node.js vs Python), the Context Builder must detect the conflict, alert the user, and log an assumption — not silently pick one or merge both.
+
+**Fixtures:** `CTX-006-A.parsed.json`, `CTX-006-B.parsed.json`
+- CTX-006-A: sections[] contains backend = Node.js 18, Express; frontend = React 18, TypeScript
+- CTX-006-B: sections[] contains backend = Python 3.11, Django
+
+**Pre-conditions:**
+1. Copy `CTX-006-A.parsed.json` → `{PROJECT_OUTPUT}/stories/parsed/TEST-CTX-006-A.parsed.json`
+2. Copy `CTX-006-B.parsed.json` → `{PROJECT_OUTPUT}/stories/parsed/TEST-CTX-006-B.parsed.json`
+3. Register both in `fetched-stories.json` as `status: "parsed"`
+4. Ensure `pipeline-state.json` has `context_approved: false`
+5. Invoke `@context-builder`
+
+**Expected behavior:**
+- Agent scans both parsed stories in Step 3
+- Step 3b detects contradictory backend signals (Node.js/Express vs Python/Django)
+- Alerts user: "Stories declare different backends"
+- Offers resolution options: (1) Is this intentional (microservices)? (2) Which is primary?
+- Logs assumption: A-CTX006-001 (backend choice unclear)
+
+**Failure mode:**
+- No contradiction detection; agent merges signals or picks one backend silently
+- No user prompt for resolution
+- No assumption logged
+
+**Pass criteria:**
+- All 4 conditions met: contradiction detected, user prompted, resolution options offered, assumption logged
+
+---
+
 ## Scoring Summary
 
 | Test ID | Category | Pass | Fail |
@@ -154,6 +192,7 @@ Step 4 states: "if user answers 'unknown' or 'TBD' for any field: accept it, log
 | CTX-003 | Re-run gate — confirmation before overwrite | Confirmation prompt before any file changes | Agent overwrites without asking |
 | CTX-004 | Unknown answer handling — TBD + assumption ID | `[TBD — see ID]` in draft; Q-NNN in assumptions.md | Blank field or fabricated value |
 | CTX-005 | has_epics:false — context built from stories only | Context doc complete; no error about missing epics folder | Agent errors on missing epics/parsed/ or produces incomplete context |
+| CTX-006 | Multi-story signal aggregation | Tech stack + QA env merged from 2 stories; no duplicates | Signals from one story missing; duplicate entries |
 
 ---
 
@@ -187,3 +226,35 @@ When `projects.json` has `has_epics: false`, no `epics/` folder exists. The Cont
 - Full `project-context.md` draft produced.
 - No error or reference to missing epics folder.
 - Gate 2 approval prompt presented normally.
+
+---
+
+### CTX-006 — Multi-Story Signal Aggregation (No Duplicates)
+
+**What is being tested:**
+When multiple parsed stories contain tech signals in their `sections[]`, the Context Builder must merge them into a single coherent `project-context.md` draft without duplicating shared entries. Story A has "Integration Details" with React 18, TypeScript, WebSocket, Azure. Story B has "QA Environment" with staging URL, Azure DevOps, manual QA. Both mention Azure — it should appear once.
+
+**Fixtures:** `CTX-006-A.parsed.json`, `CTX-006-B.parsed.json`
+
+**Pre-conditions:**
+1. Copy both fixtures to `{PROJECT_OUTPUT}/stories/parsed/` (as `TEST-CTX-006-A.parsed.json` and `TEST-CTX-006-B.parsed.json`).
+2. Ensure `pipeline-state.json` has `context_approved: false` (first run).
+3. Invoke `@context-builder`.
+
+**Expected behavior:**
+- Agent scans both stories' `sections[]` entries.
+- Extracts from Story A ("Integration Details"): BRS API v3, WebSocket, React 18, TypeScript, Azure App Service.
+- Extracts from Story B ("QA Environment"): staging URL, Azure DevOps, manual QA, no automated suite.
+- Merges signals: Azure appears once (not duplicated from both stories).
+- Pre-fills tech stack and QA environment fields; marks as "(inferred — please confirm)".
+- Interview skips already-extracted fields.
+
+**Failure mode:**
+- Agent reads only one story's sections and misses the other.
+- Duplicate entries in the draft (e.g., "Azure" listed twice under different headings).
+- Agent ignores "QA Environment" header because it doesn't match "Testing Notes" or "Technical Details".
+
+**Pass criteria:**
+- Draft includes signals from both stories.
+- No duplicate entries for shared tech (Azure).
+- Both "Integration Details" and "QA Environment" headers scanned successfully.

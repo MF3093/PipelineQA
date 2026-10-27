@@ -32,8 +32,6 @@ Story Analyzer Step 1b (Schema Validation):
                             (b) Skip story and mark as blocked"
 ```
 
-**Actual Result:** TBD
-
 ---
 
 ## STO-002: Story with Circular Dependencies
@@ -55,8 +53,6 @@ Orchestrator Step 12 (Dependency Resolution or TC Generator prereq):
 - Offers: (a) Mark A→B as optional, (b) Mark B→A as optional, (c) Skip both
 - Does NOT proceed with TC generation until resolved
 ```
-
-**Actual Result:** TBD
 
 ---
 
@@ -87,8 +83,6 @@ TC Generator:
 - May warn: "Generated [N] test cases from 75 ACs. Consider splitting story."
 - All TCs written to CSV (no truncation)
 ```
-
-**Actual Result:** TBD
 
 ---
 
@@ -123,21 +117,17 @@ TC Generator:
 - No data loss, no execution of HTML or regex
 ```
 
-**Actual Result:** TBD
-
 ---
 
 ## Execution Plan
 
-| Test | Setup | Actual Result | Pass Criteria |
-|------|-------|---|---|
-| **STO-001** | Story with zero ACs | Parser extracts empty array; Analyzer flags question or blocker | Empty ACs handled gracefully, question logged |
-| **STO-002** | Circular dependencies A↔B | Dependency cycle detected before TC gen; user alerted | Circular dependencies detected, pipeline halts |
-| **STO-003** | Story with 75 ACs | All 75 parsed and TCs generated (no truncation) | High complexity handled, no data loss |
-| **STO-004** | AC with regex, emoji, HTML | Special chars preserved in parsed JSON and CSV (properly escaped) | Special characters and Unicode handled safely |
+| Test | Setup | Pass Criteria |
+|------|-------|---|
+| **STO-001** | Story with zero ACs | Empty ACs handled gracefully, question logged |
+| **STO-002** | Circular dependencies A↔B | Circular dependencies detected, pipeline halts |
+| **STO-003** | Story with 75 ACs | High complexity handled, no data loss |
+| **STO-004** | AC with regex, emoji, HTML | Special characters and Unicode handled safely |
 
 ---
 
-## Recording Results
-
-Log to: `docs/adversarial-testing.md` → Category 18 (Story Content Edge Cases)
+Results logged in `docs/adversarial-testing.md` → Category 18.

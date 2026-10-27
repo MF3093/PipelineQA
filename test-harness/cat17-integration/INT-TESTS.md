@@ -28,8 +28,6 @@ Orchestrator Step 5 (CONTEXT/STRATEGY VERSION CHECK):
 - On 'yes': warn but continue.
 ```
 
-**Actual Result:** TBD
-
 ---
 
 ## INT-002: Story Dependency Chain Verification
@@ -52,8 +50,6 @@ TC Generator Step 2 (Prerequisites):
                Or mark dependency as 'unblocked' if not applicable to this batch."
 - Halts TC generation until dependency is resolved.
 ```
-
-**Actual Result:** TBD
 
 ---
 
@@ -81,20 +77,16 @@ Orchestrator Run 2:
 - On 'yes': proceed with re-fetch (requires explicit approval).
 ```
 
-**Actual Result:** TBD
-
 ---
 
 ## Execution Plan
 
-| Test | Setup | Actual Result | Pass Criteria |
-|------|-------|---|---|
-| **INT-001** | Context v1 → v2, strategy remains v1, start TC gen | Warning shown if strategy approved before context update | Version mismatch detected, warning shown |
-| **INT-002** | Story-A depends on Story-B (not yet parsed) | Dependency check halts TC gen, user alerted | Dependencies validated before TC generation |
-| **INT-003** | Run 1 fetches A,B,C; Run 2 sees same stories already parsed | Orchestrator does not re-fetch without approval | Registry state preserved across runs |
+| Test | Setup | Pass Criteria |
+|------|-------|---|
+| **INT-001** | Context v1 → v2, strategy remains v1, start TC gen | Version mismatch detected, warning shown |
+| **INT-002** | Story-A depends on Story-B (not yet parsed) | Dependencies validated before TC generation |
+| **INT-003** | Run 1 fetches A,B,C; Run 2 sees same stories already parsed | Registry state preserved across runs |
 
 ---
 
-## Recording Results
-
-Log to: `docs/adversarial-testing.md` → Category 17 (Integration & Version Consistency)
+Results logged in `docs/adversarial-testing.md` → Category 17.

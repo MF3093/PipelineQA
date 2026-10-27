@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "project_name": "TEST-RUN-BASELINE",
+  "output_path": "test-harness/cat13-execution/baseline-output",
+  "jira_project_key": null,
+  "last_updated": "2026-06-20T10:00:00Z",
+  "tool_version": "1.0.0",
+  "lock": { "locked": false, "locked_at": null },
+  "current_run": {
+    "run_id": null,
+    "batch_id": null,
+    "run_type": null,
+    "started_at": null,
+    "completed_at": null,
+    "status": null,
+    "current_phase": null,
+    "current_story": null,
+    "story_keys": [],
+    "daily_batch_counter": 0
+  },
+  "approval_states": {
+    "fetch_completed": true,
+    "fetch_approved_at": "2026-06-20T09:00:00Z",
+    "context_approved": true,
+    "context_approved_at": "2026-06-20T09:05:00Z",
+    "context_version": 1,
+    "strategy_approved": true,
+    "strategy_approved_at": "2026-06-20T09:10:00Z",
+    "strategy_current_version": 1,
+    "scoped_story_keys": ["TEST-RUN-001", "TEST-RUN-002", "TEST-RUN-003"],
+    "scoped_epic_keys": [],
+    "tc_approvals": {}
+  },
+  "error_log": []
+}

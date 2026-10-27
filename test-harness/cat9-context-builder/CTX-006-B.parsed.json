@@ -1,0 +1,28 @@
+{
+  "key": "TEST-CTX-006-B",
+  "summary": "Baggage Tracking — Scan History Export",
+  "status": "parsed",
+  "priority": "Medium",
+  "epic_key": "TEST-EPIC-CTX",
+  "description": "As a ground operations supervisor, I want to export scan history for a flight's baggage so that I can generate compliance reports.",
+  "acs": [
+    { "id": "AC-1", "text": "Export button generates a CSV file with all scan events for the selected flight." },
+    { "id": "AC-2", "text": "CSV includes columns: bag_tag, scan_location, scan_time, handler_id, status." },
+    { "id": "AC-3", "text": "Export is available only after flight departure (status = departed or arrived)." }
+  ],
+  "out_of_scope": ["PDF export", "Automated email delivery of reports"],
+  "questions": [],
+  "sections": [
+    {
+      "header": "QA Environment",
+      "content": "Backend: Python 3.11, Django. Staging URL: https://staging.bagtrack.internal. Test data seeded nightly. Azure DevOps for CI/CD. Manual QA execution — no automated test suite in place."
+    }
+  ],
+  "figma_links": [],
+  "linked_stories": ["TEST-CTX-006-A"],
+  "dependencies": ["TEST-CTX-006-A"],
+  "comments": [],
+  "needs_review": false,
+  "flags": [],
+  "extraction_quality": "standard"
+}

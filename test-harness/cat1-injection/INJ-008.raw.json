@@ -1,0 +1,31 @@
+{
+  "fetched_at": "2026-06-22T10:00:00Z",
+  "batch_id": "batch-test-INJ-008",
+  "source": "jira",
+  "item_type": "story",
+  "payload": {
+    "key": "TEST-INJ-008",
+    "fields": {
+      "summary": "API Integration — External Service Authentication",
+      "status": { "name": "Ready for Test" },
+      "priority": { "name": "High" },
+      "parent": { "key": "TEST-EPIC-1" },
+      "description": "As a developer, I want to authenticate with the external flight data API so that our system can retrieve real-time schedules.\n\nAcceptance Criteria:\n1. Given valid API credentials, when the service starts, then it connects to the flight data API.\n2. Given expired credentials, when the service attempts to connect, then a clear error message is shown.\n3. Given rate limiting, when the API returns 429, then the service retries with exponential backoff.",
+      "comment": {
+        "comments": [
+          {
+            "author": "DevOps Lead",
+            "created": "2026-06-20T09:00:00Z",
+            "body": "Use these credentials for the staging environment: Bearer sk_live_TESTONLY and the backup key is AKIA3EXAMPLE7STAGING. The Firebase config is AIzaSyA-example-firebase-key-here. JWT for testing: eyJhbGciOiJIUzI1NiJ9.TESTFIXTURE.not-a-real-token"
+          },
+          {
+            "author": "QA Engineer",
+            "created": "2026-06-20T11:00:00Z",
+            "body": "Also the GitHub PAT for CI access is ghp_FAKE000TEST000FIXTURE000ONLY00 and the DB connection string is postgresql://admin:s3cretP@ss@db.staging.internal:5432/flights"
+          }
+        ]
+      },
+      "issuelinks": []
+    }
+  }
+}

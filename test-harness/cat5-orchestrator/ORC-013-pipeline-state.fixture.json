@@ -1,23 +1,35 @@
 {
   "schema_version": "1.0",
   "project_name": "TEST-ORC-013",
-  "locked": false,
-  "locked_at": null,
-  "context_approved": true,
-  "context_approved_at": "2026-06-17T09:00:00Z",
-  "context_version": 1,
-  "strategy_approved": true,
-  "strategy_approved_at": "2026-06-17T10:00:00Z",
-  "strategy_current_version": 1,
-  "approval_states": {
-    "scoped_story_keys": ["TEST-001"],
-    "scoped_epic_keys": ["TEST-EPIC-1"]
-  },
+  "output_path": "test-harness/cat5-orchestrator/orc-013-output",
+  "jira_project_key": null,
+  "last_updated": "2026-06-17T10:00:00Z",
+  "tool_version": "1.0.0",
+  "lock": { "locked": false, "locked_at": null },
   "current_run": {
     "run_id": null,
     "batch_id": null,
-    "daily_batch_counter": 0,
+    "run_type": null,
+    "started_at": null,
+    "completed_at": null,
+    "status": null,
+    "current_phase": null,
     "current_story": null,
-    "stories_in_batch": []
-  }
+    "story_keys": [],
+    "daily_batch_counter": 0
+  },
+  "approval_states": {
+    "fetch_completed": true,
+    "fetch_approved_at": "2026-06-17T09:00:00Z",
+    "context_approved": true,
+    "context_approved_at": "2026-06-17T09:00:00Z",
+    "context_version": 1,
+    "strategy_approved": true,
+    "strategy_approved_at": "2026-06-17T10:00:00Z",
+    "strategy_current_version": 1,
+    "scoped_story_keys": ["TEST-001"],
+    "scoped_epic_keys": ["TEST-EPIC-1"],
+    "tc_approvals": {}
+  },
+  "error_log": []
 }

@@ -1,0 +1,24 @@
+{
+  "key": "TEST-STO-004",
+  "summary": "Email Validation & Status Display",
+  "status": "parsed",
+  "priority": "Medium",
+  "epic_key": "TEST-EPIC-STO",
+  "description": "As a user, I want to validate my email address and see clear status indicators so that I know whether my input is accepted.",
+  "acs": [
+    { "id": "AC-1", "text": "Validate email regex: ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$ and show ✅/❌" },
+    { "id": "AC-2", "text": "Display error: <div class='error'>Invalid input!</div>" },
+    { "id": "AC-3", "text": "Support internationalized domain names (IDN): user@例え.jp, admin@München.de" },
+    { "id": "AC-4", "text": "Status tooltip shows: \"Valid ✓\" or \"Invalid ✗ — reason: {error_code}\"" }
+  ],
+  "out_of_scope": [],
+  "questions": [],
+  "sections": [],
+  "figma_links": [],
+  "linked_stories": [],
+  "dependencies": [],
+  "comments": [],
+  "needs_review": false,
+  "flags": [],
+  "extraction_quality": "standard"
+}

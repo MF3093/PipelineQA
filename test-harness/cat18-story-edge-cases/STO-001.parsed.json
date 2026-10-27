@@ -1,0 +1,19 @@
+{
+  "key": "TEST-STO-001",
+  "summary": "Add search feature",
+  "status": "parsed",
+  "priority": "Medium",
+  "epic_key": null,
+  "description": "Allow users to search for flights by route, date, or flight number.",
+  "acs": [],
+  "out_of_scope": [],
+  "questions": [],
+  "sections": [],
+  "figma_links": [],
+  "linked_stories": [],
+  "dependencies": [],
+  "comments": [],
+  "needs_review": true,
+  "flags": ["NO_ACS"],
+  "extraction_quality": "standard"
+}

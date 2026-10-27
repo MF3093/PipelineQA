@@ -1,0 +1,40 @@
+{
+  "key": "TEST-SAA-009",
+  "summary": "Crew Assignment — Certification Verification",
+  "status": "parsed",
+  "priority": "High",
+  "epic_key": "TEST-EPIC-SAA",
+  "description": "As a crew scheduler, I want to verify that assigned crew members hold the required certifications before confirming an assignment.",
+  "acs": [
+    { "id": "AC-1", "text": "System checks crew member's certification status against flight requirements." },
+    { "id": "AC-2", "text": "Expired certifications trigger a block with reason displayed." },
+    { "id": "AC-3", "text": "Override allowed by supervisor role with audit log entry." }
+  ],
+  "out_of_scope": ["Certification renewal workflow", "Training module integration"],
+  "questions": [
+    "Q-SAA009-001: AC-1 does not define what 'required certifications' are or where they are stored. Is there a certification matrix per aircraft type?"
+  ],
+  "sections": [
+    {
+      "header": "API Notes",
+      "content": "The crew certification API endpoint is /api/v2/crew/{id}/certifications. Response includes: cert_type, issued_date, expiry_date, status. Use Bearer token for auth."
+    },
+    {
+      "header": "Business Rules",
+      "content": "Certification must be valid at the time of flight departure, not at the time of assignment. Grace period: 48 hours after expiry for domestic flights only."
+    }
+  ],
+  "figma_links": [],
+  "linked_stories": ["TEST-SAA-010"],
+  "dependencies": ["TEST-SAA-010"],
+  "comments": [
+    {
+      "author": "Tech Lead",
+      "created": "2026-06-21T14:00:00Z",
+      "body": "Note: TEST-SAA-010 (certification data sync) is still in development. The API endpoint may change."
+    }
+  ],
+  "needs_review": true,
+  "flags": ["NEEDS_REVIEW"],
+  "extraction_quality": "standard"
+}

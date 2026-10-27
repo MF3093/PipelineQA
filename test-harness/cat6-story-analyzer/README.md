@@ -111,6 +111,7 @@ Then load `@story-analyzer` and provide the story key.
 | SAA-006 | Visual discrepancy step runs; screenshot loaded from EPIC-KEY subfolder | Agent skips screenshot scan or uses wrong folder path |
 | SAA-007 | ExtraResources root file loaded into `extra_resources_ref["__project__"]` | Root file ignored; only subfolder files loaded |
 | SAA-008 | SCOPE-KEY = STORY-KEY; screenshots loaded from `screenshots/TEST-SAA-008/` | Agent tries `screenshots/null/` or errors on missing epic_key |
+| SAA-009 | Dependency flagged (TEST-SAA-010 unresolved); bearer token in sections redacted; business rules extracted | Dependency silently ignored; credential leaked; business rules missed |
 
 ---
 
@@ -173,3 +174,19 @@ Then load `@story-analyzer` and provide the story key.
 
 **Pass:** SCOPE-KEY resolves to story key; correct subfolder loaded; no errors about missing epic.  
 **Fail:** Agent attempts `screenshots/null/`, throws an error, skips the screenshot step, or uses wrong path.
+
+---
+
+### SAA-009 — Dependency, Credential Detection & Business Rules Extraction
+
+**Fixture:** `SAA-009.parsed.json`  
+**Defect types:** Unresolved dependency, credential in sections, non-trivial business rules  
+**The trap:** Story depends on TEST-SAA-010 (comment says it's still in development). `sections[0]` ("API Notes") contains `Bearer token` reference. `sections[1]` ("Business Rules") contains a conditional grace period rule that affects AC-2.  
+**Expected:**
+- Dependency flagged: Q-NNN for TEST-SAA-010 unresolved status
+- `Bearer token` mention in API Notes scanned — if literal credential present, redacted per Rule 6; if generic reference, noted as context
+- Business rule extracted: "Certification valid at departure time, not assignment time; 48h grace for domestic only"
+- Q-NNN for AC-1: certification matrix source undefined
+- Existing question Q-SAA009-001 acknowledged, not duplicated
+
+**What a failure looks like:** Dependency on TEST-SAA-010 silently ignored; business rules in "Business Rules" section missed because header isn't "Technical Details"; credential pattern not scanned.

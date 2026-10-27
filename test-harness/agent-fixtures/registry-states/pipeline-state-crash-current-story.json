@@ -17,7 +17,8 @@
     "status": "in_progress",
     "current_phase": "tc_generation",
     "current_story": "TEST-FMT-001",
-    "story_keys_in_run": ["TEST-FMT-001", "TEST-FMT-002"]
+    "story_keys": ["TEST-FMT-001", "TEST-FMT-002"],
+    "daily_batch_counter": 1
   },
 
   "approval_states": {
@@ -32,7 +33,5 @@
     "scoped_story_keys": ["TEST-FMT-001", "TEST-FMT-002"],
     "scoped_epic_keys": ["TEST-EPIC-1"],
     "tc_approvals": {}
-  },
-
-  "run_history": []
+  }
 }
