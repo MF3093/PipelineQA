@@ -8,7 +8,7 @@ This directory contains all Claude Code agents and instructions for the Pipeline
 
 See `.claude/agents/` directory for 8 agents:
 - `orchestrator.md` - Pipeline coordinator
-- `fetcher.md` - Story fetcher from Jira/ADO
+- `fetcher.md` - Story fetcher from Jira
 - `parser.md` - Story normalizer
 - `story-analyzer.md` - Discrepancy detector
 - `context-builder.md` - Project context builder

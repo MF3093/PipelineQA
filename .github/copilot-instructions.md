@@ -10,7 +10,7 @@ Path schema: `instructions/path-schema.instructions.md`
 | Agent | Invoke | Role |
 |-------|--------|------|
 | Orchestrator | `@orchestrator` | Entry point — sequencing, gates, project registry, state |
-| Fetcher | `@fetcher` | Only agent touching the story source (Jira/ADO) |
+| Fetcher | `@fetcher` | Only agent touching the story source (Jira) |
 | Parser | `@parser` | Raw snapshot → `ParsedStory` schema |
 | Story Analyzer | `@story-analyzer` | Discrepancy/gap detection, no TC writing |
 | Context Builder | `@context-builder` | First-run project context only |

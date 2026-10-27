@@ -42,7 +42,7 @@ If you update an agent in one system, update it in the other.
 
 **Example:** If updating Fetcher in `.github/agents/fetcher.agent.md`, apply same changes to `.claude/agents/fetcher.md`, translating tools via the mapping above.
 
-### 2. Global Rules (11 Rules)
+### 2. Global Rules (12 Rules)
 
 **No merged copy exists.** Each system's instruction file is canonical for that system and must stay textually identical (content only — Copilot's file keeps its `applyTo` frontmatter; Claude's has none):
 

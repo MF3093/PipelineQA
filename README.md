@@ -38,7 +38,7 @@ See [QUICK-REFERENCE.md — 8 Agents](QUICK-REFERENCE.md#8-agents) for descripti
 ### Platform Support
 
 - **GitHub Copilot Chat** — Agent picker (`@`) in VS Code → See [GETTING-STARTED.md](GETTING-STARTED.md)
-- **Claude Code** — Slash commands (`/`) → See [GETTING-STARTED.md](GETTING-STARTED.md)
+- **Claude Code** — Subagents (invoke by name) → See [GETTING-STARTED.md](GETTING-STARTED.md)
 
 ---
 
@@ -61,7 +61,7 @@ MAINTENANCE.md                      ← Sync & maintenance
 
 ## System Principles
 
-- **11 Global Rules** — Applied consistently to all agents (`.claude/instructions/global-rules.md` / `.github/instructions/global-rules.instructions.md`)
+- **12 Global Rules** — Applied consistently to all agents (`.claude/instructions/global-rules.md` / `.github/instructions/global-rules.instructions.md`)
 - **8 Path Rules (P-1 to P-8)** — Define folder structure (`.claude/instructions/path-schema.md` / `.github/instructions/path-schema.instructions.md`)
 - **Strict Approval Gates** — 3 options per gate, whitelisted responses only
 - **Minimum Permissions** — Each agent touches only assigned files
@@ -87,7 +87,7 @@ MAINTENANCE.md                      ← Sync & maintenance
 [QUICK-REFERENCE.md — Claude Code Commands](QUICK-REFERENCE.md#claude-code-commands) and [QUICK-REFERENCE.md — GitHub Copilot Commands](QUICK-REFERENCE.md#github-copilot-commands).
 
 **What are the approval gates?**
-4 gates: Gate 1 (fetched), Gate 2 (context), Gate 3 (priority), Gate 4 (test cases). See [QUICK-REFERENCE.md — Approval Gate Responses](QUICK-REFERENCE.md#approval-gate-responses).
+4 gates: Gate 2 (context), Gate 2b (story analysis review), Gate 3 (priority), Gate 4 (test cases). See [QUICK-REFERENCE.md — Approval Gate Responses](QUICK-REFERENCE.md#approval-gate-responses).
 
 **How do I keep Copilot and Claude Code in sync?**
 [MAINTENANCE.md](MAINTENANCE.md).

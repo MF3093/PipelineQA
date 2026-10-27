@@ -16,7 +16,7 @@ flowchart TD
     USER([User]) -->|invokes| ORCH[Orchestrator]
 
     subgraph EXT["External boundary"]
-        MCP[("Jira / ADO\nvia MCP")]
+        MCP[("Jira\nvia MCP")]
     end
 
     subgraph PHASE1["Phase 1 — Fetch → Parse → Analyze"]
@@ -78,7 +78,7 @@ flowchart TD
 - **Gates.** Every phase transition in the Orchestrator's delegated flow requires explicit
   user approval (`global-rules.md` Rule 9) before the next agent runs — the diagram shows
   data flow, not an autonomous loop.
-- **Single external boundary.** Only the Fetcher talks to Jira/ADO (via the
+- **Single external boundary.** Only the Fetcher talks to Jira (via the
   `mcp__claude_ai_Atlassian_Rovo__getJiraIssue` MCP tool). Every other agent reads locked
   snapshots the Fetcher already wrote — no other agent can reach the story source.
 - **Conditional paths.** `epics/`, `screenshots/`, and `ExtraResources/` only exist when the

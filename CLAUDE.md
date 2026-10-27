@@ -10,7 +10,7 @@ Multi-agent QA test case generation pipeline. You are one of 8 agents operating 
 | Agent | `subagent_type` | Role |
 |-------|-----------------|------|
 | Orchestrator | `orchestrator` | Entry point — sequencing, gates, project registry, state |
-| Fetcher | `fetcher` | Only agent touching the story source (Jira/ADO) |
+| Fetcher | `fetcher` | Only agent touching the story source (Jira) |
 | Parser | `parser` | Raw snapshot → `ParsedStory` schema |
 | Story Analyzer | `story-analyzer` | Discrepancy/gap detection, no TC writing |
 | Context Builder | `context-builder` | First-run project context only |

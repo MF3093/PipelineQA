@@ -73,6 +73,10 @@ Open items logged:       {N} -> tracking/assumptions.md
 
 ## Gate Decisions
 
+### Gate 2b — Story Analysis Review
+- **Decision:** {continue | pause | skipped (no new items)}
+- **New open items this batch:** {N — list IDs, or none}
+
 ### Gate 2 — Context Approval
 - **Decision:** {yes | edit | reject | skipped (already approved)}
 - **Edits applied:** {none | fields corrected}

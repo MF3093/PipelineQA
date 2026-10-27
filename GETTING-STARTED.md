@@ -41,7 +41,7 @@ claude
 
 ## Step 2 — MCP Setup (Jira)
 
-> Skip this step if your stories are in Azure DevOps or you are not using Jira.
+> Skip this step if you are not using Jira.
 
 **Copilot:** `.vscode/mcp.json` is excluded from version control (it may contain personal tokens). You must create it manually:
 
@@ -118,21 +118,13 @@ Open the generated file at:
 {YOUR_OUTPUT_PATH}/config/source-config.md
 ```
 
-Set the `story_source` field to your platform (`jira` or `ado`) and fill in the connection fields for that platform only. Leave the other platform section blank.
+Fill in the Jira connection fields:
 
-**Jira example:**
 ```
 story_source: jira
 Project Key:  MYPROJ
 Cloud ID:     xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 Site:         yourcompany.atlassian.net
-```
-
-**Azure DevOps example:**
-```
-story_source: ado
-Organization: your-org
-Project Name: YourProject
 ```
 
 ---
@@ -159,8 +151,8 @@ The Orchestrator will:
 | `1` | Full run — all phases |
 | `2` | Phase 1 only (Fetch → Parse → Story Analysis) |
 | `3` | Phase 2 only (Story Prioritizer → TC Generation) |
-| `4`–`7` | Individual phases |
-| `8` | Update project context |
+| `4`–`6` | Individual phases |
+| `7` | Update project context |
 
 3. Provide the story IDs when prompted:
 
@@ -265,7 +257,7 @@ Extra resources (requirements docs, design specs, API docs, etc.) go in the `Ext
    Database-schema.json
    Acceptance-criteria.docx
    ```
-4. Reference them in your Jira/ADO story descriptions if relevant:
+4. Reference them in your Jira story descriptions if relevant:
    ```
    See ExtraResources/API-specification.md for endpoint details
    See ExtraResources/EPIC-1/Design-guidelines.pdf for UI standards
@@ -307,7 +299,7 @@ All artifacts are saved inside the output directory you configured:
 ├── context/
 │   └── project-context.md        ← Approved project context (Gate 2)
 ├── stories/
-│   ├── raw/                       ← Raw snapshots from Jira/ADO
+│   ├── raw/                       ← Raw snapshots from Jira
 │   └── parsed/                    ← Normalized ParsedStory JSON files
 ├── epics/                         ← Only created if stories have epics
 ├── strategy/

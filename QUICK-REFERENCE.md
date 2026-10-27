@@ -9,7 +9,7 @@ This page is for **quick lookups only**. For step-by-step setup and workflows, s
 | Agent | Purpose | Role |
 |-------|---------|------|
 | **Orchestrator** | Coordinates full pipeline, manages approval gates, registers projects, tracks state | Primary entry point |
-| **Fetcher** | Reads stories from Jira/ADO, saves raw snapshots | Fetching |
+| **Fetcher** | Reads stories from Jira, saves raw snapshots | Fetching |
 | **Parser** | Normalizes raw snapshots into structured `ParsedStory` JSON schema | Data normalization |
 | **Story Analyzer** | Surfaces discrepancies and coverage gaps before TC writing | Quality assurance |
 | **Context Builder** | Captures stable project-wide information (tech stack, conventions) | Project knowledge |
@@ -28,7 +28,7 @@ Claude Code launches it through the Agent tool:
 
 ```
 run the orchestrator agent                    # Register project or run pipeline
-run the fetcher agent on STORY-KEY            # Fetch story from Jira/ADO
+run the fetcher agent on STORY-KEY            # Fetch story from Jira
 run the parser agent on STORY-KEY [...]       # Parse one or more stories
 run the story-analyzer agent on STORY-KEY     # Analyze single story
 run the context-builder agent                 # Build project context (first run)
@@ -53,7 +53,7 @@ All commands use **agent picker syntax** (`@`) + natural language:
 
 ```
 @orchestrator              # Register project or run pipeline
-@fetcher                   # Fetch stories from Jira/ADO
+@fetcher                   # Fetch stories from Jira
 @parser                    # Parse raw stories
 @story-analyzer            # Analyze single story
 @context-builder           # Build project context (first run)
@@ -196,7 +196,7 @@ run the story-analyzer agent on TEST-FMT-001
 
 ## Critical Rules (Full Text)
 
-11 Global Rules and Path Schema (P-1 to P-8) are canonical per system — kept identical, no merged copy:
+12 Global Rules and Path Schema (P-1 to P-8) are canonical per system — kept identical, no merged copy:
 
 - **Claude Code:** `.claude/instructions/global-rules.md`, `.claude/instructions/path-schema.md`
 - **Copilot:** `.github/instructions/global-rules.instructions.md`, `.github/instructions/path-schema.instructions.md`
