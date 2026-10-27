@@ -35,5 +35,18 @@
     "tc_approvals": {}
   },
 
+  "token_usage": {
+    "by_agent": {
+      "fetcher": 0,
+      "parser": 0,
+      "story-analyzer": 0,
+      "context-builder": 0,
+      "story-prioritizer": 0,
+      "tc-generator": 0,
+      "tc-reviewer": 0
+    },
+    "total": 0,
+    "last_updated_run": null
+  },
   "error_log": []
 }

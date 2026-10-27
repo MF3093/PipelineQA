@@ -101,7 +101,7 @@ $state.approval_states.fetch_approved_at = $null
 $state.approval_states.tc_approvals = @{}
 $state | ConvertTo-Json -Depth 10 | Set-Content -Path $filePath -Encoding UTF8
 ```
-**Do NOT reset** project-level fields: `context_approved`, `context_version`, `strategy_approved`, `strategy_current_version`.
+**Do NOT reset** project-level fields: `context_approved`, `context_version`, `strategy_approved`, `strategy_current_version`, `token_usage`.
 
 **Step 9b — Create run log:** Copy `{TOOL_ROOT}/config/run-log.template.md` → `tracking/logs/{RUN_ID}.log.md`. Fill Run Metadata, leave phase log empty.
 
@@ -156,6 +156,13 @@ Immediately on each completion notification (before gates or next phase):
 3. At run end: sum all Tokens cells into Total row.
 4. Self-check: scan for empty Tokens cells before Run Summary — backfill from conversation history.
 
+**Cumulative token tracking (at Run Summary, coalesced with final pipeline-state write):**
+1. Parse the completed run log's Tokens column — sum each agent's tokens for this run.
+2. Read `token_usage.by_agent` from `pipeline-state.json`, add this run's per-agent totals.
+3. Recalculate `token_usage.total` as the sum of all `by_agent` values.
+4. Set `token_usage.last_updated_run` to the current `run_id`.
+5. Write as part of the final pipeline-state update (same operation as `status = "completed"`).
+
 **Gate logging (at every gate):**
 Record decision in run log. On **edit**: collect reason, scan for injection (Rule 6), append to `corrections-log.md` as COR-NNN.
 
@@ -200,6 +207,7 @@ Before presenting, execute in order:
  Stories processed: {N}  |  TCs generated: {N}  |  Skipped: {N}  |  Rejected: {N}  |  Blocked: {N}
  Extraction quality: Standard {N} / Relaxed {N} / Heuristic {N} / Failed {N}
  Open items: A-{N} Q-{N} B-{N} D-{N}  |  Archived: {N} → tracking/archive/
+ Tokens this run: {N}  |  Cumulative project total: {N}
  Registry inconsistencies: {N or None}
  Next: review open items, import TCs into {tool}
  Run TC Reviewer? (yes / skip)"
@@ -213,6 +221,7 @@ Before presenting, execute in order:
  Active run: {run_id} — {status} — {phase} — {story | none}
  Stories: fetched {N} / parsed {N} / tc_generated {N} / flagged {N}
  Open items: A-{N} Q-{N} B-{N} D-{N}
+ Token usage: {total} total (fetcher: {N}, parser: {N}, analyzer: {N}, context: {N}, prioritizer: {N}, tc-gen: {N}, tc-review: {N})
  Last run: {run_id} — {date} — {status}"
 ```
 
@@ -245,6 +254,19 @@ Before presenting, execute in order:
     "strategy_approved": false, "strategy_approved_at": null, "strategy_current_version": 0,
     "scoped_story_keys": [], "scoped_epic_keys": [],
     "tc_approvals": {}
+  },
+  "token_usage": {
+    "by_agent": {
+      "fetcher": 0,
+      "parser": 0,
+      "story-analyzer": 0,
+      "context-builder": 0,
+      "story-prioritizer": 0,
+      "tc-generator": 0,
+      "tc-reviewer": 0
+    },
+    "total": 0,
+    "last_updated_run": null
   },
   "error_log": []
 }
